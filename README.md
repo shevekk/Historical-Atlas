@@ -6,4 +6,4 @@ Le logiciel est basé sur [Turf.js](https://turfjs.org/) et [Leaflet.js](https:/
 
 [Tester le logiciel](http://dataexplorer.hd.free.fr/HistoAtlas/index.html)
 
-[Voir un exemple de carte](https://dataexplorer.hd.free.fr/HistoAtlas/index.html?file=Europe1300)
+[Voir un exemple de carte](http://dataexplorer.hd.free.fr/HistoAtlas/index.html?file=Europe1300)
