@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>Atlas</title>
+    <link rel="icon" type="image/png" href="img/icon_map.png" />
+  </head>
+  <body>
+    
+
+    <script type="text/javascript" src="libs/jquery-3.1.1.min.js"></script>
+	
+	 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+	 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+
+	  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script> 
+
+      <link rel="stylesheet" href="index.css" />
+    <!--  -->
+    <div id="map"></div>
+
+    <script type="text/javascript" src="index.js"></script>
+    <script type="text/javascript" src="config/params.js"></script>
+
+	  <script type="text/javascript" src="controls/actionsControl.js"></script>
+    <script type="text/javascript" src="controls/backgroundControl.js"></script>
+    <script type="text/javascript" src="controls/layersControl.js"></script>
+    <script type="text/javascript" src="controls/settingsControl.js"></script>
+
+    <script type="text/javascript" src="map/paintLayer.js"></script>
+    <script type="text/javascript" src="map/paintParams.js"></script>
+    <script type="text/javascript" src="map/loadSaveManager.js"></script>
+    <script type="text/javascript" src="map/layersManager.js"></script>
+    <script type="text/javascript" src="map/cursorManager.js"></script>
+    <script type="text/javascript" src="map/label.js"></script>
+
+    <script type="text/javascript" src="buttons/actionButton.js"></script>
+    <script type="text/javascript" src="buttons/actionButtonSlider.js"></script>
+    <script type="text/javascript" src="buttons/actionButtonSimple.js"></script>
+    <script type="text/javascript" src="buttons/actionButtonColor.js"></script>
+    <script type="text/javascript" src="buttons/actionButtonFile.js"></script>
+
+    
+    
+
+	<script>
+      let main = new Main();
+	  main.init();
+    </script>
+
+
+  </body>
+</html>

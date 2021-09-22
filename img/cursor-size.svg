@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="600px"
+   height="600px"
+   viewBox="0 0 600 600"
+   version="1.1"
+   id="SVGRoot"
+   sodipodi:docname="dessin.svg"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
+  <defs
+     id="defs3901">
+    <clipPath
+       id="presentation_clip_path"
+       clipPathUnits="userSpaceOnUse">
+      <rect
+         x="0"
+         y="0"
+         width="21000"
+         height="29700"
+         id="rect2" />
+    </clipPath>
+    <clipPath
+       id="clip_path_1"
+       clipPathUnits="userSpaceOnUse">
+      <path
+         d="M 4500,2750 H 16352 V 16296 H 4500 Z"
+         id="path60" />
+    </clipPath>
+    <clipPath
+       id="clipPath3267"
+       clipPathUnits="userSpaceOnUse">
+      <path
+         d="M 4500,2750 H 16352 V 16296 H 4500 Z"
+         id="path3265" />
+    </clipPath>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="630.74042"
+     inkscape:cy="526.22053"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     inkscape:window-width="1540"
+     inkscape:window-height="710"
+     inkscape:window-x="2024"
+     inkscape:window-y="330"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata3904">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       class="SlideGroup"
+       id="g80"
+       transform="matrix(0.03050442,0,0,0.03161674,-16.870988,-1.1048496)">
+      <g
+         id="g78">
+        <g
+           id="container-id1">
+          <g
+             id="id1"
+             class="Slide"
+             clip-path="url(#presentation_clip_path)">
+            <g
+               class="Page"
+               id="g74">
+              <g
+                 class="Group"
+                 id="g72">
+                <g
+                   class="com.sun.star.drawing.CustomShape"
+                   id="g56">
+                  <g
+                     id="id3">
+                    <rect
+                       class="BoundingBox"
+                       stroke="none"
+                       fill="none"
+                       x="579"
+                       y="79"
+                       width="19594"
+                       height="18844"
+                       id="rect51" />
+                    <path
+                       fill="none"
+                       stroke="#000000"
+                       stroke-width="1341"
+                       stroke-linejoin="round"
+                       d="m 19501,9500 c 0,1537 -422,3046 -1223,4376 -801,1330 -1952,2435 -3340,3203 -1387,768 -2961,1172 -4562,1172 -1602,0 -3176,-404 -4563,-1172 C 4425,16311 3274,15206 2473,13876 1672,12546 1250,11037 1250,9501 1250,7964 1672,6455 2473,5125 3274,3795 4425,2690 5813,1922 7200,1154 8774,750 10375,750 c 1602,0 3176,404 4563,1172 1388,768 2539,1873 3340,3203 801,1330 1223,2839 1223,4375 z"
+                       id="path53" />
+                  </g>
+                </g>
+                <g
+                   class="Graphic"
+                   id="g70">
+                  <g
+                     id="id4">
+                    <rect
+                       class="BoundingBox"
+                       stroke="none"
+                       fill="none"
+                       x="4500"
+                       y="2750"
+                       width="11853"
+                       height="13547"
+                       id="rect58" />
+                    <defs
+                       id="defs63">
+                      <clipPath
+                         id="clipPath4514"
+                         clipPathUnits="userSpaceOnUse">
+                        <path
+                           d="M 4500,2750 H 16352 V 16296 H 4500 Z"
+                           id="path4512" />
+                      </clipPath>
+                    </defs>
+                    <g
+                       clip-path="url(#clip_path_1)"
+                       id="g67">
+                      <path
+                         fill="#000000"
+                         stroke="none"
+                         d="m 16352,11851 v 2963 c 0,1 0,1 0,2 0,111 -29,220 -85,317 -55,96 -135,176 -232,232 -96,55 -205,84 -316,84 -1,0 -1,0 -2,0 h -2963 c -566,0 -849,-685 -450,-1084 l 958,-958 -2836,-2836 -2837,2839 959,955 c 399,399 116,1084 -450,1084 H 5135 c -1,0 -1,0 -2,0 -111,0 -220,-29 -316,-84 -97,-56 -177,-136 -232,-232 -56,-97 -85,-206 -85,-317 0,-1 0,-1 0,-2 v -2963 c 0,-566 685,-849 1085,-450 l 957,958 L 9380,9523 6542,6684 5585,7645 C 5185,8044 4500,7761 4500,7195 V 4232 c 0,-1 0,-1 0,-2 0,-111 29,-220 85,-317 55,-96 135,-176 232,-232 96,-55 205,-84 316,-84 1,0 1,0 2,0 h 2963 c 566,0 849,685 450,1084 l -958,958 2836,2836 2837,-2839 -959,-955 c -399,-399 -116,-1084 450,-1084 h 2963 c 1,0 1,0 2,0 111,0 220,29 316,84 97,56 177,136 232,232 56,97 85,206 85,317 0,1 0,1 0,2 v 2963 c 0,566 -685,849 -1085,450 l -957,-958 -2838,2836 2838,2839 957,-958 c 400,-402 1085,-119 1085,447 z"
+                         id="path65" />
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

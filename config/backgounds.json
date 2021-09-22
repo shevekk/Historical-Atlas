@@ -1,0 +1,21 @@
+﻿{
+  "openstreetmap" : {
+    "name" : "OpenStreetMap",
+    "type" : "tile",
+    "url" : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    "attribution" : "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
+  },
+  "arcgis" : {
+    "name" : "ArcGIS",
+    "type" : "tile",
+    "url" : "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    "attribution" : ""
+  },
+  "mundialis" : {
+    "name" : "Mundialis",
+    "type" : "wms",
+    "url" : "http://ows.mundialis.de/services/service?",
+    "layers": "SRTM30-Colored-Hillshade",
+    "attribution" : ""
+  }
+}
