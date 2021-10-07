@@ -1,0 +1,14 @@
+﻿{
+  "Rome" : {
+    "name" : "République et Empire Romain",
+    "file" : "Rome"
+  },
+  "Europe_1300" : {
+    "name" : "Europe 1300",
+    "file" : "Europe1300"
+  },
+  "Europe_1300_2" : {
+    "name" : "Europe 1300 visualisation 2",
+    "file" : "Europe1300_2"
+  }
+}

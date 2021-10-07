@@ -51,7 +51,7 @@ var BackgroundControl = L.Control.extend({
    */
   updateList(backgrounds, jsonBackgrounds)
   {
-    this.div.innerHTML = ``;
+    this.div.innerHTML = '<div style="text-align:center;"><b>Fond de Plan :</b><div>';
     for(let i = 0; i < backgrounds.length; i++)
     {
       let id = backgrounds[i];

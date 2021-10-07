@@ -1,52 +1,33 @@
 ﻿<!DOCTYPE html>
 <html>
   <head>
-    <title>Atlas</title>
+    <title>Histo Atlas</title>
     <link rel="icon" type="image/png" href="img/icon_map.png" />
   </head>
   <body>
-    
 
-    <script type="text/javascript" src="libs/jquery-3.1.1.min.js"></script>
-	
-	 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
-	 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <script type="text/javascript" src="libs/jquery-3.1.1.min.js"></script>
+  <link rel="stylesheet" href="index.css" />
 
-	  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script> 
+  <h3>Histo Atlas</h3>
 
-      <link rel="stylesheet" href="index.css" />
-    <!--  -->
-    <div id="map"></div>
+  <p>Histo Atlas est un outils de création de cartes historique, il permet de créer et visualiser des cartes historiques avec la visualisation d’évolution dans le temps de frontières, zones culturelles ou autres.</p>
 
-    <script type="text/javascript" src="index.js"></script>
-    <script type="text/javascript" src="config/params.js"></script>
+  <img src="img/map_rome.png" />
+  <br/><br/>
+  <a href="histoAtlas.html"><button id="create_empty_map">Créer une carte vide</button></a>
 
-	  <script type="text/javascript" src="controls/actionsControl.js"></script>
-    <script type="text/javascript" src="controls/backgroundControl.js"></script>
-    <script type="text/javascript" src="controls/layersControl.js"></script>
-    <script type="text/javascript" src="controls/settingsControl.js"></script>
+  <!-- Display disponible maps -->
+  <h4>Cartes disponibles :</h4>
+  <div id="maps"></div>
 
-    <script type="text/javascript" src="map/paintLayer.js"></script>
-    <script type="text/javascript" src="map/paintParams.js"></script>
-    <script type="text/javascript" src="map/loadSaveManager.js"></script>
-    <script type="text/javascript" src="map/layersManager.js"></script>
-    <script type="text/javascript" src="map/cursorManager.js"></script>
-    <script type="text/javascript" src="map/label.js"></script>
 
-    <script type="text/javascript" src="buttons/actionButton.js"></script>
-    <script type="text/javascript" src="buttons/actionButtonSlider.js"></script>
-    <script type="text/javascript" src="buttons/actionButtonSimple.js"></script>
-    <script type="text/javascript" src="buttons/actionButtonColor.js"></script>
-    <script type="text/javascript" src="buttons/actionButtonFile.js"></script>
+  <br/><br/>
+  <a href="https://github.com/shevekk/Historical-Atlas">Voir le code source</a><br/>
 
-    
-    
+  <a href="https://twitter.com/HistoAtlas"><img src="img/twitter.png" /></a>
 
-	<script>
-      let main = new Main();
-	  main.init();
-    </script>
-
+  <script type="text/javascript" src="index.js"></script>
 
   </body>
 </html>

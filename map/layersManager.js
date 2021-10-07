@@ -11,10 +11,10 @@ var LayersManager = L.Class.extend({
    * @property {Param}                  params                Application params
    * @property {paintParams}            paintParams           Paint params
    * @property {LayerControl}           layersControl         The layer controller
-   * @property {PaintLayer[]}           layerGroups           The paint layer array
+   * @property {ParentLayer[]}          layerGroups           The paint layer array
    * @property {L.Map}                  map                   The map
    * @property {CursorManager}          cursorManager         The cursor manager
-   * @property {PaintLayer}             selectedLayer         The selected layer
+   * @property {ParentLayer}            selectedLayer         The selected layer
    */
   initialize: function (options) 
   {
@@ -23,12 +23,21 @@ var LayersManager = L.Class.extend({
 
     this.layersControl = options.layersControl;
 
-    this.layerGroups = [];
-
     this.map = options.map;
     this.cursorManager = options.cursorManager;
 
-    this.layerGroups.push(new PaintLayer(this.map, {color:'#ff0000'}, this.layerGroups.length, this.paintParams));
+    this.init();
+
+    this.actionsControl = null;
+  },
+
+  /*
+   * Init the layerManager
+   */
+  init()
+  {
+    this.layerGroups = [];
+    this.layerGroups.push(new ParentLayer(this.map, {color:'#ff0000'}, this.layerGroups.length, this.paintParams, this.params));
     this.selectedLayer = this.layerGroups[0];
   },
 
@@ -45,10 +54,27 @@ var LayersManager = L.Class.extend({
       
       if(!this.paintParams.removalContent)
       {
+        if(this.selectedLayer.selectedZone)
+        {
+          this.selectedLayer.addContent(geom)
+        }
+        else
+        {
+          if(this.paintParams.scrollDisable)
+          {
+            this.actionsControl.changeScrollDisableState();
+            this.paintParams.mouseDown = false;
+          }
+
+          alert("Aucun calque selectionné");
+        }
+        
+        /*
         if(!this.selectedLayer.addContent(geom))
         {
           this.mouseDown = false;
         }
+        */
       }
       else
       {
@@ -69,10 +95,9 @@ var LayersManager = L.Class.extend({
   },
 
    /*
-   * Add a new layer with random color
-   * @param {Object}               e                   Event with lat, long
+   * Add a new layer with random color and update UI
    */
-  addNewLayer : function(e)
+  addNewLayer : function()
   {
     let polygonOptions = {};
 
@@ -84,26 +109,21 @@ var LayersManager = L.Class.extend({
 
     polygonOptions = {color:`${colorText}`, fillOpacity : this.paintParams.opacity, weight: this.paintParams.borderWeight};
 
-    // Remove last layer if is empty
-    let removeLast = false;
-    if(this.layerGroups[this.layerGroups.length - 1].geom == null)
+    let number = 1;
+    for(let i = 0; i < this.layerGroups.length; i++)
     {
-      this.layerGroups.splice(this.layerGroups.length - 1, 1);
-      removeLast = true;
+      if(this.layerGroups[i].number >= number)
+      {
+        number = this.layerGroups[i].number + 1;
+      }
     }
 
-    this.layerGroups.push(new PaintLayer(this.map, polygonOptions, this.layerGroups.length, this.paintParams));
+    this.layerGroups.push(new ParentLayer(this.map, polygonOptions, number, this.paintParams, this.params));
 
     this.selectedLayer = this.layerGroups[this.layerGroups.length - 1];
 
-    if(removeLast)
-    {
-      this.layersControl.updateLineColor(this.layerGroups[this.layerGroups.length - 1]);
-    }
-    else
-    {
-      this.layersControl.addLayer(this.layerGroups[this.layerGroups.length - 1], true);
-    }
+    this.layersControl.addLayer(this.layerGroups[this.layerGroups.length - 1], true);
+    this.layersControl.parentsLayersDiv[this.layersControl.parentsLayersDiv.length - 1].select();
   },
 
   /*
@@ -120,9 +140,9 @@ var LayersManager = L.Class.extend({
     // Select all layer in cursor position
     for(let i = 0; i < this.layerGroups.length; i++)
     {
-      if(this.layerGroups[i].geom && this.layerGroups[i].geom.geometry)
+      if(this.layerGroups[i].selectedZone && this.layerGroups[i].selectedZone.geom && this.layerGroups[i].selectedZone.geom.geometry)
       {
-        if(turf.booleanPointInPolygon(pt, this.layerGroups[i].geom))
+        if(turf.booleanPointInPolygon(pt, this.layerGroups[i].selectedZone.geom))
         {
           selectedLayers.push(this.layerGroups[i]);
         }
@@ -174,10 +194,7 @@ var LayersManager = L.Class.extend({
     content.layers = [];
     for(let i = 0; i < this.layerGroups.length; i++)
     {
-      if(this.layerGroups[i].geom != null)
-      {
-        content.layers.push({options : this.layerGroups[i].polygonOptions, geom : this.layerGroups[i].geom, label : this.layerGroups[i].label.toJson()});
-      }
+      content.layers.push(this.layerGroups[i].toJson());
     }
 
     return content;
@@ -191,19 +208,16 @@ var LayersManager = L.Class.extend({
   {
     for(let i = 0; i < contentObj.layers.length; i++)
     {
-      this.layerGroups.push(new PaintLayer(this.map, contentObj.layers[i].options, this.layerGroups.length, this.paintParams));
-      this.layerGroups[this.layerGroups.length - 1].geom = contentObj.layers[i].geom;
-      this.layerGroups[this.layerGroups.length - 1].label.fromJson(contentObj.layers[i].label);
-      this.layerGroups[this.layerGroups.length - 1].label.updateZoom(this.params.zoom);
-      this.layerGroups[this.layerGroups.length - 1].redraw();
+      this.layerGroups.push(new ParentLayer(this.map, null, null, this.paintParams, this.params));
+      this.layerGroups[i].fromJson(contentObj.layers[i]);
     }
 
-    this.selectedLayer = this.layerGroups[this.layerGroups.length - 1];
+    this.selectedLayer = this.layerGroups[0];
 
     this.layersControl.updateLayersContent(this);
   },
 
-  /*
+ /*
   * Remove all layer of the map
   */
   clearMap()
@@ -223,12 +237,7 @@ var LayersManager = L.Class.extend({
    {
       for(let i = 0; i < this.layerGroups.length; i++)
       {
-        this.layerGroups[i].label.updateZoom(this.paintParams.zoomLevel);
-
-        if(this.layerGroups[i].geom != null)
-        {
-          this.layerGroups[i].label.redraw(this.layerGroups[i].layer, this.layerGroups[i].geom);
-        }
+        this.layerGroups[i].updateLabelSize();
       }
    },
 
@@ -238,7 +247,51 @@ var LayersManager = L.Class.extend({
    */
   moveLabel(e)
   {
-    this.selectedLayer.label.setPersoPosition([e.latlng.lng, e.latlng.lat])
-    this.selectedLayer.label.redraw(this.selectedLayer.layer, this.selectedLayer.geom)
+    this.selectedLayer.label.setCustomPosition(this.selectedLayer.selectedZone.number, [e.latlng.lng, e.latlng.lat])
+    this.selectedLayer.label.redraw(this.selectedLayer.layer, this.selectedLayer.selectedZone.geom, this.selectedLayer.selectedZone.number)
+  },
+
+  /*
+   * Change the selected zone from time value
+   * @param {Number}               timeValue                   The time value
+   */
+  changeTime(timeValue)
+  {
+    for(let i = 0; i < this.layerGroups.length; i++)
+    {
+      this.layerGroups[i].changeZoneFromTime(timeValue);
+    }
+  },
+
+  /*
+   * Remove a layer group
+   * @param {ParentLayer}               layer                   Layer to remove
+   */
+  removeALayerGroup(layer)
+  {
+    for(let i = 0; i < this.layerGroups.length; i++)
+    {
+      if(this.layerGroups[i] == layer)
+      {
+        this.layerGroups[i].remove();
+        this.layerGroups.splice(i, 1);
+      }
+    }
+
+    if(layer == this.selectedLayer)
+    {
+      this.selectedLayer = this.layerGroups[this.layerGroups.length - 1];
+    }
+  },
+
+  /*
+   * Change the select zone if param time is disable (first zone)
+   */
+  changeSelectZoneWithoutTime()
+  {
+    for(let i = 0; i < this.layerGroups.length; i++)
+    {
+      this.layerGroups[i].changeSelectZoneWithoutTime();
+    }
   }
 });

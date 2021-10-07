@@ -10,27 +10,25 @@ var LayersControl = L.Control.extend({
 
   /* 
    * Initialize the layersControl
-   * @property {ActionsControl}        actionsControl           The action control
-   * @property {PaintParams}           paintParams              The paint param
-   * @property {L.DomUtil[]}           lineDiv                  The div of the lines
-   * @property {L.DomUtil[]}           colorDiv                 The div of the colors frame
-   * @property {L.DomUtil}             selectedLine             The selected line
-   * @property {LayerManager}          layersManager            The layers manager
-   * @property {Params}                params                   The params
-   * @property {L.DomUtil}             _menu                    The menu containing the lines
+   * @property {ActionsControl}             actionsControl             The action control
+   * @property {PaintParams}                paintParams                The paint param
+   * @property {ParentLayerDiv[]}           parentsLayersDiv           The layers div
+   * @property {LayersManager}              layersManager              The layers manager
+   * @property {Params}                     params                     The params
+   * @property {TimeControl}                timeControl                The time controlleur
+   * @property {L.DomUtil}                  _menu                      The menu containing the lines
    */
   initialize: function (options) 
   {
     this.actionsControl = null;
     this.paintParams = options.paintParams;
 
-    this.lineDiv = [];
-    this.colorDiv = [];
+    this.parentsLayersDiv = [];
 
-    this.selectedLine = null;
     this.layersManager = null;
 
     this.params = options.params;
+    this.timeControl = options.timeControl;
 
     this._menu = null;
   },
@@ -41,6 +39,8 @@ var LayersControl = L.Control.extend({
    */
   onAdd(map)
   {
+    let me = this;
+
     this.map = map;
 
     var div = L.DomUtil.create('div', 'layers-control');
@@ -54,10 +54,26 @@ var LayersControl = L.Control.extend({
     this._menu = L.DomUtil.create('div', '', div);
     this._menu.id = "layersList";
 
+    // Add new layer component
+    if(this.params.editMode)
+    {
+      this.divAddParentLayer = L.DomUtil.create('div', 'layers-list-line-add-parent-layer', div);
+
+      let colorDiv = L.DomUtil.create('div', 'layers-list-color', this.divAddParentLayer);
+      colorDiv.style = `background-color:#cccccc; border: 2px solid black`;
+
+      let nameCmp = L.DomUtil.create('p', 'layers-list-text', this.divAddParentLayer);
+      nameCmp.innerHTML = "Ajout d'une couche";
+
+      L.DomEvent.on(this.divAddParentLayer, 'click', function(e) { this.addParentLayer() } , this);
+    }
+
     L.DomEvent.on(div, 'click', function(e) { this.actionInDiv() }, this);
     L.DomEvent.addListener(div, 'dblclick', L.DomEvent.stop);
-    L.DomEvent.addListener(div, 'mousedown', function(e) { L.DomEvent.stopPropagation(e); });
-    L.DomEvent.addListener(div, 'mouseup', L.DomEvent.stop);
+    L.DomEvent.addListener(div, 'mousedown', function(e) { L.DomEvent.stopPropagation(e);  if(!me.paintParams.scrollDisable) { me.map.dragging.disable(); } });
+    L.DomEvent.addListener(div, 'mouseup', function(e) { L.DomEvent.stopPropagation(e);  if(!me.paintParams.scrollDisable) { me.map.dragging.enable(); } } );
+    // manage scroll
+    L.DomEvent.addListener(div, 'mousewheel', function(e) { L.DomEvent.stopPropagation(e); } );
 
     L.DomEvent.on(imageHide, 'click', function(e) { this.changeVisibilityState(imageHide);  } , this);
 
@@ -74,11 +90,21 @@ var LayersControl = L.Control.extend({
     {
       this._menu.style["display"] = "inline-block";
       imageHide.src = "img/minus-solid.svg";
+
+      if(this.divAddParentLayer)
+      {
+        this.divAddParentLayer.style["display"] = "block";
+      }
     }
     else
     {
       this._menu.style["display"] = "none";
       imageHide.src = "img/plus-solid.svg";
+
+      if(this.divAddParentLayer)
+      {
+        this.divAddParentLayer.style["display"] = "none";
+      }
     }
   },
 
@@ -95,7 +121,7 @@ var LayersControl = L.Control.extend({
     }
     if(this.paintParams.scrollDisable)
     {
-      this.actionsControl._changeScrollDisableState();
+      this.actionsControl.changeScrollDisableState();
     }
     if(this.paintParams.moveLabel)
     {
@@ -111,7 +137,13 @@ var LayersControl = L.Control.extend({
   {
     this.layersManager = layersManager;
 
-    let content = "";
+    // Remove content
+    for(let i = 0; i < this.parentsLayersDiv.length; i++)
+    {
+      L.DomUtil.remove(this.parentsLayersDiv[i].div);
+    }
+    
+    this.parentsLayersDiv = [];
 
     for(let i = 0; i < this.layersManager.layerGroups.length; i++)
     {
@@ -130,141 +162,42 @@ var LayersControl = L.Control.extend({
 
   /*
    * Add a new layer
-   * @param {PaintLayer}          paintLayer           The layer manager
-   * @param {Boolean}             selected             True if the layer is curently selected
+   * @param {ParentLayer}          parentLayer           The layer manager
+   * @param {Boolean}              selected              True if the layer is curently selected
    */
-  addLayer(paintLayer, selected)
+  addLayer(parentLayer, selected)
   {
-    for(let i = 0; i < this.colorDiv.length; i++)
-    {
-      if(this.colorDiv[i].number == paintLayer.number)
-      {
-        return;
-      }
-    }
+    this.parentsLayersDiv.push(new ParentLayerDiv(this._menu, parentLayer, this.params, this.map, this));
+    this.parentsLayersDiv[this.parentsLayersDiv.length - 1].redraw();
 
-    let lineDiv = L.DomUtil.create('div', 'layers-list-line', this._menu);
-    lineDiv.id = "lineContent"+paintLayer.number;
-    lineDiv.number = paintLayer.number;
-    this.lineDiv.push(lineDiv);
-
-    this.initLine(lineDiv, paintLayer);
-
-    // Manage selected line
     if(selected)
     {
-      if(this.selectedLine)
-      {
-        this.selectedLine.style["background-color"] = "#ffffff";
-      }
-      
-      lineDiv.style["background-color"] = "#c7e0f0";
-      this.selectedLine = lineDiv;
+      this.parentsLayersDiv[this.parentsLayersDiv.length - 1].select();
     }
-  },
-
-  /*
-   * Init normal design of the line
-   * @param {L.DomUtil}          lineDiv             Div of the line
-   * @param {PaintLayer}         paintLayer          The paint layer of the line
-   */
-  initLine(lineDiv, paintLayer)
-  {
-    let selectDiv = L.DomUtil.create('div', 'layers-list-line-select', lineDiv);
-
-    let colorDiv = L.DomUtil.create('div', 'layers-list-color', selectDiv);
-    colorDiv.style = `background-color:${paintLayer.polygonOptions.color}`;
-    colorDiv.number = paintLayer.number;
-    this.colorDiv.push(colorDiv);
-
-    let nameCmp = L.DomUtil.create('p', 'layers-list-text', selectDiv);
-    nameCmp.innerHTML = paintLayer.label.value;
-
-    if(this.params.editMode)
-    {
-      let imageEdit = L.DomUtil.create('img', 'layers-list-icon', lineDiv);
-      imageEdit.src = "img/edit-solid.svg";
-
-      L.DomEvent.on(imageEdit, 'click', function(e) { this.editValue(lineDiv, selectDiv, imageEdit, paintLayer); } , this);
-    }
-
-    L.DomEvent.on(selectDiv, 'click', function(e) { this.selectLine(paintLayer); } , this);
-    L.DomEvent.on(selectDiv, 'dblclick', function(e) { this.zoomInLayer(paintLayer); } , this);
-  },
-
-  /*
-   * Edit name : add input for change the layer name
-   * @param {L.DomUtil}          lineDiv             Div of the line
-   * @param {L.DomUtil}          selectDiv           Div of the line selection part
-   * @param {L.DomUtil}          imageEdit           The img edit
-   * @param {PaintLayer}         paintLayer          The paint layer of the line
-   */
-  editValue(lineDiv, selectDiv, imageEdit, paintLayer)
-  {
-    L.DomUtil.remove(selectDiv);
-    L.DomUtil.remove(imageEdit);
-
-    let inputName = L.DomUtil.create('input', 'layers-list-input', lineDiv);
-    inputName.value = paintLayer.label.value;
-
-    let btnOk = L.DomUtil.create('button', 'layers-list-input', lineDiv);
-    btnOk.innerHTML = "OK";
-
-    L.DomEvent.on(btnOk, 'click', function(e) { this.savValue(lineDiv, selectDiv, inputName, btnOk, paintLayer); } , this);
-  },
-
-  /*
-   * Sav the name : Reinit line normal design
-   * @param {L.DomUtil}          lineDiv             Div of the line
-   * @param {L.DomUtil}          selectDiv           Div of the line selection part
-   * @param {L.DomUtil}          inputName           Input for change name
-   * @param {L.DomUtil}          btnOk               Button ok for change name
-   * @param {L.DomUtil}          imageEdit           The img edit
-   * @param {PaintLayer}         paintLayer          The paint layer of the line
-   */
-  savValue(lineDiv, selectDiv, inputName, btnOk, paintLayer)
-  {
-    L.DomUtil.remove(inputName);
-    L.DomUtil.remove(btnOk);
-
-    paintLayer.label.value = inputName.value;
-    paintLayer.label.redraw(paintLayer.layer, paintLayer.geom);
-
-    this.initLine(lineDiv, paintLayer);
-  },
-
-  /*
-   * Map zoom in a paintlayer bounds (db-click)
-   * @param {PaintLayer}         paintLayer          The paint layer of the line
-   */
-  zoomInLayer(paintLayer)
-  {
-    this.map.fitBounds([[paintLayer.layer.getBounds().getNorth(), paintLayer.layer.getBounds().getEast()], [paintLayer.layer.getBounds().getSouth(), paintLayer.layer.getBounds().getWest()]])
   },
 
   /*
    * Click on line = select layer in map and actionsControl
-   * @param {PaintLayer}         paintLayer          The paint layer of the line
+   * @param {ParentLayer}         paintLayer          The paint layer of the line
    */
-  selectLine(paintLayer)
+  selectLine(parentLayer)
   {
-    this.changeSelection(paintLayer);
-    this.layersManager.selectedLayer = paintLayer;
-    this.actionsControl.updateParamsFromLayerOptions(paintLayer.polygonOptions);
+    this.changeSelection(parentLayer);
+    this.layersManager.selectedLayer = parentLayer;
+    this.actionsControl.updateParamsFromLayerOptions(parentLayer.polygonOptions);
   },
 
   /*
    * Update color of the line from paintLayer
    * @param {PaintLayer}         paintLayer          The paint layer of the line
    */
-  updateLineColor(paintLayer)
+  updateLineColor(parentLayer)
   {
-    //$("#lineContent" + paintLayer.number).html(this.createLineContent(paintLayer));
-    for(let i = 0; i < this.colorDiv.length; i++)
+    for(let i = 0; i < this.parentsLayersDiv.length; i++)
     {
-      if(this.colorDiv[i].number == paintLayer.number)
+      if(this.parentsLayersDiv[i].parentLayer.number == parentLayer.number)
       {
-        this.colorDiv[i].style = `background-color:${paintLayer.polygonOptions.color}`;
+        this.parentsLayersDiv[i].setColor(parentLayer.polygonOptions.color);
       }
     }
   },
@@ -275,24 +208,61 @@ var LayersControl = L.Control.extend({
    */
    changeSelection(selectedLayer)
    {
-      if(this.selectedLine)
+      let selectDiv = null
+      for(let i = 0; i < this.parentsLayersDiv.length; i++)
       {
-        this.selectedLine.style["background-color"] = "#ffffff";
-      }
-
-      let lineDiv = null
-      for(let i = 0; i < this.lineDiv.length; i++)
-      {
-        if(this.lineDiv[i].number == selectedLayer.number)
+        if(this.parentsLayersDiv[i].parentLayer == selectedLayer)
         {
-          lineDiv = this.lineDiv[i];
+          this.parentsLayersDiv[i].select();
         }
       }
-      
-      if(lineDiv != null)
+   },
+
+   /*
+    * Unselect all layers
+    */
+    unselectAll()
+    {
+      for(let i = 0; i < this.parentsLayersDiv.length; i++)
       {
-        lineDiv.style["background-color"] = "#c7e0f0";
-        this.selectedLine = lineDiv;
+        this.parentsLayersDiv[i].unselect();
       }
-   }
+    },
+
+    /*
+     * Change the layer selection from time change
+     * @param {TimeValue}         timeValue          The time value
+     */
+     /*
+    changeTime(timeValue)
+    {
+      for(let i = 0; i < this.parentsLayersDiv.length; i++)
+      {
+        if(this.parentsLayersDiv[i].selected)
+        {
+          this.parentsLayersDiv[i].changeTime(timeValue);
+        }
+      }
+    },
+    */
+
+    changeSelectedZone()
+    {
+      for(let i = 0; i < this.parentsLayersDiv.length; i++)
+      {
+        if(this.parentsLayersDiv[i].selected)
+        {
+          this.parentsLayersDiv[i].changeSelectedZone();
+        }
+      }
+    },
+
+    /*
+     * Add a new parent layer (bouton click)
+     */
+    addParentLayer()
+    {
+      this.layersManager.addNewLayer();
+      this.actionsControl.updateParamsFromLayerOptions(this.layersManager.selectedLayer.polygonOptions);
+    }
 });

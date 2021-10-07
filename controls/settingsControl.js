@@ -24,6 +24,8 @@ var SettingsControl = L.Control.extend({
     this.params = options.params;
     this.jsonBackgrounds = options.jsonBackgrounds;
     this.backgroundControl = options.backgroundControl;
+    this.timeControl = options.timeControl;
+    this.layersControl = options.layersControl;
   },
   
   /*
@@ -42,6 +44,11 @@ var SettingsControl = L.Control.extend({
     L.DomEvent.addListener(this._container, 'mouseup', function(e) { L.DomEvent.stopPropagation(e); });
 
     this.initOpenButton();
+
+    if(!this.params.editMode)
+    {
+      this._container.style["display"] = "none";
+    }
 
     return this._container;
   },
@@ -155,15 +162,47 @@ var SettingsControl = L.Control.extend({
       }
     }
 
+    // Create time settings
+    let timeCheckBoxDiv = L.DomUtil.create('div', '', contentDiv);
+    let inputTimeCheckBox = L.DomUtil.create('input', 'settings-zoom-input', timeCheckBoxDiv);
+    inputTimeCheckBox.type = "checkbox";
+    inputTimeCheckBox.name = "timeCheckbox";
+    inputTimeCheckBox.checked = this.params.timeEnable;
+    let labelTimeCheckBox = L.DomUtil.create('label', '', timeCheckBoxDiv);
+    labelTimeCheckBox.for = "timeCheckbox";
+    labelTimeCheckBox.innerHTML = "Barre de temps actif";
+
+    let timaMaxMinDiv = L.DomUtil.create('div', '', contentDiv);
+    let labelTimeMin = L.DomUtil.create('label', '', timaMaxMinDiv);
+    labelTimeMin.for = "timeMin";
+    labelTimeMin.innerHTML = "Min : ";
+    let inputTimeMin = L.DomUtil.create('input', 'settings-zoom-input', timaMaxMinDiv);
+    inputTimeMin.type = "number";
+    inputTimeMin.name = "timeMin";
+    inputTimeMin.value = this.params.timeMin;
+    let labelTimeMax = L.DomUtil.create('label', '', timaMaxMinDiv);
+    labelTimeMax.for = "timeMax";
+    labelTimeMax.innerHTML = " Max : ";
+    let inputTimeMax = L.DomUtil.create('input', 'settings-zoom-input', timaMaxMinDiv);
+    inputTimeMax.type = "number";
+    inputTimeMax.name = "timeMax";
+    inputTimeMax.value = this.params.timeMax;
+
+    // Add sav button
     let buttonSav = L.DomUtil.create('button', 'settings-button-sav', contentDiv);
     buttonSav.innerHTML = "Mise à jour";
 
+    // Manage actions
     L.DomEvent.on(imageClose, 'click', function(e) { this.closeMenu(titleDiv, contentDiv) }, this);
+
     L.DomEvent.on(buttonPosition, 'click', function(e) { this.getActualPosition(inputPositionLat, inputPositionLong) }, this);
     L.DomEvent.on(buttonZoomDefault, 'click', function(e) { this.getActualZoom(inputZoomDefault) }, this);
     L.DomEvent.on(buttonZoomMin, 'click', function(e) { this.getActualZoom(inputZoomMin) }, this);
     L.DomEvent.on(buttonZoomMax, 'click', function(e) { this.getActualZoom(inputZoomMax) }, this);
-    L.DomEvent.on(buttonSav, 'click', function(e) { this.sav(inputPositionLat, inputPositionLong, inputZoomDefault, inputZoomMin, inputZoomMax, selectBackgroundDefault, selectBackgroundDisplay) }, this);
+
+    //L.DomEvent.on(inputTimeCheckBox, 'click', function(e) { this.changeTimeState(e) }, this);
+
+    L.DomEvent.on(buttonSav, 'click', function(e) { this.sav(inputPositionLat, inputPositionLong, inputZoomDefault, inputZoomMin, inputZoomMax, selectBackgroundDefault, selectBackgroundDisplay, inputTimeCheckBox, inputTimeMin, inputTimeMax) }, this);    
   },
 
   /*
@@ -230,7 +269,7 @@ var SettingsControl = L.Control.extend({
    * @param {L.Dom}               selectBackgroundDefault                 The select input default backgroung
    * @param {L.Dom}               selectBackgroundDisplay                 The select input display backgroungs
    */
-  sav(inputPositionLat, inputPositionLong, inputZoomDefault, inputZoomMin, inputZoomMax, selectBackgroundDefault, selectBackgroundDisplay)
+  sav(inputPositionLat, inputPositionLong, inputZoomDefault, inputZoomMin, inputZoomMax, selectBackgroundDefault, selectBackgroundDisplay, inputTimeCheckBox, inputTimeMin, inputTimeMax)
   {
     this.params.defaultPosition = [];
     this.params.defaultPosition.push(parseFloat(inputPositionLat.value));
@@ -255,5 +294,33 @@ var SettingsControl = L.Control.extend({
 
     this.backgroundControl.setBackground(this.params.backgroundDefault);
     this.backgroundControl.updateList(this.params.backgrounds, this.jsonBackgrounds);
+
+    // Update time param
+    this.params.timeEnable = inputTimeCheckBox.checked;
+    this.params.timeMin = inputTimeMin.value;
+    this.params.timeMax = inputTimeMax.value;
+    this.timeControl.updateFromParams();
+
+    this.layersControl.updateLayersContent(this.layersControl.layersManager)
+  },
+
+  /*
+   * Change the time state
+   * @param {Event}               e                    The event with checkbox value
+   */
+  changeTimeState(e)
+  {
+    if(e.target.checked)
+    {
+      this.params.timeEnable = true;
+
+      this.timeControl.enable();
+    }
+    else
+    {
+      this.params.timeEnable = false;
+
+      this.timeControl.disable();
+    }
   }
 });

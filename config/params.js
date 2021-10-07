@@ -28,6 +28,10 @@ class Params
 
     this.backgroundDefault = "openstreetmap";
     this.backgrounds = [];
+
+    this.timeEnable = false;
+    this.timeMin = 1900;
+    this.timeMax = 2000;
   }
 
   /*
@@ -44,6 +48,11 @@ class Params
     content.params["defaultPosition"] = this.defaultPosition;
     content.params["backgroundDefault"] = this.backgroundDefault;
     content.params["backgrounds"] = this.backgrounds;
+
+    content.params["timeEnable"] = this.timeEnable;
+    content.params["timeMin"] = this.timeMin;
+    content.params["timeMax"] = this.timeMax;
+
     return content;
   }
 
@@ -61,6 +70,10 @@ class Params
       this.defaultPosition = content.params["defaultPosition"];
       this.backgroundDefault = content.params["backgroundDefault"];
       this.backgrounds = content.params["backgrounds"];
+
+      this.timeEnable = content.params["timeEnable"];
+      this.timeMin = content.params["timeMin"];
+      this.timeMax = content.params["timeMax"];
     }
   }
 

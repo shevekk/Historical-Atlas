@@ -4,12 +4,11 @@
 class Label
 {
   /* 
-   * @property {String}            value              The label value (content)
-   * @property {Number}            textSize           Size of the text (param)
-   * @property {Number}            fontSize           Fond display size
-   * @property {L.tooltip}         tooltip            Layer for cursor drawing
-   * @property {Number[]}          position           Array of perso position (choose by user)
-   * @property {Boolean}           positionPerso      True if position is not the center of layer
+   * @property {String}            value                     The label value (content)
+   * @property {Number}            textSize                  Size of the text (param)
+   * @property {Number}            fontSize                  Fond display size
+   * @property {L.tooltip}         tooltip                   Layer for cursor drawing
+   * @property {Object}            customPositions           Object of custom position (choose by user) - Key is paintZone number
    */
   constructor(value)
   {
@@ -18,8 +17,7 @@ class Label
     this.fontSize = 0;
     this.tooltip = null;
 
-    this.position = [];
-    this.positionPerso = false;
+    this.customPositions = {};
   }
 
   /* 
@@ -45,45 +43,49 @@ class Label
 
   /*
    * Define a custom position 
-   * @param {Number[]}          position           Array of perso position (choose by user)
+   * @param {Number}            number           The paintZone number
+   * @param {Number[]}          position         Array of perso position (choose by user)
    */
-  setPersoPosition(position)
+  setCustomPosition(number, position)
   {
-    this.position = position;
-    this.positionPerso = true;
+    this.customPositions[number] = position;
   }
 
   /*
    * Draw the layer
-   * @property {L.layerGroup}        layer                The parent drawing layer
-   * @property {Object}              geom                 Geom of the parent polygon
+   * @param {L.layerGroup}        layer                The parent drawing layer
+   * @param {Object}              geom                 Geom of the parent polygon
+   * @param {Number}              number               The paintZone number
    */
-  redraw(layer, geom)
+  redraw(layer, geom, number)
   {
-    layer.removeLayer(this.tooltip)
+    layer.removeLayer(this.tooltip);
     
-    var center = turf.center(geom);
- 
-    this.tooltip = L.tooltip({
-      direction: 'center',
-      permanent: true,
-      interactive: false,
-      noWrap: true,
-      opacity: 1,
-      className: 'label-tooltip'
-    });
+    if(geom)
+    {
+      var center = turf.center(geom);
+   
+      this.tooltip = L.tooltip({
+        direction: 'center',
+        permanent: true,
+        interactive: false,
+        noWrap: true,
+        opacity: 1,
+        className: 'label-tooltip'
+      });
 
-    if(this.positionPerso)
-    {
-      this.tooltip.setLatLng(new L.LatLng(this.position[1], this.position[0]));
+      if(this.customPositions[number])
+      {
+        this.tooltip.setLatLng(new L.LatLng(this.customPositions[number][1], this.customPositions[number][0]));
+      }
+      else
+      {
+        this.tooltip.setLatLng(new L.LatLng(center.geometry.coordinates[1], center.geometry.coordinates[0]));
+      }
+      
+      this.tooltip.setContent(`<p style="font-size: ${Math.round(this.fontSize)}px"> ${this.value} </p>`);
+      this.tooltip.addTo(layer);
     }
-    else
-    {
-      this.tooltip.setLatLng(new L.LatLng(center.geometry.coordinates[1], center.geometry.coordinates[0]));
-    }
-    
-    this.tooltip.setContent(`<p style="font-size: ${Math.round(this.fontSize)}px"> ${this.value} </p>`);
-    this.tooltip.addTo(layer);
   }
 
   /*
@@ -94,13 +96,13 @@ class Label
     let objResult = {};
     objResult["value"] = this.value;
     objResult["textSize"] = this.textSize;
-    objResult["position"] = this.position;
-    objResult["positionPerso"] = this.positionPerso;
+    objResult["customPositions"] = this.customPositions;
     return objResult;
   }
 
   /*
    * Import from json
+   * @param {Object}              obj               Object of label value
    */
   fromJson(obj)
   {
@@ -108,8 +110,11 @@ class Label
     {
       this.value = obj["value"];
       this.textSize = obj["textSize"];
-      this.position = obj["position"];
-      this.positionPerso = obj["positionPerso"];
+
+      if(obj["customPositions"])
+      {
+        this.customPositions = obj["customPositions"];
+      }
     }
   } 
 }

@@ -68,9 +68,7 @@ var ActionsControl = L.Control.extend({
       let me = this;
       this.buttons["selection"] = new ActionButtonSimple(this._container, "img/mouse-pointer-solid.svg", "Activer la selection", function(e) { me.paintParams.uiClick = true; me._changeSelectionState(e); });
 
-      this.buttons["scrool"] = new ActionButtonSimple(this._container, "img/paint-brush-solid.svg", "Activer le dessin", function(e) { me.paintParams.uiClick = true; me._changeScrollDisableState(e); });
-
-      this.buttons["add_new_layer"] = new ActionButtonSimple(this._container, "img/plus-solid.svg", "Créer un nouvelle couche", function(e) { me.paintParams.uiClick = true; me.addNewLayer(e); });
+      this.buttons["scrool"] = new ActionButtonSimple(this._container, "img/paint-brush-solid.svg", "Activer le dessin", function(e) { me.paintParams.uiClick = true; me.changeScrollDisableState(e); });
 
       this.buttons["erase"] = new ActionButtonSimple(this._container, "img/eraser-solid.svg", "Activer le retait de contenu", function(e) { me.paintParams.uiClick = true; me._changeRemoveContentState(e); });
 
@@ -110,7 +108,7 @@ var ActionsControl = L.Control.extend({
       }
       if(this.paintParams.scrollDisable)
       {
-        this._changeScrollDisableState();
+        this.changeScrollDisableState();
       }
 
       this.buttons["move_label"].setSelectedState(true);
@@ -128,7 +126,7 @@ var ActionsControl = L.Control.extend({
   _cursorLabelSizeMove : function(e)
   {
     this.layersManager.selectedLayer.label.updateSize(e.target.valueAsNumber, this.paintParams.zoomLevel);
-    this.layersManager.selectedLayer.label.redraw(this.layersManager.selectedLayer.layer, this.layersManager.selectedLayer.geom);
+    this.layersManager.selectedLayer.label.redraw(this.layersManager.selectedLayer.layer, this.layersManager.selectedLayer.selectedZone.geom, this.layersManager.selectedLayer.selectedZone.number);
   },
 
   /*
@@ -215,7 +213,7 @@ var ActionsControl = L.Control.extend({
 
       if(this.paintParams.scrollDisable)
       {
-        this._changeScrollDisableState();
+        this.changeScrollDisableState();
       }
       if(this.paintParams.moveLabel)
       {
@@ -226,9 +224,8 @@ var ActionsControl = L.Control.extend({
   
   /* 
    * Change the scrool state
-   * @param {Event}               e                    The event
    */
-  _changeScrollDisableState: function(e)
+  changeScrollDisableState: function()
   {
     if(this.paintParams.scrollDisable)
     {
@@ -287,24 +284,6 @@ var ActionsControl = L.Control.extend({
     {
       this.buttons["erase_all"].changeImageAndTitle("img/paint-roller-solid.svg", "Activer le retait de contenu sur toutes les couches");
     }
-  },
-
-  /*
-   * Add a new layer with random color
-   * @param {Object}               e                   Event with lat, long
-   */
-  addNewLayer : function(e)
-  {
-    if(this.options.removalContent)
-    {
-      this._changeRemoveContentState();
-    }
-
-    this.layersManager.addNewLayer();
-
-    this.updateParamsFromLayerOptions(this.layersManager.selectedLayer.polygonOptions);
-
-    //this.buttons["color"].value = colorText;
   },
 
   /*

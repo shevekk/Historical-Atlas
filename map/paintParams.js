@@ -11,6 +11,7 @@
  * @property {Boolean}           uiClick                  UI click state (Click in a control button)
  * @property {Boolean}           selectionState           The selection state (action selection label enable)
  * @property {Boolean}           moveLabel                The move label state (action move label enable)
+ * @property {Boolean}           mouseDown                State of mouse clic (true is down)
  */
 class PaintParams
 {
@@ -27,5 +28,7 @@ class PaintParams
     this.uiClick = false;
     this.selectionState = false;
     this.moveLabel = false;
+
+    this.mouseDown = false;
   }
 }

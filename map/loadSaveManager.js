@@ -11,15 +11,19 @@ class LoadSaveManager
    * @property {LayerManager}               layersManager            The layers manager
    * @property {Param}                      params                   Application params
    * @property {BackgroundControl}          backgroundControl        The background controller
+   * @property {TimeControl}                timeControl              The time control
+   * @property {LayersControl}              layersControl            The layers control
    * @property {Object}                     jsonBackgrounds          The json background
    */
-  constructor(map, layersManager, params, backgroundControl, jsonBackgrounds)
+  constructor(map, layersManager, params, backgroundControl, timeControl, layersControl, jsonBackgrounds)
   {
     this.map = map;
     this.layersManager = layersManager;
+    this.layersControl = layersControl;
     this.params = params;
     this.backgroundControl = backgroundControl;
     this.jsonBackgrounds = jsonBackgrounds;
+    this.timeControl = timeControl;
   }
 
   /*
@@ -75,6 +79,7 @@ class LoadSaveManager
 
           if(contentObj.layers)
           {
+            me.initParamsFromData(contentObj)
             me.initMapFromData(contentObj);
           }
           else
@@ -97,24 +102,67 @@ class LoadSaveManager
   /*
    * Load a file
    * @param {String}               fileUrl                   The file url
+   * @param {Function}             filcallbackeUrl           The function callback
    */
-  loadFile(fileUrl)
+  loadFile(fileName, callback)
   {
     let me = this;
+
+    let fileUrl = fileName+".json?jsoncallback=?";
+    if(!fileName.startsWith("http"))
+    {
+      fileUrl = "files/"+fileName+".json";
+    }
 
     $.getJSON(fileUrl, function(data) 
     {
       if(data.layers)
       {
-        me.initParamsFromData(data);
+        try
+        {
+          me.initParamsFromData(data);
 
-        me.initMapFromData(data);
+          me.initMapFromData(data);
+
+          callback();
+        }
+        catch (error) 
+        {
+          alert("Le fichier carte cible est invalide");
+          console.log( "Load map fail" );
+
+          me.layersManager.init();
+          me.createEmptyMap();
+
+          callback();
+        }
       }
       else
       {
         alert("Le fichier est invalide");
       }
+    })
+    .fail(function() 
+    {
+      alert("Le fichier carte cible est inexistant ou invalide");
+      console.log( "Load map fail" );
+
+      me.createEmptyMap();
+
+      callback();
     });
+  }
+
+  /*
+   * Create an empty map
+   */
+  createEmptyMap()
+  {
+    this.layersControl.updateLayersContent(this.layersManager);
+    this.params.updateMap(this.map);
+    this.backgroundControl.setBackground("openstreetmap");
+
+    this.timeControl.updateFromParams();
   }
 
   /*
@@ -128,6 +176,15 @@ class LoadSaveManager
     this.layersManager.fromJson(contentObj);
 
     this.actionsControl.updateParamsFromLayerOptions(this.layersManager.selectedLayer.polygonOptions);
+
+    if(this.params.timeEnable)
+    {
+      this.timeControl.setValue(this.params.timeMin);
+    }
+    else
+    {
+      this.layersManager.changeSelectZoneWithoutTime();
+    }
   }
 
   /*
@@ -140,5 +197,6 @@ class LoadSaveManager
     this.params.updateMap(this.map);
     this.backgroundControl.setBackground(this.params.backgroundDefault);
     this.backgroundControl.updateList(this.params.backgrounds, this.jsonBackgrounds);
+    this.timeControl.updateFromParams();
   }
 }
