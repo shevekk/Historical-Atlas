@@ -1,0 +1,19 @@
+﻿{
+  "bdd" : 
+  {
+    "host" : "localhost",
+    "user" : "root",
+    "password" : "",
+    "database" : "histoatlas",
+    "port" : 3307
+  },
+  "tokenKey" : "tokenTest",
+  "mail" : 
+  {
+    "to" : "",
+    "auth_user" : "",
+    "auth_pass" : "",
+    "host" : "",
+    "port" : 0
+  }
+}
