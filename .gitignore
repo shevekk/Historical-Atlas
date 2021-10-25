@@ -1,0 +1,7 @@
+node_modules/
+server/file
+src/files/Rome.json
+src/config/configProd.json
+server/files/
+server/params/configProd.json
+package-lock.json

@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>Histo Atlas</title>
+    <link rel="icon" type="image/png" href="../img/icon_map.png" />
+  </head>
+  <body>
+
+  <script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
+
+  <link rel="stylesheet" href="../index.css" />
+
+  <p><a href="../index.html">Retour au menu</a></p>
+
+  <h3>Inscription</h3>
+  <label for="name">Nom d'utilisateur : </label><input id="name" type="text"></input><br/><br/>
+  <label for="password">Mot de passe : </label><input id="password" type="password"></input><br/><br/>
+  <label for="mail">Mail : </label><input id="mail" type="text"></input><br/><br/>
+  <input type="checkbox" id="newsletter" name="newsletter"><label for="newsletter">Inscription à la newsletter</label><br/><br/>
+  <button id="registrationButton">Inscription</button>
+
+  <script type="text/javascript" src="../config/config.js"></script>
+
+  <script>
+
+    Config.load(true).then((config) =>
+    {
+      function validateEmail(email) 
+      {
+        const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+      }
+
+      function validateName(name)
+      {
+        var usernameRegex = /^[a-zA-Z0-9]+$/;
+        return usernameRegex.test(name);
+      }
+
+
+      $("#registrationButton").click(function() 
+      {
+        let name = $("#name").val();
+        let password = $("#password").val();
+        let mail = $("#mail").val();
+        let newsletter = $("#newsletter")[0].checked;
+
+        if(name.length == 0)
+        {
+          alert("Inscription impossible : nom d'utilisateur vide");
+        }
+        else if(!validateName(name))
+        {
+          alert("Inscription impossible : nom d'utilisateur invalide doit contenir uniquement des lettre et des chiffres");
+        }
+        else if(password.length == 0)
+        {
+          alert("Inscription impossible : mot de passe vide");
+        }
+        else if(mail.length == 0)
+        {
+          alert("Inscription impossible : mail vide");
+        }
+        else if(!validateEmail(mail))
+        {
+          alert("Inscription impossible : adresse mail invalide");
+        }
+        else
+        {
+          // Call registration API
+          let urlServer = config.serverUrl + "/api/user/registration";
+
+          $.ajax({
+            url: urlServer,
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({name : name, password : password, mail : mail, newsletter : newsletter}),
+            success: (response) => {
+
+              localStorage.setItem('session-token-histoatlas', response.token);
+              localStorage.setItem('session-id-histoatlas', response.userId);
+
+              window.location.href = "../index.html";
+            },
+            error: (err) => {
+              alert("Inscription impossible : " + err.responseJSON.error);
+              //reject(err);
+            }
+          });
+        }
+
+      });
+
+    });
+
+  </script>
+
+  </body>
+</html>

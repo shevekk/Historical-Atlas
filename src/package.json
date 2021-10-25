@@ -1,0 +1,17 @@
+{
+  "name": "histoatlas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@turf/turf": "^6.5.0",
+    "jquery": "^3.6.0",
+    "leaflet": "^1.7.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Maxence MARTIN",
+  "license": "ISC"
+}

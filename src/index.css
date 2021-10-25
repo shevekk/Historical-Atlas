@@ -1,0 +1,103 @@
+﻿
+/* Icon action of maps actions (edit and view) */
+.icon-action
+{
+  width: 20px;
+  vertical-align:middle;
+  margin-left: 5px;
+  border-radius: 5px;
+  padding: 2px;
+}
+
+.icon-action:hover
+{
+  background-color: #aaaaaa;
+}
+
+/* Icon action for change public state */
+.icon-action-public
+{
+  width: 20px;
+  vertical-align:middle;
+  margin-left: 5px;
+  border-radius: 5px;
+  padding: 2px;
+}
+
+.icon-action-public:hover
+{
+  background-color: #aaaaaa;
+}
+
+/* Icon action for change editable state */
+.icon-action-editable
+{
+  width: 20px;
+  vertical-align:middle;
+  margin-left: 5px;
+  border-radius: 5px;
+  padding: 2px;
+}
+
+.icon-action-editable:hover
+{
+  background-color: #aaaaaa;
+}
+
+/* Icon action for delete a map */
+.icon-action-delete
+{
+  width: 20px;
+  margin-left: 20px;
+  vertical-align:middle;
+  padding: 3px;
+  background-color: #ffffff;
+  cursor: pointer;
+}
+
+.icon-action-delete:hover
+{
+  background-color: #e8394c;
+}
+
+/* Icon action for change editable state */
+#connexion-registration-div
+{
+  float: right;
+  text-align: right;
+  border-radius: 5px;
+  border : 2px solid black;
+  padding: 5px;
+
+  background-color: #eeeeee;
+}
+
+/* Button for login */
+.button-loggin
+{
+  width: 100px;
+}
+
+/* user name where logged */
+#user-name-logged-in
+{
+  padding-top: 0px; 
+  margin-top: 0px;
+  text-align: center;
+}
+
+/* Div for edit public and editable state */
+#edit-visibility-div
+{
+  border-radius: 5px;
+  margin-left: 20px;
+  border : 2px solid black;
+  display: inline-block;
+  padding-right: 5px; 
+}
+
+/* Div of a map name and acces button */
+#map-div
+{
+  display: inline-block;
+}

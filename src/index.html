@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>Histo Atlas</title>
+    <link rel="icon" type="image/png" href="img/icon_map.png" />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+
+  <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+
+  <div id="connexion-registration-div">
+    <div id="connexion-div"><button id="connexion-button" class="button-loggin">Connexion</button></div><br/>
+    <a href="forms/registration.html"><button class="button-loggin">Inscription</button></a>
+  </div>
+
+  <h3>Histo Atlas</h3>
+
+  <p>Histo Atlas est un logiciel libre et gratuit permettant de dessiner et de visualiser des cartes historiques avec la visualisation d’évolution dans le temps de frontières, zones culturelles ou autres.<br/>
+  Le logiciel permet de dessiner des zones, d'ajouter des labels, de choisir un fond de plan, de définir des zones de temps.<br/>
+  Vous pouvez vous inscrire pour pouvoir sauvegarder vos propres carte et les partager en ligne.</p>
+
+  <img src="img/map_rome.png" />
+  <br/><br/>
+  <a href="histoAtlas.html"><button id="create_empty_map">Créer une nouvelle carte</button></a>
+  <!-- Display disponible maps -->
+  <h4>Cartes d'exemple :</h4>
+  <div id="maps"></div>
+
+  <!-- Display user maps -->
+  <h4>Vos Cartes :</h4>
+  <div id="user-maps"></div>
+
+  <!-- Display user maps -->
+  <h4>Cartes publiques :</h4>
+  <div id="public-maps"></div>
+
+
+  <br/><br/>
+  <a href="files/HistoAtlas_Help.pdf"><button>Accéder au menu d'aide</button></a>
+
+  <br/><br/>
+  <a href="forms/contact.html"><img src="img/envelope-solid.svg" style="width: 20px;height: 20px;" /> Contacter moi</a><br/><br/> 
+
+  <a href="https://github.com/shevekk/Historical-Atlas">Voir le code source</a><br/>
+
+  <a href="https://twitter.com/HistoAtlas"><img src="img/twitter.png" /></a>
+
+  <script type="text/javascript" src="config/config.js"></script>
+  <script type="text/javascript" src="index.js"></script>
+  <script type="text/javascript" src="data/mapData.js"></script>
+
+  </body>
+</html>

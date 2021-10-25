@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>Histo Atlas</title>
+    <link rel="icon" type="image/png" href="img/icon_map.png" />
+  </head>
+  <body>
+
+    <link rel="stylesheet" href="node_modules/leaflet/dist/leaflet.css"/>
+    <script type="text/javascript" src="node_modules/leaflet/dist/leaflet.js"></script>
+
+    <script type="text/javascript" src="node_modules/@turf/turf/turf.min.js"></script>
+
+    <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+
+
+    <link rel="stylesheet" href="histoAtlas.css" />
+    
+    <div id="loading"></div>
+    <!--  -->
+    <div id="map"></div>
+
+    <script type="text/javascript" src="config/config.js"></script>
+    <script type="text/javascript" src="histoAtlas.js"></script>
+    <script type="text/javascript" src="config/params.js"></script>
+
+    <script type="text/javascript" src="controls/actionsControl.js"></script>
+    <script type="text/javascript" src="controls/backgroundControl.js"></script>
+    <script type="text/javascript" src="controls/layersControl.js"></script>
+    <script type="text/javascript" src="controls/settingsControl.js"></script>
+    <script type="text/javascript" src="controls/timeControl.js"></script>
+    <script type="text/javascript" src="controls/paintZoneDiv.js"></script>
+    <script type="text/javascript" src="controls/parentLayerDiv.js"></script>
+    <script type="text/javascript" src="controls/backMenuControl.js"></script>
+
+    <script type="text/javascript" src="map/parentLayer.js"></script>
+    <script type="text/javascript" src="map/paintZone.js"></script>
+    <script type="text/javascript" src="map/paintParams.js"></script>
+    <script type="text/javascript" src="map/loadSaveManager.js"></script>
+    <script type="text/javascript" src="map/layersManager.js"></script>
+    <script type="text/javascript" src="map/cursorManager.js"></script>
+    <script type="text/javascript" src="map/label.js"></script>
+
+    <script type="text/javascript" src="buttons/actionButton.js"></script>
+    <script type="text/javascript" src="buttons/actionButtonSlider.js"></script>
+    <script type="text/javascript" src="buttons/actionButtonSimple.js"></script>
+    <script type="text/javascript" src="buttons/actionButtonColor.js"></script>
+    <script type="text/javascript" src="buttons/actionButtonFile.js"></script>
+    <script type="text/javascript" src="buttons/actionButtonSave.js"></script>
+    <script type="text/javascript" src="buttons/actionButtonConnexionState.js"></script>
+    
+
+	<script>
+      let main = new Main();
+	  setTimeout(main.init(), 1000);
+    </script>
+
+
+  </body>
+</html>
