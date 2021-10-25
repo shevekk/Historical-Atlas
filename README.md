@@ -9,6 +9,6 @@ Vous pouvez vous inscrire pour pouvoir sauvegarder vos propres carte et les part
 
 Le logiciel est basé sur [Turf.js](https://turfjs.org/) et [Leaflet.js](https://leafletjs.com/)
 
-[Tester le logiciel](http://dataexplorer.hd.free.fr/HistoAtlas/index.html)
+[Tester le logiciel](https://www.histoatlas.org/index.html)
 
-[Voir un exemple de carte de Rome de -272 à 115](http://dataexplorer.hd.free.fr/HistoAtlas/histoAtlas.html?file=Rome&edit=false)
+[Voir un exemple de carte de Rome de -272 à 115](https://www.histoatlas.org/histoAtlas.html?file=Rome&edit=false)
