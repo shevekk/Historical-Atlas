@@ -34,16 +34,16 @@ var TimeControl = L.Control.extend({
 
     this._container = L.DomUtil.create('div', 'time-control');
 
+    this.title = L.DomUtil.create('p', 'time-slider-title', this._container);
+    this.title.innerHTML = this.value;
+
     //var menuContent = L.DomUtil.create('div', 'leaflet-control-div-slider-content', this._container);
     this.cursor = L.DomUtil.create('input', 'time-slider', this._container);
     this.cursor.type = "range";
     this.cursor.value = this.value;
     this.cursor.min = this.params.timeMin;
     this.cursor.max = this.params.timeMax;
-    this.cursor.title = this.cursor.value;
-
-    this.title = L.DomUtil.create('p', 'time-slider-title', this._container);
-    this.title.innerHTML = this.cursor.value;
+    this.cursor.title = this.cursor.value;    
 
     //L.DomEvent.on(this.div, 'click', function(e) { this.paintParams.uiClick = true; }, this);
     L.DomEvent.addListener(this._container, 'hover', function(e) { alert("hello") });
@@ -76,9 +76,9 @@ var TimeControl = L.Control.extend({
   {
     this.value = value;
 
-    this.cursor.title =  value;
-    this.title.innerHTML = this.value;
     this.cursor.value = value;
+
+    this.title.innerHTML = DateConverter.numberToDate(this.value, this.params);
 
     this.layersManager.changeTime(value);
     //this.layersManager.layersControl.changeTime(value);
@@ -92,15 +92,26 @@ var TimeControl = L.Control.extend({
   {
     if(this.params.timeEnable)
     {
-      this.value = this.params.timeMin;
-      this._container.style = "display : inline-block";
-      this.cursor.min = this.params.timeMin;
-      this.cursor.max = this.params.timeMax;
-      this.cursor.value = this.params.timeMin;
-      this.cursor.title = this.cursor.value;
-      this.title.innerHTML = this.cursor.value;
+      let minStr = this.params.timeMin;
+      let maxStr = this.params.timeMax;
+      
+      let min = DateConverter.dateToNumber(minStr, false, this.params);
+      let max = DateConverter.dateToNumber(maxStr, true, this.params);
 
-      this.layersManager.changeTime(this.params.timeMin);
+      let value = min;
+
+
+      this.value = value;
+      this._container.style = "display : inline-block";
+      this.cursor.min = min;
+      this.cursor.max = max;
+      this.cursor.value = value;
+      //this.cursor.title = this.cursor.value;
+      //this.title.innerHTML = this.cursor.value;
+
+      this.setValue(value);
+
+      this.layersManager.changeTime(value);
     }
     else
     {

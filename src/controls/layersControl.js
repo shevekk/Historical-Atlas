@@ -30,6 +30,8 @@ var LayersControl = L.Control.extend({
     this.params = options.params;
     this.timeControl = options.timeControl;
 
+    this.actionsList = options.actionsList;
+
     this._menu = null;
   },
 
@@ -49,7 +51,7 @@ var LayersControl = L.Control.extend({
     let title = L.DomUtil.create('b', '', titleDiv);
     title.innerHTML = "Couches :";
     imageHide = L.DomUtil.create('img', 'layers-list-icon-hide', titleDiv);
-    imageHide.src = "img/minus-solid.svg";
+    imageHide.src = "img/menu/minus-solid.svg";
 
     this._menu = L.DomUtil.create('div', '', div);
     this._menu.id = "layersList";
@@ -77,6 +79,18 @@ var LayersControl = L.Control.extend({
 
     L.DomEvent.on(imageHide, 'click', function(e) { this.changeVisibilityState(imageHide);  } , this);
 
+    // Init dialog Update PopUp
+    let dialogUpdatePopUp = $("#dialog-modify-popUp").dialog({
+      autoOpen: false,
+      height: 400,
+      width: 500,
+      modal: true,
+      buttons: {
+      },
+      close: function() {
+      }
+    });
+
     return div;
   },
 
@@ -89,7 +103,7 @@ var LayersControl = L.Control.extend({
     if(this._menu.style["display"] == "none")
     {
       this._menu.style["display"] = "inline-block";
-      imageHide.src = "img/minus-solid.svg";
+      imageHide.src = "img/menu/minus-solid.svg";
 
       if(this.divAddParentLayer)
       {
@@ -99,7 +113,7 @@ var LayersControl = L.Control.extend({
     else
     {
       this._menu.style["display"] = "none";
-      imageHide.src = "img/plus-solid.svg";
+      imageHide.src = "img/menu/plus-solid.svg";
 
       if(this.divAddParentLayer)
       {
@@ -247,5 +261,7 @@ var LayersControl = L.Control.extend({
     {
       this.layersManager.addNewLayer();
       this.actionsControl.updateParamsFromLayerOptions(this.layersManager.selectedLayer.polygonOptions);
+
+      this.actionsList.addActionAddLayer(this.layersManager.selectedLayer, this, this.layersManager);
     }
 });

@@ -12,10 +12,13 @@ exports.connectBDD = () =>
     fs.readFile("params/config.json", "utf8", function (err,data) {
       if (err)
       { 
+        console.log("Erreur lecture fichier config");
+        console.log(err);
         return reject();
       }
 
       let dataObj = JSON.parse(data);
+
 
       mariadb.createConnection({
         host: dataObj["bdd"]["host"],
@@ -27,6 +30,8 @@ exports.connectBDD = () =>
         resolve(conn);
       })
       .catch(err => {
+        console.log("Connexion rejetée");
+        console.log(dataObj);
         reject()
       });
     });

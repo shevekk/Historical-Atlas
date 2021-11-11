@@ -67,7 +67,7 @@ var SettingsControl = L.Control.extend({
     title.innerHTML = "Paramètres :";
 
     let imageClose = L.DomUtil.create('img', 'settings-icon-close', titleDiv);
-    imageClose.src = "img/times-solid.svg";
+    imageClose.src = "img/actions/times-solid.svg";
 
     // Create content
     let contentDiv = L.DomUtil.create('div', '', this._container);
@@ -83,7 +83,7 @@ var SettingsControl = L.Control.extend({
     inputZoomDefault.max = 22;
     inputZoomDefault.min = 0;
     let buttonZoomDefault = L.DomUtil.create('button', 'settings-button-target', zoomDefaultDiv);
-    buttonZoomDefault.innerHTML = `<img src="img/dot-circle-solid.svg" style="width:12px;height:10px;" />`;
+    buttonZoomDefault.innerHTML = `<img src="img/actions/dot-circle-solid.svg" style="width:12px;height:10px;" />`;
     buttonZoomDefault.title = "Récupération du zoom actuel";
 
     let zoomMinDiv = L.DomUtil.create('div', '', contentDiv);
@@ -97,7 +97,7 @@ var SettingsControl = L.Control.extend({
     inputZoomMin.max = 22;
     inputZoomMin.min = 0;
     let buttonZoomMin = L.DomUtil.create('button', 'settings-button-target', zoomMinDiv);
-    buttonZoomMin.innerHTML = `<img src="img/dot-circle-solid.svg" style="width:12px;height:10px;" />`;
+    buttonZoomMin.innerHTML = `<img src="img/actions/dot-circle-solid.svg" style="width:12px;height:10px;" />`;
     buttonZoomMin.title = "Récupération du zoom actuel";
 
     let zoomMaxDiv = L.DomUtil.create('div', '', contentDiv);
@@ -111,7 +111,7 @@ var SettingsControl = L.Control.extend({
     inputZoomMax.max = 22;
     inputZoomMax.min = 0;
     let buttonZoomMax = L.DomUtil.create('button', 'settings-button-target', zoomMaxDiv);
-    buttonZoomMax.innerHTML = `<img src="img/dot-circle-solid.svg" style="width:12px;height:10px;" />`;
+    buttonZoomMax.innerHTML = `<img src="img/actions/dot-circle-solid.svg" style="width:12px;height:10px;" />`;
     buttonZoomMax.title = "Récupération du zoom actuel";
 
     let positionDiv = L.DomUtil.create('div', '', contentDiv);
@@ -126,7 +126,7 @@ var SettingsControl = L.Control.extend({
     inputPositionLong.name = "positionLong";
     inputPositionLong.value = this.params.defaultPosition[1];
     let buttonPosition = L.DomUtil.create('button', 'settings-button-target', positionDiv);
-    buttonPosition.innerHTML = `<img src="img/dot-circle-solid.svg" style="width:12px;height:10px;" />`;
+    buttonPosition.innerHTML = `<img src="img/actions/dot-circle-solid.svg" style="width:12px;height:10px;" />`;
     buttonPosition.title = "Récupération de la position actuel";
 
     let backgroundDefaultDiv = L.DomUtil.create('div', '', contentDiv);
@@ -172,21 +172,31 @@ var SettingsControl = L.Control.extend({
     labelTimeCheckBox.for = "timeCheckbox";
     labelTimeCheckBox.innerHTML = "Barre de temps actif";
 
-    let timaMaxMinDiv = L.DomUtil.create('div', '', contentDiv);
-    let labelTimeMin = L.DomUtil.create('label', '', timaMaxMinDiv);
+    let timeMaxMinDiv = L.DomUtil.create('div', '', contentDiv);
+    let labelTimeMin = L.DomUtil.create('label', '', timeMaxMinDiv);
     labelTimeMin.for = "timeMin";
     labelTimeMin.innerHTML = "Min : ";
-    let inputTimeMin = L.DomUtil.create('input', 'settings-zoom-input', timaMaxMinDiv);
-    inputTimeMin.type = "number";
+    let inputTimeMin = L.DomUtil.create('input', 'settings-time-input', timeMaxMinDiv);
+    //inputTimeMin.type = "number";
     inputTimeMin.name = "timeMin";
     inputTimeMin.value = this.params.timeMin;
-    let labelTimeMax = L.DomUtil.create('label', '', timaMaxMinDiv);
+    let labelTimeMax = L.DomUtil.create('label', '', timeMaxMinDiv);
     labelTimeMax.for = "timeMax";
     labelTimeMax.innerHTML = " Max : ";
-    let inputTimeMax = L.DomUtil.create('input', 'settings-zoom-input', timaMaxMinDiv);
-    inputTimeMax.type = "number";
+    let inputTimeMax = L.DomUtil.create('input', 'settings-time-input', timeMaxMinDiv);
+    //inputTimeMax.type = "number";
     inputTimeMax.name = "timeMax";
     inputTimeMax.value = this.params.timeMax;
+
+    let typeDateDiv = L.DomUtil.create('div', '', contentDiv);
+    let labelTypeDate = L.DomUtil.create('label', '', typeDateDiv);
+    labelTypeDate.innerHTML = "Type de dates : ";
+    let selectTypeDate = L.DomUtil.create('select', '', typeDateDiv);
+    selectTypeDate.innerHTML += `<option id="years" value="years">Années</option>`;
+    selectTypeDate.innerHTML += `<option id="months" value="months">Mois</option>`;
+    selectTypeDate.innerHTML += `<option id="days" value="days">Jours</option>`;
+
+    selectTypeDate.value = this.params.typeTime;
 
     // Add sav button
     let buttonSav = L.DomUtil.create('button', 'settings-button-sav', contentDiv);
@@ -202,7 +212,7 @@ var SettingsControl = L.Control.extend({
 
     //L.DomEvent.on(inputTimeCheckBox, 'click', function(e) { this.changeTimeState(e) }, this);
 
-    L.DomEvent.on(buttonSav, 'click', function(e) { this.sav(inputPositionLat, inputPositionLong, inputZoomDefault, inputZoomMin, inputZoomMax, selectBackgroundDefault, selectBackgroundDisplay, inputTimeCheckBox, inputTimeMin, inputTimeMax) }, this);    
+    L.DomEvent.on(buttonSav, 'click', function(e) { this.sav(inputPositionLat, inputPositionLong, inputZoomDefault, inputZoomMin, inputZoomMax, selectBackgroundDefault, selectBackgroundDisplay, inputTimeCheckBox, inputTimeMin, inputTimeMax, selectTypeDate) }, this);    
   },
 
   /*
@@ -229,7 +239,7 @@ var SettingsControl = L.Control.extend({
     this.buttonOpen.title = "Ouvrir le menu de paramétrage";
 
     let imageOpen = L.DomUtil.create('img', '', this.buttonOpen);
-    imageOpen.src = "img/cogs-solid.svg";
+    imageOpen.src = "img/actions/cogs-solid.svg";
     imageOpen.style = "margin-top : 5px;margin-left:0px;width:20px;height:20px"
 
     L.DomEvent.addListener(this.buttonOpen, 'dblclick', L.DomEvent.stop);
@@ -269,7 +279,7 @@ var SettingsControl = L.Control.extend({
    * @param {L.Dom}               selectBackgroundDefault                 The select input default backgroung
    * @param {L.Dom}               selectBackgroundDisplay                 The select input display backgroungs
    */
-  sav(inputPositionLat, inputPositionLong, inputZoomDefault, inputZoomMin, inputZoomMax, selectBackgroundDefault, selectBackgroundDisplay, inputTimeCheckBox, inputTimeMin, inputTimeMax)
+  sav(inputPositionLat, inputPositionLong, inputZoomDefault, inputZoomMin, inputZoomMax, selectBackgroundDefault, selectBackgroundDisplay, inputTimeCheckBox, inputTimeMin, inputTimeMax, selectTypeDate)
   {
     this.params.defaultPosition = [];
     this.params.defaultPosition.push(parseFloat(inputPositionLat.value));
@@ -297,8 +307,32 @@ var SettingsControl = L.Control.extend({
 
     // Update time param
     this.params.timeEnable = inputTimeCheckBox.checked;
-    this.params.timeMin = inputTimeMin.value;
-    this.params.timeMax = inputTimeMax.value;
+
+    if(DateConverter.checkDateValid(inputTimeMin.value))
+    {
+      this.params.timeMin = inputTimeMin.value;
+    }
+    else
+    {
+      inputTimeMin.value = this.params.timeMin;
+    }
+
+    if(DateConverter.checkDateValid(inputTimeMax.value))
+    {
+      this.params.timeMax = inputTimeMax.value;
+    }
+    else
+    {
+      inputTimeMax.value = this.params.timeMax;
+    }
+
+    if(selectTypeDate.value != this.params.typeTime)
+    {
+      this.layersControl.layersManager.updateTypeDate(this.params.typeTime, selectTypeDate.value)
+    }
+
+    this.params.typeTime = selectTypeDate.value;
+
     this.timeControl.updateFromParams();
 
     this.layersControl.updateLayersContent(this.layersControl.layersManager)

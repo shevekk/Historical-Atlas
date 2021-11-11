@@ -10,6 +10,8 @@
  * @property {Number[]}      defaultPosition        The default position
  * @property {String}        backgroundDefault      The default background key name
  * @property {String[]}      backgrounds            The possible backgrounds key name
+ * @property {String}        typeTime               The type of the time (years, months, days)
+ * @property {String}        description            The possible backgrounds key name
  */
 class Params
 {
@@ -32,6 +34,10 @@ class Params
     this.timeEnable = false;
     this.timeMin = 1900;
     this.timeMax = 2000;
+
+    this.typeTime = "years";
+
+    this.description = "";
   }
 
   /*
@@ -52,6 +58,10 @@ class Params
     content.params["timeEnable"] = this.timeEnable;
     content.params["timeMin"] = this.timeMin;
     content.params["timeMax"] = this.timeMax;
+
+    content.params["typeTime"] = this.typeTime;
+    
+    content.params["description"] = this.description;
 
     return content;
   }
@@ -74,6 +84,20 @@ class Params
       this.timeEnable = content.params["timeEnable"];
       this.timeMin = content.params["timeMin"];
       this.timeMax = content.params["timeMax"];
+
+      if(content.params["typeTime"])
+      {
+        this.typeTime = content.params["typeTime"];
+      }
+
+      if(content.params["description"])
+      {
+        this.description = content.params["description"];
+      }
+      else
+      {
+        this.description = "";
+      }
     }
   }
 

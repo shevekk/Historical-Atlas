@@ -66,8 +66,8 @@ class ActionButton
   {
     if(state)
     {
-      this.image.style['background-color'] = "#bbbbbb";
-      this.buttonDom.style['background-color'] = "#bbbbbb";
+      this.image.style['background-color'] = "#82d3e0";
+      this.buttonDom.style['background-color'] = "#82d3e0";
     }
     else
     {
@@ -90,5 +90,20 @@ class ActionButton
   show()
   {
     this.buttonDom.style['display'] = "block";
+  }
+
+  setActiveState(state)
+  {
+    if(state)
+    {
+      this.image.style['background-color'] = "#ffffff";
+      this.buttonDom.style['background-color'] = "#ffffff";
+    }
+    else
+    {
+      this.image.style['background-color'] = "#888888";
+      this.buttonDom.style['background-color'] = "#888888";
+    }
+
   }
 }

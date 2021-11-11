@@ -41,10 +41,11 @@ exports.save = (req, res, next) =>
 
           db.query(sql).then((result) => {
 
+            db.end();
             res.status(200).json({});
 
-          }).catch(error => res.status(500).json({ error: 'Echec de la requête de sauvegarde' }));
-        }).catch((e) => { res.status(500).json({ error: 'Impossible de ce connecter à la base de donnée' }) });
+          }).catch(error => { db.end(); res.status(500).json({ error: 'Echec de la requête de sauvegarde' })});
+        }).catch((e) => { db.end(); res.status(500).json({ error: 'Impossible de ce connecter à la base de donnée' }) });
       }).catch((e) => { res.status(500).json({ error: 'Impossible de ce connecter à la base de donnée' }) });
     }
   });
@@ -64,18 +65,19 @@ exports.checkIfFileExist = (req, res, next) =>
 
     db.query(sql).then((result) => {
 
-        if(result.length > 0)
-        {
-          res.status(200).json({exist : true});
-        }
-        else
-        {
-          res.status(200).json({exist : false});
-        }
+      db.end();
+      if(result.length > 0)
+      {
+        res.status(200).json({exist : true});
+      }
+      else
+      {
+        res.status(200).json({exist : false});
+      }
 
-    }).catch(error => {res.status(500).json({ error: 'Echec de la requête' })});
+    }).catch(error => {db.end(); res.status(500).json({ error: 'Echec de la requête' })});
 
-  }).catch((e) => { res.status(500).json({ error: 'Impossible de ce connecter à la base de donnée' }) });
+  }).catch((e) => { db.end(); res.status(500).json({ error: 'Impossible de ce connecter à la base de donnée' }) });
 }
 
 /*
@@ -91,11 +93,12 @@ exports.getVisibleMapsOfUser = (req, res, next) =>
 
     db.query(sql).then((userMaps) => {
 
+      db.end();
       res.status(200).json({userMaps : userMaps});
 
-    }).catch(error => res.status(500).json({ error: 'Echec de la requête' }));
+    }).catch(error => { db.end(); res.status(500).json({ error: 'Echec de la requête' })});
 
-  }).catch((e) => { res.status(500).json({ error: 'Impossible de ce connecter à la base de donnée' }) });
+  }).catch((e) => { db.end(); res.status(500).json({ error: 'Impossible de ce connecter à la base de donnée' }) });
 }
 
 /*
@@ -113,11 +116,12 @@ exports.getVisibleMaps = (req, res, next) =>
 
     db.query(sql).then((publicMaps) => {
 
+      db.end();
       res.status(200).json({publicMaps : publicMaps});
 
-    }).catch(error => res.status(500).json({ error: 'Echec de la requête' }));
+    }).catch(error => { db.end(); res.status(500).json({ error: 'Echec de la requête' })});
 
-  }).catch((e) => { res.status(500).json({ error: 'Impossible de ce connecter à la base de donnée' }) });
+  }).catch((e) => { db.end(); res.status(500).json({ error: 'Impossible de ce connecter à la base de donnée' }) });
 }
 
 /*
@@ -132,39 +136,22 @@ exports.getMap = (req, res, next) =>
   let user = url.parse(req.url,true).query.user;
   let editMode = url.parse(req.url,true).query.editMode;
 
-  config.connectBDD().then((db) => {
+  let sql = ``;
 
-    let sql = ``;
+  if(editMode == true || editMode == "true")
+  {
+    sql = `SELECT maps.url, maps.name, maps.views, users.name as user_name FROM maps 
+            LEFT JOIN users ON users.id = maps.user_id 
+            WHERE maps.id = ${req.params.id} AND (users.name = "${user}" OR (maps.public AND maps.public_editable))`;
+  }
+  else
+  {
+    sql = `SELECT maps.url, maps.name, maps.views, users.name as user_name FROM maps 
+            LEFT JOIN users ON users.id = maps.user_id 
+            WHERE maps.id = ${req.params.id} AND (users.name = "${user}" OR maps.public)`;
+  }
 
-    if(editMode == true || editMode == "true")
-    {
-      sql = `SELECT maps.url, maps.name FROM maps 
-              LEFT JOIN users ON users.id = maps.user_id 
-              WHERE maps.id = ${req.params.id} AND (users.name = "${user}" OR (maps.public AND maps.public_editable))`;
-    }
-    else
-    {
-      sql = `SELECT maps.url, maps.name FROM maps 
-              LEFT JOIN users ON users.id = maps.user_id 
-              WHERE maps.id = ${req.params.id} AND (users.name = "${user}" OR maps.public)`;
-    }
-
-    db.query(sql).then((result) => {
-
-      if(result.length == 0) return res.status(500).json({ error: 'La carte est inaccessible' });
-
-      fs.readFile(result[0]['url'], 'utf8', function (err,data) {
-        if (err)
-        { 
-          console.log(err); 
-          return res.status(500).json({ error: 'Echec de la lecture du fichier' });
-        }
-        
-        res.status(200).json({data : data, name : result[0]['name']});
-      });
-    }).catch(error => res.status(500).json({ error: 'Echec de la requête' }));
-
-  }).catch((e) => { res.status(500).json({ error: 'Impossible de ce connecter à la base de donnée' }) });
+  this.getMapManage(sql, req.params.id, editMode, user, res);
 }
 
 /*
@@ -177,40 +164,69 @@ exports.getMap = (req, res, next) =>
 exports.getMapGuest = (req, res, next) => 
 {
   let editMode = url.parse(req.url,true).query.editMode;
+  let sql = "";
 
+  if(editMode == true || editMode == "true")
+  {
+    sql = `SELECT maps.url, maps.name, maps.views, users.name as user_name FROM maps 
+            LEFT JOIN users ON users.id = maps.user_id 
+            WHERE maps.id = ${req.params.id} AND (maps.public AND maps.public_editable)`;
+  }
+  else
+  {
+    sql = `SELECT maps.url, maps.name, maps.views, users.name as user_name FROM maps 
+            LEFT JOIN users ON users.id = maps.user_id 
+            WHERE maps.id = ${req.params.id} AND maps.public`;
+  }
+
+  this.getMapManage(sql, req.params.id, editMode, "", res);
+}
+
+/*
+ * Get a map in guest mod
+ * @param {String}                      sql                  The sql query
+ * @param {Number}                      id                   The map id
+ * @param {Boolean}                     editMode             True if editMode 
+ * @param {String}                      userName             The user name
+ * @param {Boolean}                     res                  Result manager
+ * @return {Object}                                          Object with map data
+ */
+exports.getMapManage = (sql, id, editMode, userName, res) =>
+{
   config.connectBDD().then((db) => {
 
-    let sql = "";
-
-    if(editMode == true || editMode == "true")
-    {
-      sql = `SELECT maps.url FROM maps 
-              LEFT JOIN users ON users.id = maps.user_id 
-              WHERE maps.id = ${req.params.id} AND (maps.public AND maps.public_editable)`;
-    }
-    else
-    {
-      sql = `SELECT maps.url FROM maps 
-              LEFT JOIN users ON users.id = maps.user_id 
-              WHERE maps.id = ${req.params.id} AND maps.public`;
-    }
 
     db.query(sql).then((result) => {
 
       if(result.length == 0) return res.status(500).json({ error: 'La carte est inaccessible' });
 
-      fs.readFile(result[0]['url'], 'utf8', function (err,data) {
-        if (err)
-        { 
-          console.log(err); 
-          return res.status(500).json({ error: 'Echec de la lecture du fichier' });
-        }
-        
-        res.status(200).json({data : data});
-      });
-    }).catch(error => res.status(500).json({ error: 'Echec de la requête' }));
+      let views = result[0]['views'];
+      if(editMode == false || editMode == "false" || result[0]['user_name'] != userName)
+      {
+        views ++;
+      }
 
-  }).catch((e) => { res.status(500).json({ error: 'Impossible de ce connecter à la base de donnée' }) });
+      sqlUpdate = `UPDATE maps SET views = ${views} WHERE maps.id = ${id}`;
+
+      db.query(sqlUpdate).then((resultUpdate) => {
+
+        fs.readFile(result[0]['url'], 'utf8', function (err,data) {
+          if (err)
+          { 
+            console.log(err); 
+            db.end();
+            return res.status(500).json({ error: 'Echec de la lecture du fichier' });
+          }
+          
+          db.end();
+          res.status(200).json({data : data, views : views, name : result[0]['name']});
+        });
+
+     }).catch(error => { db.end(); res.status(500).json({ error: 'Echec de la requête' })});
+
+    }).catch(error => { db.end(); res.status(500).json({ error: 'Echec de la requête' })});
+
+  }).catch((e) => { db.end(); res.status(500).json({ error: 'Impossible de ce connecter à la base de donnée' }) });
 }
 
 /*
@@ -230,11 +246,12 @@ exports.changePublicState = (req, res, next) =>
 
     db.query(sql).then((result) => {
 
+      db.end();
       res.status(200).json({});
 
-    }).catch(error => res.status(500).json({ error: 'Echec de la requête' }));
+    }).catch(error => { db.end(); res.status(500).json({ error: 'Echec de la requête' })});
 
-  }).catch((e) => { res.status(500).json({ error: 'Impossible de ce connecter à la base de donnée' }) });
+  }).catch((e) => { db.end(); res.status(500).json({ error: 'Impossible de ce connecter à la base de donnée' }) });
 }
 
 /*
@@ -254,11 +271,12 @@ exports.changeEditableState = (req, res, next) =>
 
     db.query(sql).then((result) => {
 
+      db.end();
       res.status(200).json({});
 
-    }).catch(error => res.status(500).json({ error: 'Echec de la requête' }));
+    }).catch(error => { db.end(); res.status(500).json({ error: 'Echec de la requête' })});
 
-  }).catch((e) => { res.status(500).json({ error: 'Impossible de ce connecter à la base de donnée' }) });
+  }).catch((e) => { db.end(); res.status(500).json({ error: 'Impossible de ce connecter à la base de donnée' }) });
 }
 
  /* Delete a file and update database
@@ -286,6 +304,8 @@ exports.delete = (req, res, next) =>
 
         fs.unlink(fileUrl, (err) => {
 
+          db.end();
+          
           if (err) 
           {
             return res.status(500).json({ error: 'Impossible de supprimer le fichier' })
@@ -294,8 +314,8 @@ exports.delete = (req, res, next) =>
           res.status(200).json({});
         });
 
-      }).catch(error => res.status(500).json({ error: 'Echec de la requête' }));
-    }).catch(error => res.status(500).json({ error: 'Echec de la requête' }));
+      }).catch(error => { db.end(); res.status(500).json({ error: 'Echec de la requête' }) });
+    }).catch(error => { db.end(); res.status(500).json({ error: 'Echec de la requête' })});
 
-  }).catch((e) => { res.status(500).json({ error: 'Impossible de ce connecter à la base de donnée' }) });
+  }).catch((e) => { db.end(); res.status(500).json({ error: 'Impossible de ce connecter à la base de donnée' }) });
 }

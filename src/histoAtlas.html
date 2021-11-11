@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Histo Atlas</title>
-    <link rel="icon" type="image/png" href="img/icon_map.png" />
+    <link rel="icon" type="image/png" href="img/icon.png" />
   </head>
   <body>
 
@@ -13,12 +13,20 @@
 
     <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
 
+    <link rel="stylesheet" href="libs/jquery-ui/jquery-ui.min.css">
+    <script src="libs/jquery-ui/jquery-ui.min.js"></script>
 
+
+    
     <link rel="stylesheet" href="histoAtlas.css" />
     
     <div id="loading"></div>
     <!--  -->
     <div id="map"></div>
+    <div id="description">Description : <div id="description-text"></div><img id="img-description-edit" src="img/menu/edit-solid.svg" width="20px" /><button style="display:none" id="sav-description">Ok</button></div>
+    <p id="nb-views"></p>
+
+    <div id="dialog-modify-popUp" title="Contenu de la PopUp"><textarea id="textAreaModifyPopUp" name="textAreaModifyPopUp"></textarea></div>
 
     <script type="text/javascript" src="config/config.js"></script>
     <script type="text/javascript" src="histoAtlas.js"></script>
@@ -32,6 +40,7 @@
     <script type="text/javascript" src="controls/paintZoneDiv.js"></script>
     <script type="text/javascript" src="controls/parentLayerDiv.js"></script>
     <script type="text/javascript" src="controls/backMenuControl.js"></script>
+    <script type="text/javascript" src="controls/dateConverter.js"></script>
 
     <script type="text/javascript" src="map/parentLayer.js"></script>
     <script type="text/javascript" src="map/paintZone.js"></script>
@@ -48,8 +57,20 @@
     <script type="text/javascript" src="buttons/actionButtonFile.js"></script>
     <script type="text/javascript" src="buttons/actionButtonSave.js"></script>
     <script type="text/javascript" src="buttons/actionButtonConnexionState.js"></script>
-    
+    <script type="text/javascript" src="buttons/actionButtonSliderWithButton.js"></script>
 
+    <script type="text/javascript" src="actions/action.js"></script>
+    <script type="text/javascript" src="actions/actionPaint.js"></script>
+    <script type="text/javascript" src="actions/actionsList.js"></script>
+    <script type="text/javascript" src="actions/actionDeleteZone.js"></script>
+    <script type="text/javascript" src="actions/actionAddZone.js"></script>
+    <script type="text/javascript" src="actions/actionDeleteLayer.js"></script>
+    <script type="text/javascript" src="actions/actionAddLayer.js"></script>
+    <script type="text/javascript" src="actions/actionChangeDateZone.js"></script>
+    <script type="text/javascript" src="actions/actionRenameLayer.js"></script>
+    <script type="text/javascript" src="actions/actionPopUpContent.js"></script>
+    <script type="text/javascript" src="actions/actionMoveLabel.js"></script>
+    
 	<script>
       let main = new Main();
 	  setTimeout(main.init(), 1000);

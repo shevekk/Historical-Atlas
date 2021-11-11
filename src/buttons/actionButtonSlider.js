@@ -2,7 +2,7 @@
 class ActionButtonSlider extends ActionButton
 {
   /*
-   * Button of manage load file
+   * Button of manage Slider
    * @property {L.Dom}             cursor                Cursor component (input slider)
    * @property {L.Dom}             _menu                 The menu div of choose file
    * @param {L.Dom}                container             The contener element
@@ -21,8 +21,8 @@ class ActionButtonSlider extends ActionButton
     this._menu = L.DomUtil.create('div', 'leaflet-bar leaflet-control-div-slider', container);
     L.DomEvent.disableClickPropagation(this._menu);
 
-    var menuContent = L.DomUtil.create('div', 'leaflet-control-div-slider-content', this._menu);
-    this.cursor = L.DomUtil.create('input', '', menuContent);
+    this.menuContent = L.DomUtil.create('div', 'leaflet-control-div-slider-content', this._menu);
+    this.cursor = L.DomUtil.create('input', '', this.menuContent);
     this.cursor.type = "range";
     this.cursor.value = value;
     this.cursor.min = minValue;

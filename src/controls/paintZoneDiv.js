@@ -42,31 +42,79 @@ class PaintZoneDiv
     let selectDiv = L.DomUtil.create('div', 'layers-list-line-select', this.div);
 
     let namePaintZone = L.DomUtil.create('p', 'layers-list-text', selectDiv);
-    this.label = this.paintZone.startDate + "-" + this.paintZone.endDate;
+    this.label = DateConverter.numberToDate(this.paintZone.startDate, this.params) + " - " + DateConverter.numberToDate(this.paintZone.endDate, this.params);
     namePaintZone.innerHTML = this.label;
 
     if(this.params.editMode)
     {
-      // Edit
-      let imageEdit = L.DomUtil.create('img', 'layers-list-zone-icon', this.div);
-      imageEdit.src = "img/edit-solid.svg";
-      imageEdit.title = "Editer les dates";
-
       // Delete
       let imageDelete = null;
       if(this.parentLayer.paintZones.length > 1)
       {
         imageDelete = L.DomUtil.create('img', 'layers-list-zone-icon', this.div);
-        imageDelete.src = "img/trash-solid.svg";
+        imageDelete.src = "img/menu/trash-solid.svg";
         imageDelete.title = "Supprimer la sous-couche";
 
         L.DomEvent.on(imageDelete, 'click', function(e) { this.delete(namePaintZone); } , this);
       }
+
+      // Change PopUp text
+      let imagePopUp = L.DomUtil.create('img', 'layers-list-zone-icon', this.div);
+      imagePopUp.src = "img/menu/comment-alt-solid.svg";
+      imagePopUp.title = "Ajout d'un popUp";
+
+      // Edit
+      let imageEdit = L.DomUtil.create('img', 'layers-list-zone-icon', this.div);
+      imageEdit.src = "img/menu/edit-solid.svg";
+      imageEdit.title = "Editer les dates";
       
-      L.DomEvent.on(imageEdit, 'click', function(e) { this.editValue(selectDiv, imageEdit, imageDelete); } , this);
+      L.DomEvent.on(imageEdit, 'click', function(e) { this.editValue(selectDiv, imageEdit, imageDelete, imagePopUp); } , this);
+      L.DomEvent.on(imagePopUp, 'click', function(e) { this.modifyPopUp(); } , this);
     }
 
     L.DomEvent.on(selectDiv, 'click', function(e) { this.select(); } , this);
+  }
+
+  /*
+   * Action of modify popup content
+   */
+  modifyPopUp()
+  {
+    $("#textAreaModifyPopUp").val(this.paintZone.popupContent);
+
+    let me = this;
+
+    let dialogUpdatePopUp = $("#dialog-modify-popUp").dialog({
+      autoOpen: false,
+      height: 400,
+      width: 500,
+      modal: true,
+      buttons: {
+        Cancel: function() {
+          dialogUpdatePopUp.dialog( "close" );
+        },
+        OK: function() {
+          me.savModifyPopUp(me);
+          dialogUpdatePopUp.dialog( "close" );
+        }
+      },
+      close: function() {
+        dialogUpdatePopUp.dialog( "close" );
+      }
+    });
+
+    dialogUpdatePopUp.dialog( "open" );
+  }
+
+  /*
+   * Sav the modification of the popup content
+   */
+  savModifyPopUp(me)
+  {
+    me.layersControl.actionsList.addActionPopUpContent(me.paintZone, me.parentLayer);
+
+    me.paintZone.popupContent = $("#textAreaModifyPopUp").val();
+    me.parentLayer.redraw();
   }
 
   /*
@@ -74,24 +122,28 @@ class PaintZoneDiv
    * @param {L.DomUtil}          selectDiv               Div of the line selection part
    * @param {L.DomUtil}          imageEdit               The img edit
    * @param {L.DomUtil}          imageDelete             The img delete
+   * @param {L.DomUtil}          imagePopUp              The img popup
    */
-  editValue(selectDiv, imageEdit, imageDelete)
+  editValue(selectDiv, imageEdit, imageDelete, imagePopUp)
   {
     L.DomUtil.remove(selectDiv);
     L.DomUtil.remove(imageEdit);
+    L.DomUtil.remove(imagePopUp);
     if(imageDelete)
     {
       L.DomUtil.remove(imageDelete);
     }
     
     let inputStart = L.DomUtil.create('input', 'layers-list-input-date', this.div);
-    inputStart.value = this.paintZone.startDate;
+    inputStart.value = DateConverter.numberToDate(this.paintZone.startDate, this.params);
 
     let label = L.DomUtil.create('label', '', this.div);
     label.innerHTML = "-";
 
     let inputEnd = L.DomUtil.create('input', 'layers-list-input-date', this.div);
-    inputEnd.value = this.paintZone.endDate;
+    //inputEnd.value = this.paintZone.endDate;
+    inputEnd.value = DateConverter.numberToDate(this.paintZone.endDate, this.params);
+
 
     let btnOk = L.DomUtil.create('button', '', this.div);
     btnOk.innerHTML = "OK";
@@ -113,14 +165,16 @@ class PaintZoneDiv
     L.DomUtil.remove(inputEnd);
     L.DomUtil.remove(btnOk);
 
-    if(this.checkDatesValid(inputStart.value, inputEnd.value))
+    this.layersControl.actionsList.addActionChangeDateZone(this.paintZone, this.parentLayerDiv);
+
+    if(DateConverter.checkDateValid(inputStart.value) && DateConverter.checkDateValid(inputEnd.value))
     {
-      this.paintZone.startDate = parseInt(inputStart.value);
-      this.paintZone.endDate = parseInt(inputEnd.value);
+      this.paintZone.setStartDate(inputStart.value);
+      this.paintZone.setEndDate(inputEnd.value);
     }
     else
     {
-      alert("Date invalide");
+      alert("Dates invalides");
     }
 
     this.redraw();
@@ -133,6 +187,8 @@ class PaintZoneDiv
   {
     if(confirm(`Etes-vous sur de vouloir supprimer la sous-couche "${this.parentLayer.label.value}"-"${namePaintZone.innerHTML}" `))
     {
+      this.layersControl.actionsList.addActionDeleteZone(this.paintZone, this.parentLayer, this.parentLayerDiv, this.layersManager);
+
       this.parentLayer.removePaintZone(this.paintZone);
 
       // Change selected layer
@@ -149,23 +205,6 @@ class PaintZoneDiv
 
       this.parentLayerDiv.redraw();
       this.parentLayer.redraw();
-    }
-  }
-
-  /*
-   * Check if the date of value
-   * @param {String}          startDate          The start date value
-   * @param {String}          endDate            The end date value
-   */
-  checkDatesValid(startDate, endDate)
-  {
-    if(isNaN(startDate) || isNaN(endDate))
-    {
-      return false;
-    }
-    else
-    {
-      return true;
     }
   }
 

@@ -51,6 +51,8 @@ var LayersManager = L.Class.extend({
     {
       let raduisExtend = 150 * Math.abs(Math.cos(this.cursorManager.position.lat * Math.PI / 180)) / Math.pow(2, this.paintParams.zoomLevel);
       let geom = turf.circle({ type: "Point", coordinates: [this.cursorManager.position.lng, this.cursorManager.position.lat]}, this.paintParams.cursorRaduis * raduisExtend, {});
+
+      //me.actionsList.updateGeom(geom); 
       
       if(!this.paintParams.removalContent)
       {
@@ -247,6 +249,8 @@ var LayersManager = L.Class.extend({
    */
   moveLabel(e)
   {
+    this.layersControl.actionsList.addActionMoveLabel(this.selectedLayer);
+
     this.selectedLayer.label.setCustomPosition(this.selectedLayer.selectedZone.number, [e.latlng.lng, e.latlng.lat])
     this.selectedLayer.label.redraw(this.selectedLayer.layer, this.selectedLayer.selectedZone.geom, this.selectedLayer.selectedZone.number)
   },
@@ -292,6 +296,43 @@ var LayersManager = L.Class.extend({
     for(let i = 0; i < this.layerGroups.length; i++)
     {
       this.layerGroups[i].changeSelectZoneWithoutTime();
+    }
+  },
+
+  /**
+   * Fill In the active layer
+   */
+  fillInActiveLayer()
+  {
+    if(this.selectedLayer.selectedZone)
+    {
+      this.selectedLayer.selectedZone.fillIn();
+    }
+
+    this.selectedLayer.redraw();
+  },
+
+  /**
+   * Simplify in the active layer
+   * @param {Number}               tolerance                   The tolerence of simplification
+   */
+  simplifyActiveLayer(tolerance)
+  {
+    this.selectedLayer.selectedZone.simplify(tolerance);
+
+    this.selectedLayer.redraw();
+  },
+
+  /**
+   * Update paintZone date values for change date type
+   * @param {String}               oldTypeDate                   The old date type
+   * @param {String}               newTypeDate                   The new date type
+   */
+  updateTypeDate(oldTypeDate, newTypeDate)
+  {
+    for(let i = 0; i < this.layerGroups.length; i++)
+    {
+      this.layerGroups[i].updateTypeDate(oldTypeDate, newTypeDate);
     }
   }
 });

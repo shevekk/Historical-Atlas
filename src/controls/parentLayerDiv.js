@@ -64,12 +64,13 @@ class ParentLayerDiv
     let imageEdit = null;
     let imageReOrder = null;
     let imageDelete = null;
+    let imagePopUp = null;
     if(this.params.editMode)
     {
-      if(this.parentLayer.number >= 1)
+      if(this.layersManager.layerGroups.length > 1)
       {
         imageDelete = L.DomUtil.create('img', 'layers-list-icon', this.parentLineDiv);
-        imageDelete.src = "img/trash-solid.svg";
+        imageDelete.src = "img/menu/trash-solid.svg";
         imageDelete.title = "Supprimer la couche";
         L.DomEvent.on(imageDelete, 'click', function(e) { this.delete(); } , this);
       }
@@ -77,12 +78,20 @@ class ParentLayerDiv
       if(this.params.timeEnable)
       {
         imageReOrder = L.DomUtil.create('img', 'layers-list-icon', this.parentLineDiv);
-        imageReOrder.src = "img/sync-solid.svg";
+        imageReOrder.src = "img/menu/sync-solid.svg";
         imageReOrder.title = "Ré-ordonné";
+      }
+      else
+      {
+        // Change PopUp text
+        imagePopUp = L.DomUtil.create('img', 'layers-list-icon', this.parentLineDiv);
+        imagePopUp.src = "img/menu/comment-alt-solid.svg";
+        imagePopUp.title = "Ajout d'un popUp";
+        L.DomEvent.on(imagePopUp, 'click', function(e) { this.modifyPopUp(); } , this);
       }
 
       imageEdit = L.DomUtil.create('img', 'layers-list-icon', this.parentLineDiv);
-      imageEdit.src = "img/edit-solid.svg";
+      imageEdit.src = "img/menu/edit-solid.svg";
       imageEdit.title = "Editer le nom";
     }
 
@@ -110,7 +119,7 @@ class ParentLayerDiv
         let imageAddPaintZoneDiv = L.DomUtil.create('div', 'layers-list-line-add-child-icon-div', this.divAddPaintZone); 
 
         let imageAddPaintZone = L.DomUtil.create('img', 'layers-list-line-add-child-icon', imageAddPaintZoneDiv);
-        imageAddPaintZone.src = "img/plus-solid.svg";
+        imageAddPaintZone.src = "img/menu/plus-solid.svg";
 
         L.DomEvent.on(imageAddPaintZoneDiv, 'click', function(e) { this.addPaintZoneForm(imageAddPaintZoneDiv) } , this);
       }
@@ -118,7 +127,7 @@ class ParentLayerDiv
 
     if(this.params.editMode)
     {
-      L.DomEvent.on(imageEdit, 'click', function(e) { this.editValue(this.parentLineDiv, selectDiv, imageEdit, imageReOrder, imageDelete, this.paintZoneDiv, this.divAddPaintZone); } , this);
+      L.DomEvent.on(imageEdit, 'click', function(e) { this.editValue(this.parentLineDiv, selectDiv, imageEdit, imageReOrder, imageDelete, imagePopUp, this.paintZoneDiv, this.divAddPaintZone); } , this);
 
       if(this.params.timeEnable)
       {
@@ -133,6 +142,49 @@ class ParentLayerDiv
     {
       this.parentLineDiv.style = "background-color : #c7e0f0";
     }
+  }
+
+
+  /*
+   * Action of modify popup content
+   */
+  modifyPopUp()
+  {
+    $("#textAreaModifyPopUp").val(this.parentLayer.paintZones[0].popupContent);
+
+    let me = this;
+
+    let dialogUpdatePopUp = $("#dialog-modify-popUp").dialog({
+      autoOpen: false,
+      height: 400,
+      width: 500,
+      modal: true,
+      buttons: {
+        Cancel: function() {
+          dialogUpdatePopUp.dialog( "close" );
+        },
+        OK: function() {
+          me.savModifyPopUp(me);
+          dialogUpdatePopUp.dialog( "close" );
+        }
+      },
+      close: function() {
+        dialogUpdatePopUp.dialog( "close" );
+      }
+    });
+
+    dialogUpdatePopUp.dialog( "open" );
+  }
+
+  /*
+   * Sav the modification of the popup content
+   */
+  savModifyPopUp(me)
+  {
+    me.layersControl.actionsList.addActionPopUpContent(me.parentLayer.paintZones[0], me.parentLayer);
+
+    me.parentLayer.paintZones[0].popupContent = $("#textAreaModifyPopUp").val();
+    me.parentLayer.redraw();
   }
 
   /*
@@ -175,6 +227,8 @@ class ParentLayerDiv
     this.redraw();
 
     this.paintZoneDiv[this.paintZoneDiv.length -1].select();
+
+    this.layersControl.actionsList.addActionAddZone(this.parentLayer.paintZones[this.parentLayer.paintZones.length - 1], this.parentLayer, this, this.layersManager);
   }
 
   /*
@@ -193,9 +247,17 @@ class ParentLayerDiv
   {
     if(confirm(`Etes-vous sur de vouloir supprimer la couche "${this.parentLayer.label.value}" `))
     {
+      this.layersControl.actionsList.addActionDeleteLayer(this.parentLayer, this.layersControl, this.layersManager);
+
       this.layersManager.removeALayerGroup(this.parentLayer);
       
       L.DomUtil.remove(this.div);
+
+      // Redraw all for remove delete icon for the last layer
+      if(this.layersManager.layerGroups.length == 1)
+      {
+        this.layersControl.updateLayersContent(this.layersManager);
+      }
 
       // Change selection
       this.layersControl.selectLine(this.layersManager.selectedLayer);
@@ -218,20 +280,28 @@ class ParentLayerDiv
    * @param {L.DomUtil}          imageEdit               The img edit
    * @param {L.DomUtil}          imageReOrder            The img reorder
    * @param {L.DomUtil}          imageDelete             The img delete
+   * @param {L.DomUtil}          imagePopUp              The img popup
    * @param {L.DomUtil}          paintZoneDiv            Div zone of the paint zone
    * @param {L.DomUtil}          divAddPaintZone         Div of add paint zone button
    */
-  editValue(lineDiv, selectDiv, imageEdit, imageReOrder, imageDelete, paintZoneDiv, divAddPaintZone)
+  editValue(lineDiv, selectDiv, imageEdit, imageReOrder, imageDelete, imagePopUp, paintZoneDiv, divAddPaintZone)
   {
     L.DomUtil.remove(selectDiv);
     L.DomUtil.remove(imageEdit);
-    L.DomUtil.remove(imageReOrder);
+    if(imageReOrder)
+    {
+      L.DomUtil.remove(imageReOrder);
+    }
     if(imageDelete)
     {
       L.DomUtil.remove(imageDelete);
     }
+    if(imagePopUp)
+    {
+      L.DomUtil.remove(imagePopUp);
+    }
 
-    let inputName = L.DomUtil.create('input', 'layers-list-input', lineDiv);
+    let inputName = L.DomUtil.create('input', 'layers-list-input-text', lineDiv);
     inputName.value = this.parentLayer.label.value;
 
     let btnOk = L.DomUtil.create('button', 'layers-list-input', lineDiv);
@@ -260,6 +330,8 @@ class ParentLayerDiv
       L.DomUtil.remove(paintZoneDiv);
     if(divAddPaintZone != null)
       L.DomUtil.remove(divAddPaintZone);
+
+    this.layersControl.actionsList.addActionRenameLayer(this.parentLayer, this);
 
     this.parentLayer.label.value = inputName.value;
 

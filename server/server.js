@@ -1,5 +1,13 @@
 ﻿const http = require('http');
+const https = require('https');
 const app = require('./app');
+const fs = require('fs');
+
+/*
+const privateKey  = fs.readFileSync('/etc/ssl/node/private-key.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/ssl/node/cert.pem', 'utf8');
+const credentials = {key: privateKey, cert: certificate};
+*/
 
 const normalizePort = val => {
   const port = parseInt(val, 10);
@@ -45,3 +53,16 @@ server.on('listening', () => {
 });
 
 server.listen(port);
+
+/*
+const httpsServer = https.createServer(credentials, app);
+
+httpsServer.on('error', errorHandler);
+httpsServer.on('listening', () => {
+  const address = server.address();
+  const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + port;
+  console.log('Listening on ' + bind);
+});
+
+httpsServer.listen(8443);
+*/

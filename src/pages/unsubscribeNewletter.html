@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>Histo Atlas - Désinscription de la newsletter</title>
+    <link rel="icon" type="image/png" href="../img/icon.png" />
+  </head>
+  <body>
+
+  <link rel="stylesheet" href="../index.css" />
+
+  <script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
+
+  <p><a href="../index.html">Retour au menu</a></p>
+
+  <h4>Désinscription de la newsletter  : </h4>
+  <label for="name">Votre nom d'utilisateur : </label><br/><input id="name" type="text" style="width: 250px;"></input><br/><br/>
+  <button id="unsubcribe">Désinscription</button><br/>
+
+
+  <script type="text/javascript" src="../config/config.js"></script>
+
+  <script>
+
+    Config.load(true).then((config) =>
+    {
+      $("#unsubcribe").click(function() 
+      {
+        let userName = $("#name").val();
+
+        if(userName != "")
+        {
+          $.ajax({
+            url: config.serverUrl + "/api/user/changeNewsletterState",
+            method: "PATCH",
+            contentType: "application/json",
+            data: JSON.stringify({user : userName, newsletter : false}),
+            success: (response) => {
+
+              alert("Vous avez été désinscrit de la newsletter");
+              window.location.href = "../index.html";
+            },
+            error: (err) => {
+              if(err.responseJSON)
+              {
+                alert("Echec de la désinscription : " + err.responseJSON.error);
+              }
+              else
+              {
+                alert("Echec de la désinscription");
+              }
+              window.location.href = "../index.html";
+            }
+          });
+        }
+        else
+        {
+          alert("Le nom d'utilisateur est vide");
+        }
+      });
+    });
+  </script>
+  </body>
+</html>

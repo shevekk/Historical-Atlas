@@ -82,6 +82,11 @@ class ParentLayer
     {   
       this.layer = L.geoJSON(this.selectedZone.geom, this.polygonOptions).addTo(this.map);
 
+      if(this.selectedZone.popupContent)
+      {
+        this.layer.bindPopup(this.selectedZone.popupContent);
+      }
+
       this.label.redraw(this.layer, this.selectedZone.geom, this.selectedZone.number);
     }
   }
@@ -124,8 +129,9 @@ class ParentLayer
   addPaintZone(numberZoneToCopy)
   {
     let number = 1;
-    let startDate = this.params.timeMin;
+    let startDate = DateConverter.dateToNumber(this.params.timeMin, false, this.params);
     let geom = null;
+    let popupContent = "";
     for(let i = 0; i < this.paintZones.length; i++)
     {
       if(this.paintZones[i].number >= number)
@@ -140,6 +146,7 @@ class ParentLayer
       if(this.paintZones[i].number == numberZoneToCopy)
       {
         geom = this.paintZones[i].geom;
+        popupContent = this.paintZones[i].popupContent;
       }
     }
 
@@ -147,6 +154,7 @@ class ParentLayer
     this.selectedZone = this.paintZones[this.paintZones.length - 1];
     this.selectedZone.startDate = startDate;
     this.selectedZone.geom = geom;
+    this.selectedZone.popupContent = popupContent;
   }
 
   /*
@@ -249,5 +257,18 @@ class ParentLayer
   {
     this.selectedZone = this.paintZones[0];
     this.redraw();
+  }
+
+  /**
+   * Update paintZone date values for change date type
+   * @param {String}               oldTypeDate                   The old date type
+   * @param {String}               newTypeDate                   The new date type
+   */
+  updateTypeDate(oldTypeDate, newTypeDate)
+  {
+    for(let i = 0; i < this.paintZones.length; i++)
+    {
+      this.paintZones[i].updateTypeDate(oldTypeDate, newTypeDate);
+    }
   }
 }

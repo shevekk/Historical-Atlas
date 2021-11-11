@@ -1,0 +1,188 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>Histo Atlas - Mon profil</title>
+    <link rel="icon" type="image/png" href="../img/icon.png" />
+  </head>
+  <body>
+
+  <script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
+
+  <link rel="stylesheet" href="../index.css" />
+
+  <p><a href="../index.html">Retour au menu</a></p>
+
+  <div id="profil-content">
+    <h2>Mon profil</h2>
+
+    <b><p id="user-name-profile"></p></b>
+    <label for="mail">Votre Mail : </label><input id="mail" type="text" style="width: 250px;"></input><button style="margin-left: 5px;" id="change-mail-profil">Modifier</button><br/><br/>
+
+    <h4>Changer le mot de passe : </h4>
+    <label for="new-password">Nouveau mot de passe : </label><br/><input id="new-password" type="password" style="width: 250px;"></input><br/><br/>
+    <label for="confirm-password">Confirmer le mot de passe : </label><br/><input id="confirm-password" type="password" style="width: 250px;"></input><br/><br/>
+    <button id="change-password-profil">Modifier le mot de passe</button><br/><br/><br/>
+
+    <input type="checkbox" id="newsletter" name="newsletter"><label for="newsletter"> Recevoir la newsletter</label> <button style="margin-left: 5px;" id="change-newsletter-state">Sauvegarder</button>
+
+    <br/><br/><br/>
+    <button id="delete-profil">Supprimer votre compte</button><br/>
+  </div>
+
+  <script type="text/javascript" src="../config/config.js"></script>
+
+  <script>
+
+    /*
+     * Call an API in the server
+     * @param {String}               apiName                   The api name
+     * @param {String}               method                    The method (GET, POST, ...)
+     * @param {Object}               data                      Data of the API
+     */
+    function callServer(urlServer, apiName, method, data)
+    {
+      return new Promise(function(resolve, reject) 
+      {
+        let urlApi = urlServer + "/api/" + apiName;
+
+        $.ajax({
+          url: urlApi,
+          method: method,
+          contentType: "application/json",
+          headers:{ 'Authorization': localStorage.getItem('session-token-histoatlas') }, // 
+          data: JSON.stringify(data),
+          success: (response) => {
+            resolve(response);
+          },
+          error: (err) => {
+            reject(err);
+          }
+        });
+      });
+    }
+
+    Config.load(true).then((config) =>
+    {
+      if(localStorage.getItem('session-id-histoatlas'))
+      {
+        callServer(config.serverUrl, "user/checkValidUser", "GET", {})
+        .then((result) => {
+
+          let user = localStorage.getItem('session-id-histoatlas');
+
+          $("#user-name-profile").html(user);
+
+          callServer(config.serverUrl, "user/getMail?user=" + user, "GET", {})
+          .then((result) => {
+
+            $("#mail").val(result.mail);
+
+            // Manage change E-mail
+            $("#change-mail-profil").click(function() 
+            {
+              callServer(config.serverUrl, "user/changeMail", "PATCH", {user : user, mail : $("#mail").val()})
+              .then((result) => {
+                alert("Email changé");
+              }).catch((err) =>  { 
+                alert("Échec du changement de l'email");
+              });
+            });
+
+            // Manage change password
+            $("#change-password-profil").click(function() 
+            {
+              let newPassWord = $("#new-password").val();
+              let confirmPassWord = $("#confirm-password").val();
+
+              if(newPassWord != "")
+              {
+                if(newPassWord == confirmPassWord)
+                {
+                  callServer(config.serverUrl, "user/changePassword", "PATCH", {user : user, password : newPassWord})
+                  .then((result) => {
+                    alert("Mot de passe changé");
+                  }).catch((err) =>  { 
+                    alert("Échec du changement de mot de passe");
+                  });
+                }
+                else
+                {
+                  alert("Les deux mots de passe entrés ne sont pas identiques");
+                }
+              }
+              else
+              {
+                alert("Le mot de passe est vide");
+              }
+            });
+
+            // Manage delete account
+            $("#delete-profil").click(function() 
+            {
+              if(window.confirm("Êtes-vous sur de vouloir supprimer votre compte ? ATTENTION : Cette action est irrévocable ! ")) 
+              {
+                callServer(config.serverUrl, "user/deleteUser/", "DELETE", {user : user})
+                  .then((result) => {
+                    alert("Votre compte à été supprimé");
+                    localStorage.removeItem('session-id-histoatlas');
+                    window.location.href = "../index.html";
+                  }).catch((err) =>  { 
+                    alert("Échec de la suppression du compte");
+                  });
+              }
+            });
+
+            // Get newsletter state
+            callServer(config.serverUrl, "user/getNewsletterState?user=" + user, "GET", {})
+            .then((result) => {
+              $("#newsletter").prop("checked", result.newsletter);
+            }).catch((err) =>  { 
+            });
+
+            // Change the newsletter state
+            $("#change-newsletter-state").click(function() 
+            {
+              let newsletterState = $("#newsletter").prop("checked");
+              callServer(config.serverUrl, "user/changeNewsletterState", "PATCH", {user : user, newsletter : newsletterState})
+              .then((result) => {
+
+                if(newsletterState)
+                {
+                  alert("Vous êtes maintenant inscrit à la newsletter");
+                }
+                else
+                {
+                  alert("Vous êtes maintenant désinscrit à la newsletter");
+                }
+                
+              }).catch((err) =>  { 
+                alert("Échec de la modification de votre abonnement à la newsletter");
+              });
+            });
+
+          }).catch((err) =>  { 
+            $("#profil-content").html("Impossible d'accéder à la page profil car vous n'êtes pas connecté"); 
+          });
+
+
+        }).catch((err) => 
+        { 
+          $("#profil-content").html("Impossible d'accéder à la page profil car vous n'êtes pas connecté"); 
+        });
+      }
+      else
+      {
+        $("#profil-content").html("Impossible d'accéder à la page profil car vous n'êtes pas connecté");  
+      }
+
+      
+
+      
+    });
+
+  
+
+  </script>
+
+  </body>
+</html>

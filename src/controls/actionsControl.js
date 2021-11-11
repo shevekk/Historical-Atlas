@@ -32,6 +32,7 @@ var ActionsControl = L.Control.extend({
     this.paintParams = options.paintParams;
     this.loadSaveManager = options.loadSaveManager;
     this.layersControl = options.layersControl;
+    this.actionsList = options.actionsList;
 
     this.params = options.params;
 
@@ -69,39 +70,100 @@ var ActionsControl = L.Control.extend({
 
     this.buttons["connexion_state"] = new ActionButtonConnexionState(this._container);
 
-    this.buttons["selection"] = new ActionButtonSimple(this._container, "img/mouse-pointer-solid.svg", "Activer la selection", function(e) { me.paintParams.uiClick = true; me._changeSelectionState(e); });
+    this.buttons["undo"] = new ActionButtonSimple(this._container, "img/actions/undo-solid.svg", "Annuler la dernière action", function(e) { me.paintParams.uiClick = true; me.undo() });
+    this.buttons["undo"].setActiveState(false);
 
-    this.buttons["back"] = new ActionButtonSimple(this._container, "img/arrow-left-solid.svg", "Retour", function(e) { me.paintParams.uiClick = true; me.backToMain(); });
+    this.buttons["redo"] = new ActionButtonSimple(this._container, "img/actions/redo-solid.svg", "Rétablir la dernière action annulé", function(e) { me.paintParams.uiClick = true; me.redo() });
+    this.buttons["redo"].setActiveState(false);
 
-    this.buttons["paint"] = new ActionButtonSimple(this._container, "img/paint-brush-solid.svg", "Activer le dessin", function(e) { me.paintParams.uiClick = true; me.enablePaint(); });
+    this.buttons["selection"] = new ActionButtonSimple(this._container, "img/actions/mouse-pointer-solid.svg", "Activer la selection", function(e) { me.paintParams.uiClick = true; me._changeSelectionState(e); });
 
-    this.buttons["erase"] = new ActionButtonSimple(this._container, "img/eraser-solid.svg", "Activer le retait de contenu", function(e) { me.paintParams.uiClick = true; me.enableRemove(e); });
+    this.buttons["back"] = new ActionButtonSimple(this._container, "img/actions/arrow-left-solid.svg", "Retour", function(e) { me.paintParams.uiClick = true; me.backToMain(); });
 
-    this.buttons["erase_all"] = new ActionButtonSimple(this._container, "img/paint-roller-solid.svg", "Activer le retait de contenu sur toutes les couches", function(e) { me.paintParams.uiClick = true; me._changeRemovalAllState(); });
+    this.buttons["paint"] = new ActionButtonSimple(this._container, "img/actions/paint-brush-solid.svg", "Activer le dessin", function(e) { me.paintParams.uiClick = true; me.enablePaint(); });
 
-    this.buttons["cursor_size"] = new ActionButtonSlider(this._container, "img/cursor-size.svg", "Choix de la taille du curseur", function(e) { me._cursorSizeMove(e) }, 5, 50, this.paintParams.cursorRaduis, this.paintParams);
+    this.buttons["erase"] = new ActionButtonSimple(this._container, "img/actions/eraser-solid.svg", "Activer le retait de contenu", function(e) { me.paintParams.uiClick = true; me.enableRemove(e); });
+
+    this.buttons["erase_all"] = new ActionButtonSimple(this._container, "img/actions/paint-roller-solid.svg", "Activer le retait de contenu sur toutes les couches", function(e) { me.paintParams.uiClick = true; me._changeRemovalAllState(); });
+
+    this.buttons["cursor_size"] = new ActionButtonSlider(this._container, "img/actions/cursor-size.svg", "Choix de la taille du curseur", function(e) { me._cursorSizeMove(e) }, 5, 50, this.paintParams.cursorRaduis, this.paintParams);
 
     this.buttons["color"] = new ActionButtonColor(this._container, "Choix de la couleur de la couche", function(e) { me.paintParams.uiClick = true }, function (e) { me._changeColor(e.target.value); });
 
-    this.buttons["border_size"] = new ActionButtonSlider(this._container, "img/border-style-solid.svg", "Choix de la taille de la bordure", function(e) { me._cursorBorderSizeMove(e) }, 0, 20, this.paintParams.borderWeight, this.paintParams);
+    this.buttons["border_size"] = new ActionButtonSlider(this._container, "img/actions/border-style-solid.svg", "Choix de la taille de la bordure", function(e) { me._cursorBorderSizeMove(e) }, 0, 20, this.paintParams.borderWeight, this.paintParams);
 
-    this.buttons["opacity"] = new ActionButtonSlider(this._container, "img/opacity.png", "Choix l'opacité de la couche", function(e) { me._cursorOpacityMove(e) }, 0, 100, this.paintParams.opacity * 100, this.paintParams);
+    this.buttons["opacity"] = new ActionButtonSlider(this._container, "img/actions/opacity.png", "Choix l'opacité de la couche", function(e) { me._cursorOpacityMove(e) }, 0, 100, this.paintParams.opacity * 100, this.paintParams);
 
-    this.buttons["label"] = new ActionButtonSimple(this._container, "img/tag-solid.svg", "Actions sur le label",  function(e) { me.paintParams.uiClick = true; me.openLabelMenu()  });
+    this.buttons["label"] = new ActionButtonSimple(this._container, "img/actions/tag-solid.svg", "Actions sur le label",  function(e) { me.paintParams.uiClick = true; me.openLabelMenu()  });
 
-    this.buttons["label_size"] = new ActionButtonSlider(this._container, "img/text-width-solid.svg", "Choix de la taille du label", function(e) { me._cursorLabelSizeMove(e) }, 0, 50, this.layersManager.selectedLayer.label.textSize, this.paintParams);
+    this.buttons["label_size"] = new ActionButtonSlider(this._container, "img/actions/text-width-solid.svg", "Choix de la taille du label", function(e) { me._cursorLabelSizeMove(e) }, 0, 50, this.layersManager.selectedLayer.label.textSize, this.paintParams);
 
-    this.buttons["move_label"] = new ActionButtonSimple(this._container, "img/arrows-alt-solid.svg", "Deplacer le label",  function(e) { me.paintParams.uiClick = true; me.changeMoveLabelState()  });
+    this.buttons["move_label"] = new ActionButtonSimple(this._container, "img/actions/arrows-alt-solid.svg", "Deplacer le label",  function(e) { me.paintParams.uiClick = true; me.changeMoveLabelState()  });
 
-    this.buttons["import_export"] = new ActionButtonSimple(this._container, "img/file.svg", "Menu import/export",  function(e) { me.paintParams.uiClick = true; me.openImportExportMenu(); });
+    this.buttons["import_export"] = new ActionButtonSimple(this._container, "img/actions/file.svg", "Menu import/export",  function(e) { me.paintParams.uiClick = true; me.openImportExportMenu(); });
 
-    this.buttons["export"] = new ActionButtonSimple(this._container, "img/file-download-solid.svg", "Exporter la visualistion",  function(e) { me.paintParams.uiClick = true; me.loadSaveManager.export(); });
+    this.buttons["export"] = new ActionButtonSimple(this._container, "img/actions/file-download-solid.svg", "Exporter la visualistion",  function(e) { me.paintParams.uiClick = true; me.loadSaveManager.export(); });
 
-    this.buttons["import"] = new ActionButtonFile(this._container, "img/file-import-solid.svg", "Importer une visualistion (fichier json)", this.paintParams, me.loadSaveManager);
+    this.buttons["import"] = new ActionButtonFile(this._container, "img/actions/file-import-solid.svg", "Importer une visualistion (fichier json)", this.paintParams, me.loadSaveManager);
 
-    this.buttons["save"] = new ActionButtonSave(this._container, "img/save-regular.svg", "Sauvegarder la carte sur le server", me.paintParams, me.loadSaveManager);
+    this.buttons["save"] = new ActionButtonSave(this._container, "img/actions/save-regular.svg", "Sauvegarder la carte sur le server", me.paintParams, me.loadSaveManager);
+
+    this.buttons["filling"] = new ActionButtonSimple(this._container, "img/actions/fill-drip-solid.svg", "Remplissage de la zone (ne fonctionne que si la zone est une polygone non rempli)", function(e) { me.paintParams.uiClick = true; me.fillInActiveLayer(); });
+
+    this.buttons["simplify"] = new ActionButtonSliderWithButton(this._container, "img/actions/simplify.jpg", "Simplifier la géométrie (améliore les performances)", function(cursorValue) { me.simplifyActiveLayer(cursorValue);}, 5, 100, 5, this.paintParams);
 
     this.backToMain();
+  },
+
+  /*
+   * Undo last action
+   */
+  undo()
+  {
+    this.actionsList.undo();
+
+    if(this.actionsList.actionsIsEmpty())
+    {
+      this.buttons["undo"].setActiveState(false);
+    }
+  },
+
+  /*
+   * Redo last action
+   */
+  redo()
+  {
+    this.actionsList.redo();
+
+    if(this.actionsList.actionsRedoIsEmpty())
+    {
+      this.buttons["redo"].setActiveState(false);
+    }
+  },
+
+  /*
+   * Simplify geom of the active layer
+   * @param {Number}               cursorValue                   The cusor value (between 5 and 100)
+   */
+  simplifyActiveLayer : function(cursorValue)
+  {
+    this.actionsList.addActionPaint(this.layersManager);
+
+    this.layersManager.simplifyActiveLayer(parseInt(cursorValue) / 1000);
+
+    this.buttons["undo"].setActiveState(true);
+  },
+
+  /*
+   * Fill In the active layer
+   */
+  fillInActiveLayer()
+  {
+    this.actionsList.addActionPaint(this.layersManager);
+
+    this.layersManager.fillInActiveLayer();
+
+    this.buttons["undo"].setActiveState(true);
   },
 
   /*
@@ -135,6 +197,7 @@ var ActionsControl = L.Control.extend({
     this.buttons["selection"].show();
     this.buttons["paint"].show();
     this.buttons["label"].show();
+    this.buttons["undo"].show();
 
     this.buttons["cursor_size"].hide();
     this.buttons["border_size"].hide();
@@ -146,7 +209,8 @@ var ActionsControl = L.Control.extend({
     this.buttons["erase_all"].hide();
     this.buttons["label_size"].hide();
     this.buttons["move_label"].hide();
-
+    this.buttons["filling"].hide();
+    this.buttons["simplify"].hide();
 
     this.enableScroll();
     this.map.dragging.enable();
@@ -164,6 +228,12 @@ var ActionsControl = L.Control.extend({
    */
   enablePaint : function()
   {
+    if(this.paintParams.selectionState)
+    {
+      this.paintParams.selectionState = false;
+      this.buttons["selection"].setSelectedState(false);
+    } 
+
     // Change button visibility
     this.buttons["erase"].hide();
     this.buttons["import_export"].hide();
@@ -178,6 +248,8 @@ var ActionsControl = L.Control.extend({
     this.buttons["opacity"].show();
     this.buttons["color"].show();
     this.buttons["back"].show();
+    this.buttons["filling"].show();
+    this.buttons["simplify"].show();
 
     this.disableScroll();
     this.map.dragging.disable();
@@ -188,6 +260,12 @@ var ActionsControl = L.Control.extend({
    */
   openImportExportMenu : function()
   {
+    if(this.paintParams.selectionState)
+    {
+      this.paintParams.selectionState = false;
+      this.buttons["selection"].setSelectedState(false);
+    } 
+
     this.buttons["export"].show();
     this.buttons["import"].show();
     this.buttons["back"].show();
@@ -206,6 +284,12 @@ var ActionsControl = L.Control.extend({
    */
   enableRemove : function()
   {
+    if(this.paintParams.selectionState)
+    {
+      this.paintParams.selectionState = false;
+      this.buttons["selection"].setSelectedState(false);
+    } 
+
     this.buttons["erase_all"].show();
     this.buttons["back"].show();
     this.buttons["cursor_size"].show();
@@ -228,6 +312,12 @@ var ActionsControl = L.Control.extend({
    */
   openLabelMenu : function()
   {
+    if(this.paintParams.selectionState)
+    {
+      this.paintParams.selectionState = false;
+      this.buttons["selection"].setSelectedState(false);
+    } 
+
     this.buttons["erase"].hide();
     this.buttons["import_export"].hide();
     this.buttons["save"].hide();
@@ -340,7 +430,7 @@ var ActionsControl = L.Control.extend({
    * Change the selection state
    * @param {Event}               e                    The event
    */
-  _changeSelectionState : function(e)
+  _changeSelectionState : function()
   {
     if(this.paintParams.selectionState)
     {
@@ -396,6 +486,8 @@ var ActionsControl = L.Control.extend({
    */
   manageSelection : function(e)
   {
+    this._changeSelectionState();
+
     this.layersManager.manageSelection(e);
 
     if(this.layersManager.selectedLayer)
@@ -421,5 +513,6 @@ var ActionsControl = L.Control.extend({
     this.buttons["border_size"].setValue(polygonOptions.weight);
     this.buttons["opacity"].setValue(polygonOptions.fillOpacity * 100);
     this.buttons["label_size"].setValue(this.layersManager.selectedLayer.label.textSize);
+    this.buttons["simplify"].setValue(5);
   }
 });

@@ -9,8 +9,8 @@ Config.load().then((config) =>
     {
       htmlMaps += "<p>";
       htmlMaps += jsonMaps[key]["name"];
-      htmlMaps += `<a href="histoAtlas.html?file=${jsonMaps[key]["file"]}&edit=false"><img class="icon-action" src="img/eye-solid.svg" title="Visualiser" /></a>`;
-      htmlMaps += `<a href="histoAtlas.html?file=${jsonMaps[key]["file"]}"><img class="icon-action" src="img/edit-solid.svg" title="Editer un copie" /></a>`;
+      htmlMaps += `<a href="histoAtlas.html?file=${jsonMaps[key]["file"]}&edit=false"><img class="icon-action" src="img/menu/eye-solid.svg" title="Visualiser" /></a>`;
+      htmlMaps += `<a href="histoAtlas.html?file=${jsonMaps[key]["file"]}"><img class="icon-action" src="img/menu/edit-solid.svg" title="Editer un copie" /></a>`;
       htmlMaps += "</p>";
     }
 
@@ -29,10 +29,14 @@ Config.load().then((config) =>
       success: (response) => {
 
         let user = localStorage.getItem('session-id-histoatlas');
+        getUserMap(user);
         getServerMaps(user);
         displayUser(user);
       },
       error: (err) => {
+        localStorage.removeItem('session-id-histoatlas');
+        localStorage.removeItem('session-token-histoatlas');
+        
         getServerMaps(null);
       }
     });
@@ -42,11 +46,36 @@ Config.load().then((config) =>
     getServerMaps(null);
   }
 
-   /* 
-    * Get users map on server and all visible maps 
-    * @property {String}                      user                       The user name
-    */
+  /* 
+   * Get all visible maps for user on server (all if not connected)
+   * @property {String}                      user                       The user name
+   */
   function getServerMaps(user)
+  {
+    $.ajax({
+      url: config.serverUrl + "/api/map/getVisibleMaps/" + user,
+      method: "GET",
+      contentType: "application/json",
+      success: (response) => 
+      {
+        let publicMaps = [];
+        for(let i = 0; i < response.publicMaps.length; i++)
+        {
+          publicMaps.push(new MapData());
+          publicMaps[i].fromJson(response.publicMaps[i]);
+        }
+        displayPublicMap(publicMaps);
+      },
+      error: (err) => {
+        alert("Impossible de récupérer les cartes : " + err.responseJSON.error);
+      }})
+  }
+
+  /* 
+   * Get users map on server 
+   * @property {String}                      user                       The user name
+   */
+  function getUserMap(user)
   {
     $.ajax({
       url: config.serverUrl + "/api/map/getVisibleMapsOfUser/" + user,
@@ -61,25 +90,6 @@ Config.load().then((config) =>
           userMaps[i].fromJson(response.userMaps[i]);
         }
         displayUserMap(userMaps);
-
-        $.ajax({
-        url: config.serverUrl + "/api/map/getVisibleMaps/" + user,
-        method: "GET",
-        contentType: "application/json",
-        success: (response) => 
-        {
-          let publicMaps = [];
-          for(let i = 0; i < response.publicMaps.length; i++)
-          {
-            publicMaps.push(new MapData());
-            publicMaps[i].fromJson(response.publicMaps[i]);
-          }
-          displayPublicMap(publicMaps);
-        },
-        error: (err) => {
-          alert("Impossible de récupérer les cartes : " + err.responseJSON.error);
-        }})
-
       },
       error: (err) => {
         alert("Impossible de récupérer les cartes : " + err.responseJSON.error);
@@ -98,31 +108,31 @@ Config.load().then((config) =>
     for(let i = 0; i < userMaps.length; i++)
     {
       content += `<p><div id="map-div">${userMaps[i].name}
-      <a href="histoAtlas.html?mapId=${userMaps[i].id}&edit=false"><img class="icon-action" src="img/eye-solid.svg" title="Visualiser" /></a>
-      <a href="histoAtlas.html?mapId=${userMaps[i].id}"><img class="icon-action" src="img/edit-solid.svg" title="Editer" /></a></div>`;
+      <a href="histoAtlas.html?mapId=${userMaps[i].id}&edit=false"><img class="icon-action" src="img/menu/eye-solid.svg" title="Visualiser" /></a>
+      <a href="histoAtlas.html?mapId=${userMaps[i].id}"><img class="icon-action" src="img/menu/edit-solid.svg" title="Editer" /></a></div>`;
 
       content += `<div id="edit-visibility-div">`;
       if(userMaps[i].public)
       {
-        content += `<img class="icon-action-public" id="change-public-state_${i}" src="img/eye-solid-green.svg" title="Carte accessible à tous les utilisateurs" />`;
+        content += `<img class="icon-action-public" id="change-public-state_${i}" src="img/menu/eye-solid-green.svg" title="Carte accessible à tous les utilisateurs" />`;
 
         if(userMaps[i].publicEditable)
         {
-          content += `<img class="icon-action-editable" id="change-editable-state_${i}" src="img/edit-solid-green.svg" title="Edition d'une copie accessible à tous les utilisateurs" />`;
+          content += `<img class="icon-action-editable" id="change-editable-state_${i}" src="img/menu/edit-solid-green.svg" title="Edition d'une copie accessible à tous les utilisateurs" />`;
         }
         else
         {
-          content += `<img class="icon-action-editable" id="change-editable-state_${i}" src="img/edit-solid-red.svg" title="Edition d'une copie inaccessible aux autres utilisateurs" />`;
+          content += `<img class="icon-action-editable" id="change-editable-state_${i}" src="img/menu/edit-solid-red.svg" title="Edition d'une copie inaccessible aux autres utilisateurs" />`;
         }
       }
       else
       {
-        content += `<img class="icon-action-public" id="change-public-state_${i}" src="img/eye-solid-red.svg" title="Carte inaccessible aux autres utilisateurs" />`;
+        content += `<img class="icon-action-public" id="change-public-state_${i}" src="img/menu/eye-solid-red.svg" title="Carte inaccessible aux autres utilisateurs" />`;
       }
 
       content += `</div>`;
 
-      content += `<img class="icon-action-delete" id="delete_${i}" src="img/trash-solid.svg" title="Supprimer la carte" />`;
+      content += `<img class="icon-action-delete" id="delete_${i}" src="img/menu/trash-solid.svg" title="Supprimer la carte" />`;
 
       content += `</p>`;
     }
@@ -209,11 +219,11 @@ Config.load().then((config) =>
     for(let i = 0; i < publicMaps.length; i++)
     {
       content += `<p>${publicMaps[i].name} - <i>créateur <b>${publicMaps[i].userName}</b></i>
-      <a href="histoAtlas.html?mapId=${publicMaps[i].id}&edit=false"><img class="icon-action" src="img/eye-solid.svg" title="Visualiser" /></a>`;
+      <a href="histoAtlas.html?mapId=${publicMaps[i].id}&edit=false"><img class="icon-action" src="img/menu/eye-solid.svg" title="Visualiser" /></a>`;
 
       if(publicMaps[i].publicEditable)
       {
-        content += `<a href="histoAtlas.html?mapId=${publicMaps[i].id}"><img class="icon-action" src="img/edit-solid.svg" title="Editer une copie" /></a>`;
+        content += `<a href="histoAtlas.html?mapId=${publicMaps[i].id}"><img class="icon-action" src="img/menu/edit-solid.svg" title="Editer une copie" /></a>`;
       }
       
       content += `</p>`;
@@ -228,7 +238,7 @@ Config.load().then((config) =>
    */ 
   function displayUser(user)
   {
-    $("#connexion-div").html(`<h3 id="user-name-logged-in">${user}</h3><button id="logout" class="button-loggin">Déconnexion</button>`);
+    $("#connexion-div").html(`<h3 id="user-name-logged-in">${user}</h3><button id="logout" class="button-loggin">Déconnexion</button><br/><br/><a href="pages/profile.html"><button id="profile" class="button-loggin">Mon profil</button></a>`);
 
     $("#logout").click(function() 
     {
@@ -237,6 +247,8 @@ Config.load().then((config) =>
 
       document.location.href="index.html";
     });
+
+
   }
 
   /*
@@ -245,9 +257,10 @@ Config.load().then((config) =>
   $("#connexion-button").click(function() 
   {
     let content = "";
-    content += `<label for="user-name">Nom d'utilisateur : </label><input id="user-name" type="text"></input><br/>`;
-    content += `<label for="password">Mot de passe : </label><input id="user-password" type="password"></input><br/>`;
-    content += `<button id="cancel-login" class="button-loggin">Annuler</button><button id="login" class="button-loggin">Connexion</button>`;
+    content += `<label for="user-name">Nom d'utilisateur : </label><input id="user-name" type="text"></input><br/>
+    <label for="user-password">Mot de passe : </label><input id="user-password" type="password"></input><br/>
+    <button id="cancel-login" class="button-loggin">Annuler</button><button id="login" class="button-loggin">Connexion</button>
+    <br/><a href="pages/forgotPassword.html">Mot de passe oublié</a>`;
 
     $("#connexion-div").html(content);
 
@@ -258,9 +271,9 @@ Config.load().then((config) =>
     });
 
     /*
-     * Clic login, call API
+     * Call API
      */
-    $("#login").click(function() 
+    function login()
     {
       let urlServer = config.serverUrl + "/api/user/login";
 
@@ -282,6 +295,24 @@ Config.load().then((config) =>
           alert("Connexion impossible : " + err.responseJSON.error);
         }
       });
+    }
+
+    // Login on enter il focus
+    $(window).keypress(function (e) {
+      if(e.which == 13) {
+        e.preventDefault()
+        if (document.activeElement.id == "user-password" || document.activeElement.id == "user-name") {
+          login();
+        }
+      }
+    })
+
+    /*
+     * Clic login button
+     */
+    $("#login").click(function() 
+    {
+      login();
     });
   });
 });

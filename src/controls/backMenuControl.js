@@ -14,6 +14,7 @@ var BackMenuControl = L.Control.extend({
    */
   initialize: function (options) 
   {
+    this.params = options.params;
   },
   
   /*
@@ -31,7 +32,10 @@ var BackMenuControl = L.Control.extend({
     this.buttonMenu.title = "Retour au menu principal";
     this.buttonMenu.innerHTML = "Menu";
     this.buttonMenu.href = "index.html";
-    this.buttonMenu.target = "_blank";
+    if(this.params.editMode)
+    {
+      this.buttonMenu.target = "_blank";
+    }
 
     L.DomEvent.addListener(this.buttonMenu, 'dblclick', L.DomEvent.stop);
     L.DomEvent.addListener(this.buttonMenu, 'mousedown', L.DomEvent.stop);

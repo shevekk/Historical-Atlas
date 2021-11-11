@@ -28,13 +28,13 @@ class ActionButtonConnexionState
     if(state)
     {
       this.buttonDom.style['background-color'] = "#ADE196";
-      this.image.src = "img/circle_green.png";
+      this.image.src = "img/actions/circle_green.png";
       this.buttonDom.title="Connecté, en tant que " + localStorage.getItem('session-id-histoatlas');
     }
     else
     {
       this.buttonDom.style['background-color'] = "#FD9CA1";
-      this.image.src = "img/circle_red.png";
+      this.image.src = "img/actions/circle_red.png";
       this.buttonDom.title="Non connecté, retourné au menu pour vous connecté et pouvoir sauvegarder ";
     }
   }

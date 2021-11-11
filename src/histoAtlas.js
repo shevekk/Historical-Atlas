@@ -47,11 +47,13 @@ class Main
         zoom : 6
       });
 
-      me.backMenuControl = new BackMenuControl({}).addTo(me.map);
+      me.actionsList = new ActionList();
+
+      me.backMenuControl = new BackMenuControl({params : me.params}).addTo(me.map);
       me.backgroundControl = new BackgroundControl({paintParams : me.paintParams, jsonBackgrounds : jsonBackgrounds}).addTo(me.map);
       me.backgroundControl.manageEvents()
       me.timeControl = new TimeControl({params : me.params, paintParams : me.paintParams}).addTo(me.map);
-      me.layersControl = new LayersControl({paintParams : me.paintParams, params : me.params, timeControl : me.timeControl});
+      me.layersControl = new LayersControl({paintParams : me.paintParams, params : me.params, timeControl : me.timeControl, actionsList : me.actionsList});
       me.settingsControl = new SettingsControl({paintParams : me.paintParams, params : me.params, jsonBackgrounds : jsonBackgrounds, backgroundControl : me.backgroundControl, timeControl : me.timeControl, layersControl : me.layersControl}).addTo(me.map);
 
       me.cursorManager = new CursorManager({params : me.params, paintParams : me.paintParams});
@@ -61,7 +63,7 @@ class Main
 
       me.loadSaveManager = new LoadSaveManager(me.map, me.layersManager, me.params, me.backgroundControl, me.timeControl, me.layersControl, jsonBackgrounds);
 
-      me.actionsControl = new ActionsControl({cursorManager : me.cursorManager, paintParams : me.paintParams, layersManager: me.layersManager, params : me.params, loadSaveManager : me.loadSaveManager, layersControl : me.layersControl}).addTo(me.map);
+      me.actionsControl = new ActionsControl({cursorManager : me.cursorManager, paintParams : me.paintParams, layersManager: me.layersManager, params : me.params, loadSaveManager : me.loadSaveManager, layersControl : me.layersControl, actionsList : me.actionsList}).addTo(me.map);
 
       me.loadSaveManager.actionsControl = me.actionsControl;
       me.layersManager.actionsControl = me.actionsControl;
@@ -70,11 +72,21 @@ class Main
 
       me.timeControl.layersManager = me.layersManager;
 
+      me.actionsList.timeControl = me.timeControl;
+      me.actionsList.actionsControl = me.actionsControl;
+
+      if(me.params.editMode)
+      {
+        me.loadSaveManager.checkValidUser();
+        setInterval(function(){ me.loadSaveManager.checkValidUser(); }, 180000);
+      }
+      
       if(urlParams["file"])
       {
         me.loadSaveManager.loadFile(urlParams["file"], function()
         {
           $("#loading").html("");
+          $("#description-text").html(me.params.description);
         });
       }
       else if(urlParams["mapId"])
@@ -82,6 +94,7 @@ class Main
         me.loadSaveManager.loadMapOnServer(urlParams["mapId"], function()
         {
           $("#loading").html("");
+          $("#description-text").html(me.params.description);
         });
       }
       else
@@ -90,12 +103,7 @@ class Main
         $("#loading").html("")
       }
 
-      if(me.params.editMode)
-      {
-        me.loadSaveManager.checkValidUser();
-        setInterval(function(){ me.loadSaveManager.checkValidUser(); }, 180000);
-      }
-
+      me.manageDescription();
       me.manageMapEvents();
     });
   }
@@ -111,11 +119,15 @@ class Main
     me.map.on('mousedown', function(e) 
     {
       me.paintParams.mouseDown = true;
+
+      me.actionsList.addActionPaint(me.layersManager);
     });
     
     me.map.on('mouseup', function(e)
     {
       me.paintParams.mouseDown = false;
+
+      me.actionsList.checkActionPaint(me.layersManager);
     });
     
     me.map.on('click', function(e)
@@ -156,7 +168,7 @@ class Main
         
         if(me.paintParams.mouseDown && me.paintParams.scrollDisable)
         {
-          me.layersManager.addOrRemoveContent(e);
+          me.layersManager.addOrRemoveContent(e, me.actionsList);
         }
       }
     });
@@ -195,4 +207,35 @@ class Main
     return argsValues;
   }
   
+  /**
+   * Manage change of description
+   */
+  manageDescription()
+  {
+    let me = this;
+
+    if(!me.params.editMode)
+    {
+      $("#img-description-edit").css("visibility", "hidden");
+    }
+
+    $("#img-description-edit").click(function() {
+
+      $("#description-text").html(`<textarea id="text-area-description">${me.params.description}</textarea>`);
+      $("#img-description-edit").css("visibility", "hidden");
+      $("#sav-description").css("display", "inline");
+
+      $("#sav-description").click(function() {
+
+        if($("#text-area-description").length > 0)
+        {
+          me.params.description = $("#text-area-description").val();
+
+          $("#description-text").html(me.params.description);
+          $("#img-description-edit").css("visibility", "visible");
+          $("#sav-description").css("display", "none");
+        }
+      });
+    });
+  }
 }

@@ -181,9 +181,10 @@ class LoadSaveManager
 
     this.actionsControl.updateParamsFromLayerOptions(this.layersManager.selectedLayer.polygonOptions);
 
+
     if(this.params.timeEnable)
     {
-      this.timeControl.setValue(this.params.timeMin);
+      this.timeControl.setValue(this.timeControl.value);
     }
     else
     {
@@ -276,6 +277,8 @@ class LoadSaveManager
       me.initParamsFromData(contentObj);
 
       me.initMapFromData(contentObj);
+
+      $("#nb-views").html(`Nombres de vues : ${result.views}`);
 
       callback();
 

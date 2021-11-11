@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Histo Atlas - Contact</title>
-    <link rel="icon" type="image/png" href="img/icon_map.png" />
+    <link rel="icon" type="image/png" href="../img/icon.png" />
   </head>
   <body>
 
@@ -13,12 +13,12 @@
   <p><a href="../index.html">Retour au menu</a></p>
 
   <h3>Contact</h3>
-  <p>Envoyé un mail pour remonter un bug, une suggestion ou un avis.</p>
-  <label for="mail">Votre Mail : </label><input id="mail" type="text" style="width: 250px;"></input><br/><br/>
-  <label for="name">Nom ou pseudo : </label><input id="name" type="text" style="width: 500px;"></input><br/><br/>
-  <label for="title">Titre : </label><input id="title" type="text" style="width: 500px;"></input><br/><br/>
-  <label for="message">Message : </label><textarea id="message" name="message" rows="22" cols="80"></textarea><br/><br/>
-  <button id="sendButton">Envoyer</button>
+  <p>Envoyé un mail pour remonter un bug, une suggestion ou un avis. Vous pouvez également demander de l'assistance pour créer vos cartes ou demander une nouvelle fonctionnalité sur le logiciel.</p>
+  <label for="mail">Votre Mail : </label><br/><input id="mail" type="text" style="width: 250px;"></input><br/>
+  <label for="name">Nom ou pseudo : </label><br/><input id="name" type="text" style="width: 250px;"></input><br/>
+  <label for="title">Titre : </label><br/><input id="title" type="text" style="width: 500px;"></input><br/>
+  <label for="message">Message : </label><br/><textarea id="message" name="message" rows="22" cols="80"></textarea><br/><br/>
+  <button id="sendButton" style="width : 200px; height: 30px">Envoyer</button>
 
   <script type="text/javascript" src="../config/config.js"></script>
 
@@ -67,7 +67,7 @@
             url: urlServer,
             method: "POST",
             contentType: "application/json",
-            data: JSON.stringify({name : name, message : message, title : title, mail : mail}),
+            data: JSON.stringify({name : name, message : message, title : "[Contact] "+title, mail : mail}),
             success: (response) => {
 
               alert("Message Envoyé");

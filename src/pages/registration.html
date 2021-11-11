@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Histo Atlas</title>
-    <link rel="icon" type="image/png" href="../img/icon_map.png" />
+    <link rel="icon" type="image/png" href="../img/icon.png" />
   </head>
   <body>
 
@@ -13,8 +13,10 @@
   <p><a href="../index.html">Retour au menu</a></p>
 
   <h3>Inscription</h3>
+  <p>L'inscription est neccésaire pour sauvegarder vos cartes en ligne, mais pour consulter les cartes elle n'est pas nécessaire.</p>
   <label for="name">Nom d'utilisateur : </label><input id="name" type="text"></input><br/><br/>
   <label for="password">Mot de passe : </label><input id="password" type="password"></input><br/><br/>
+  <label for="confirm-password">Confirmer le mot de passe : </label><input id="confirm-password" type="password"></input><br/><br/>
   <label for="mail">Mail : </label><input id="mail" type="text"></input><br/><br/>
   <input type="checkbox" id="newsletter" name="newsletter"><label for="newsletter">Inscription à la newsletter</label><br/><br/>
   <button id="registrationButton">Inscription</button>
@@ -42,6 +44,7 @@
       {
         let name = $("#name").val();
         let password = $("#password").val();
+        let confirmPassword = $("#confirm-password").val();
         let mail = $("#mail").val();
         let newsletter = $("#newsletter")[0].checked;
 
@@ -64,6 +67,10 @@
         else if(!validateEmail(mail))
         {
           alert("Inscription impossible : adresse mail invalide");
+        }
+        else if(confirmPassword != password)
+        {
+          alert("Les deux mots de passe entrés ne sont pas identiques");
         }
         else
         {
