@@ -1,7 +1,11 @@
-﻿
+﻿ 
 /* Load maps file and display all */
 Config.load().then((config) =>
 {
+  let urlArray = window.location.href.split("/");
+  urlArray.pop();
+  const websiteUrl = urlArray.join("/");
+
   $.getJSON("maps.json", function(jsonMaps) 
   {
     let htmlMaps = "";
@@ -11,10 +15,29 @@ Config.load().then((config) =>
       htmlMaps += jsonMaps[key]["name"];
       htmlMaps += `<a href="histoAtlas.html?file=${jsonMaps[key]["file"]}&edit=false"><img class="icon-action" src="img/menu/eye-solid.svg" title="Visualiser" /></a>`;
       htmlMaps += `<a href="histoAtlas.html?file=${jsonMaps[key]["file"]}"><img class="icon-action" src="img/menu/edit-solid.svg" title="Editer un copie" /></a>`;
+      htmlMaps += `<a><img id="iframe-${key}" class="icon-action" src="img/menu/iframe.png" title="Exporter sous forme d'une iframe" /></a>`;
+      htmlMaps += `<input id="iframeContent-${key}" style="display:none; width:1150px; margin-left: 5px"></input>`;
+
       htmlMaps += "</p>";
     }
 
     $("#maps").html(htmlMaps);
+
+    for(let key in jsonMaps)
+    {
+      $(`#iframe-${key}`).click(function()
+      {
+        if($(`#iframeContent-${key}`).css("display") == "none")
+        {
+          $(`#iframeContent-${key}`).css("display", "inline");
+          $(`#iframeContent-${key}`).val(`<iframe id="histoatlas" title="Histo Atlas" width="600" height="400" src="${websiteUrl}/histoAtlas.html?file=${jsonMaps[key]["file"]}&edit=false&defaultFullScreen=true"> </iframe>`);
+        }
+        else
+        {
+          $(`#iframeContent-${key}`).css("display", "none");
+        }
+      });
+    }
   });
 
   /* Check if user is connected */
@@ -105,6 +128,10 @@ Config.load().then((config) =>
   {
     let content = "";
 
+    //alert(window.location.href.split("/").toString());
+
+    
+
     for(let i = 0; i < userMaps.length; i++)
     {
       content += `<p><div id="map-div">${userMaps[i].name}
@@ -133,6 +160,12 @@ Config.load().then((config) =>
       content += `</div>`;
 
       content += `<img class="icon-action-delete" id="delete_${i}" src="img/menu/trash-solid.svg" title="Supprimer la carte" />`;
+
+      if(userMaps[i].public)
+      {
+        content += `<a><img class="iframe-usermap" id="iframeContent_${userMaps[i].id}" src="img/menu/iframe.png" title="Exporter sous forme d'une iframe" /></a>
+        <input id="iframeContent-${userMaps[i].id}" style="display:none; width:1150px; margin-left: 5px"></input>`;
+      }
 
       content += `</p>`;
     }
@@ -206,6 +239,22 @@ Config.load().then((config) =>
       });
       }
     });
+
+    // Manage iframe
+    $('.iframe-usermap').click(function() 
+    {
+      let mapNumber = parseInt($(this).prop("id").split("_")[1]);
+
+      if($(`#iframeContent-${mapNumber}`).css("display") == "none")
+      {
+        $(`#iframeContent-${mapNumber}`).css("display", "inline");
+        $(`#iframeContent-${mapNumber}`).val(`<iframe id="histoatlas" title="Histo Atlas" width="600" height="400" src="${websiteUrl}/histoAtlas.html?mapId=${mapNumber}&edit=false&defaultFullScreen=true"> </iframe>`);
+      }
+      else
+      {
+        $(`#iframeContent-${mapNumber}`).css("display", "none");
+      }
+    });
   }
 
   /* 
@@ -225,11 +274,30 @@ Config.load().then((config) =>
       {
         content += `<a href="histoAtlas.html?mapId=${publicMaps[i].id}"><img class="icon-action" src="img/menu/edit-solid.svg" title="Editer une copie" /></a>`;
       }
+
+      content += `<a><img class="iframe-publicmap" id="iframeContent_${publicMaps[i].id}" src="img/menu/iframe.png" title="Exporter sous forme d'une iframe" /></a>
+      <input id="iframeContent-${publicMaps[i].id}" style="display:none; width:1150px; margin-left: 5px"></input>`;
       
       content += `</p>`;
     }
 
     $("#public-maps").html(content);
+
+    // Manage iframe
+    $(".iframe-publicmap").click(function() 
+    {
+      let mapNumber = parseInt($(this).prop("id").split("_")[1]);
+
+      if($(`#iframeContent-${mapNumber}`).css("display") == "none")
+      {
+        $(`#iframeContent-${mapNumber}`).css("display", "inline");
+        $(`#iframeContent-${mapNumber}`).val(`<iframe id="histoatlas" title="Histo Atlas" width="600" height="400" src="${websiteUrl}/histoAtlas.html?mapId=${mapNumber}&edit=false&defaultFullScreen=true"> </iframe>`);
+      }
+      else
+      {
+        $(`#iframeContent-${mapNumber}`).css("display", "none");
+      }
+    });
   }
 
   /*

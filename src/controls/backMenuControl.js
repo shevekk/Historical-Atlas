@@ -26,6 +26,20 @@ var BackMenuControl = L.Control.extend({
     this.map = map;
 
     this._container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+
+    if(this.inIframe())
+    {
+      // Accès in main site button
+      this.buttonMain = L.DomUtil.create('a', 'back-menu-button', this._container);
+      this.buttonMain.title = "Voir sur le site (grand écran)";
+      this.buttonMain.innerHTML = "Site";
+      this.buttonMain.href = "";
+      this.buttonMain.target = "_blank";
+
+      L.DomEvent.addListener(this.buttonMain, 'dblclick', L.DomEvent.stop);
+      L.DomEvent.addListener(this.buttonMain, 'mousedown', L.DomEvent.stop);
+      L.DomEvent.addListener(this.buttonMain, 'mouseup', L.DomEvent.stop);
+    }
    
     // Menu button
     this.buttonMenu = L.DomUtil.create('a', 'back-menu-button', this._container);
@@ -53,5 +67,14 @@ var BackMenuControl = L.Control.extend({
     L.DomEvent.addListener(this.buttonHelp, 'mouseup', L.DomEvent.stop);
 
     return this._container;
+  },
+
+  inIframe : function() 
+  {
+    try {
+      return window.self !== window.top;
+    } catch (e) {
+      return true;
+    }
   }
 });

@@ -40,21 +40,7 @@ class ParentLayer
   {
     this.selectedZone.addContent(geom);
 
-    this.redraw();
-    /*
-    if(this.selectedZone)
-    {
-      this.selectedZone.addContent(geom);
-
-      this.redraw();
-    }
-    else
-    {
-      alert("Aucun calque selectionné");
-      this.paintParams.scrollDisable = false;
-    }
-    */
-    //return true;
+    this.redraw(true);
   }
 
   /*
@@ -74,8 +60,9 @@ class ParentLayer
   /*
    * Redraw the layer with geom
    */
-  redraw()
+  redraw(currentDrawing)
   {
+    let me = this;
     this.layer.remove();
 
     if(this.selectedZone != null && this.selectedZone.geom != null)
@@ -84,10 +71,27 @@ class ParentLayer
 
       if(this.selectedZone.popupContent)
       {
-        this.layer.bindPopup(this.selectedZone.popupContent);
+        this.layer.bindPopup(this.selectedZone.popupContent).on('click', function(e) { me.closePopUpOnClick(e); });
       }
 
-      this.label.redraw(this.layer, this.selectedZone.geom, this.selectedZone.number);
+      if(!currentDrawing)
+      {
+        this.label.redraw(this.layer, this.selectedZone.geom, this.selectedZone.number);
+      }
+    }
+  }
+
+  /*
+   * Close the popup on click
+   * @param {L.Event}               event                   Leaflet event of click
+   */
+  closePopUpOnClick(event)
+  {
+    if(this.paintParams.scrollDisable || this.paintParams.removalContent || this.paintParams.moveLabel || this.paintParams.moveMarker || this.paintParams.selectionState || this.paintParams.autoClosePopUp)
+    {
+      event.target.closePopup();
+
+      this.paintParams.autoClosePopUp = false;
     }
   }
 
@@ -130,6 +134,7 @@ class ParentLayer
   {
     let number = 1;
     let startDate = DateConverter.dateToNumber(this.params.timeMin, false, this.params);
+    let endDate = DateConverter.dateToNumber(this.params.timeMax, false, this.params);
     let geom = null;
     let popupContent = "";
     for(let i = 0; i < this.paintZones.length; i++)
@@ -140,7 +145,14 @@ class ParentLayer
       }
       if(this.paintZones[i].endDate >= startDate)
       {
-        startDate = this.paintZones[i].endDate;
+        if(this.paintZones[i].endDate < endDate)
+        {
+          startDate = this.paintZones[i].endDate + 1;
+        }
+        else
+        {
+          startDate = endDate;
+        }
       }
 
       if(this.paintZones[i].number == numberZoneToCopy)

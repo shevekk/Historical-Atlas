@@ -17,6 +17,7 @@ var LayersControl = L.Control.extend({
    * @property {Params}                     params                     The params
    * @property {TimeControl}                timeControl                The time controlleur
    * @property {L.DomUtil}                  _menu                      The menu containing the lines
+   * @property {L.DomUtil}                  imageHide                  The image dom for hide menu
    */
   initialize: function (options) 
   {
@@ -31,6 +32,8 @@ var LayersControl = L.Control.extend({
     this.timeControl = options.timeControl;
 
     this.actionsList = options.actionsList;
+
+    this.markersControl = new MarkersControl(this.params, this.paintParams, this.timeControl, this, this.actionsList);
 
     this._menu = null;
   },
@@ -47,11 +50,13 @@ var LayersControl = L.Control.extend({
 
     var div = L.DomUtil.create('div', 'layers-control');
 
+    this.div = div;
+
     let titleDiv = L.DomUtil.create('div', 'layers-list-title', div);
     let title = L.DomUtil.create('b', '', titleDiv);
     title.innerHTML = "Couches :";
-    imageHide = L.DomUtil.create('img', 'layers-list-icon-hide', titleDiv);
-    imageHide.src = "img/menu/minus-solid.svg";
+    this.imageHide = L.DomUtil.create('img', 'layers-list-icon-hide', titleDiv);
+    this.imageHide.src = "img/menu/minus-solid.svg";
 
     this._menu = L.DomUtil.create('div', '', div);
     this._menu.id = "layersList";
@@ -77,7 +82,7 @@ var LayersControl = L.Control.extend({
     // manage scroll
     L.DomEvent.addListener(div, 'mousewheel', function(e) { L.DomEvent.stopPropagation(e); } );
 
-    L.DomEvent.on(imageHide, 'click', function(e) { this.changeVisibilityState(imageHide);  } , this);
+    L.DomEvent.on(this.imageHide, 'click', function(e) { this.changeVisibilityState();  } , this);
 
     // Init dialog Update PopUp
     let dialogUpdatePopUp = $("#dialog-modify-popUp").dialog({
@@ -96,14 +101,17 @@ var LayersControl = L.Control.extend({
 
   /* 
    * Change the visibility state
-   * @param {L.DomUtil}        imageHide           The image dom
    */
-  changeVisibilityState(imageHide)
+  changeVisibilityState()
   {
     if(this._menu.style["display"] == "none")
     {
       this._menu.style["display"] = "inline-block";
-      imageHide.src = "img/menu/minus-solid.svg";
+      this.imageHide.src = "img/menu/minus-solid.svg";
+
+      this.markersControl.div.style["display"] = "inline";
+
+      this.div.style["background"] = "rgba(255, 255, 255, 1)";
 
       if(this.divAddParentLayer)
       {
@@ -113,7 +121,11 @@ var LayersControl = L.Control.extend({
     else
     {
       this._menu.style["display"] = "none";
-      imageHide.src = "img/menu/plus-solid.svg";
+      this.imageHide.src = "img/menu/plus-solid.svg";
+
+      this.markersControl.div.style["display"] = "none";
+
+      this.div.style["background"] = "rgba(255, 255, 255, 0.5)";
 
       if(this.divAddParentLayer)
       {
@@ -172,6 +184,9 @@ var LayersControl = L.Control.extend({
     }
 
     this._menu.style["display"] = "inline-block";
+
+    //markersControl = new MarkersControl(this._menu, layersManager);
+    this.markersControl.initContent(this.div, this.map, layersManager);
   },
 
   /*

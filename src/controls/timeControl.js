@@ -34,6 +34,14 @@ var TimeControl = L.Control.extend({
 
     this._container = L.DomUtil.create('div', 'time-control');
 
+    this.leftButton = L.DomUtil.create('img', 'timeControl-change-img', this._container);
+    this.leftButton.src = "img/menu/caret-left-solid.svg";
+    this.leftButton.title = "Déplacer vers l'événement précédent";
+
+    this.rightButton = L.DomUtil.create('img', 'timeControl-change-img', this._container);
+    this.rightButton.src = "img/menu/caret-right-solid.svg";
+    this.rightButton.title = "Déplacer vers l'événement suivant";
+
     this.title = L.DomUtil.create('p', 'time-slider-title', this._container);
     this.title.innerHTML = this.value;
 
@@ -43,14 +51,13 @@ var TimeControl = L.Control.extend({
     this.cursor.value = this.value;
     this.cursor.min = this.params.timeMin;
     this.cursor.max = this.params.timeMax;
-    this.cursor.title = this.cursor.value;    
 
-    //L.DomEvent.on(this.div, 'click', function(e) { this.paintParams.uiClick = true; }, this);
-    L.DomEvent.addListener(this._container, 'hover', function(e) { alert("hello") });
     L.DomEvent.addListener(this._container, 'dblclick', L.DomEvent.stop);
     L.DomEvent.addListener(this._container, 'mousedown', function(e) { L.DomEvent.stopPropagation(e); if(!me.paintParams.scrollDisable) { me.map.dragging.disable(); } });
     L.DomEvent.addListener(this._container, 'mouseup', function(e) { L.DomEvent.stopPropagation(e); if(!me.paintParams.scrollDisable) { me.map.dragging.enable(); } });
-    //L.DomEvent.addListener(this._container, 'mouseup', L.DomEvent.stop);
+
+    L.DomEvent.on(this.rightButton, 'click', function(e) { this.moveWithButton(true) }, this);
+    L.DomEvent.on(this.leftButton, 'click', function(e) { this.moveWithButton(false) }, this);
 
     L.DomEvent.on(this.cursor, 'input change', this.changeValue, this);
 
@@ -69,6 +76,151 @@ var TimeControl = L.Control.extend({
   },
 
   /*
+   * Change the value with move buttons
+   * @param {Boolean}               right                    True if move with the right button, false for left button
+   */
+  moveWithButton(right)
+  {
+    let targetValue = 0;
+
+    if(right)
+    {
+      targetValue = DateConverter.dateToNumber(this.params.timeMax, true, this.params);
+    }
+    else
+    {
+      targetValue = DateConverter.dateToNumber(this.params.timeMin, false, this.params);
+    }
+
+    // paintZones
+    for(let i = 0; i < this.layersManager.layerGroups.length; i++)
+    {
+      for(let j = 0; j < this.layersManager.layerGroups[i].paintZones.length; j++)
+      {
+        if(right)
+        {
+          let startDate = this.layersManager.layerGroups[i].paintZones[j].startDate;
+          if(startDate > this.value && startDate < targetValue)
+          {
+            targetValue = startDate;
+          }
+        }
+        else
+        {
+          let endDate = this.layersManager.layerGroups[i].paintZones[j].endDate;
+          if(endDate < this.value && endDate > targetValue)
+          {
+            targetValue = endDate;
+          }
+        }
+      }
+    }
+
+    // markers
+    for(let i = 0; i < this.layersManager.markers.length; i++)
+    {
+      if(right)
+      {
+        let startDate = this.layersManager.markers[i].startDate;
+        if(startDate > this.value && startDate < targetValue)
+        {
+          targetValue = startDate;
+        }
+      }
+      else
+      {
+        let endDate = this.layersManager.markers[i].endDate;
+        if(endDate < this.value && endDate > targetValue)
+        {
+          targetValue = endDate;
+        }
+      }
+    }
+
+    this.setValue(targetValue);
+  },
+
+  /*
+   * Disable the left button if not time to change
+   */
+  checkDisableLeftButton()
+  {
+    let targetValue = DateConverter.dateToNumber(this.params.timeMin, false, this.params);
+
+    for(let i = 0; i < this.layersManager.layerGroups.length; i++)
+    {
+      for(let j = 0; j < this.layersManager.layerGroups[i].paintZones.length; j++)
+      {
+        let endDate = this.layersManager.layerGroups[i].paintZones[j].endDate;
+        if(endDate < this.value && endDate > targetValue)
+        {
+          targetValue = endDate;
+        }
+      }
+    }
+
+    // markers
+    for(let i = 0; i < this.layersManager.markers.length; i++)
+    { 
+      let endDate = this.layersManager.markers[i].endDate;
+      if(endDate < this.value && endDate > targetValue)
+      {
+        targetValue = endDate;
+      }
+    }
+
+    if(targetValue == this.value)
+    {
+      L.DomUtil.addClass(this.leftButton, 'timeControl-change-img-disable');
+      
+    }
+    else
+    {
+      L.DomUtil.removeClass(this.leftButton, 'timeControl-change-img-disable');
+    }
+  },
+
+  /*
+   * Disable the right button if not time to change
+   */
+  checkDisableRightButton()
+  {
+    let targetValue = DateConverter.dateToNumber(this.params.timeMax, true, this.params);
+
+    for(let i = 0; i < this.layersManager.layerGroups.length; i++)
+    {
+      for(let j = 0; j < this.layersManager.layerGroups[i].paintZones.length; j++)
+      {
+        let startDate = this.layersManager.layerGroups[i].paintZones[j].startDate;
+        if(startDate > this.value && startDate < targetValue)
+        {
+          targetValue = startDate;
+        }
+      }
+    }
+
+    // markers
+    for(let i = 0; i < this.layersManager.markers.length; i++)
+    { 
+      let startDate = this.layersManager.markers[i].startDate;
+      if(startDate > this.value && startDate < targetValue)
+      {
+        targetValue = startDate;
+      }
+    }
+
+    if(targetValue == this.value)
+    {
+      L.DomUtil.addClass(this.rightButton, 'timeControl-change-img-disable');
+      
+    }
+    else
+    {
+      L.DomUtil.removeClass(this.rightButton, 'timeControl-change-img-disable');
+    }
+  },
+
+  /*
    * Set the value of the time control
    * @param {Number}               value                    The value
    */
@@ -81,8 +233,10 @@ var TimeControl = L.Control.extend({
     this.title.innerHTML = DateConverter.numberToDate(this.value, this.params);
 
     this.layersManager.changeTime(value);
-    //this.layersManager.layersControl.changeTime(value);
     this.layersManager.layersControl.changeSelectedZone();
+
+    this.checkDisableLeftButton();
+    this.checkDisableRightButton();
   },
 
   /*
@@ -100,14 +254,11 @@ var TimeControl = L.Control.extend({
 
       let value = min;
 
-
       this.value = value;
       this._container.style = "display : inline-block";
       this.cursor.min = min;
       this.cursor.max = max;
       this.cursor.value = value;
-      //this.cursor.title = this.cursor.value;
-      //this.title.innerHTML = this.cursor.value;
 
       this.setValue(value);
 

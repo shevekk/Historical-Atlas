@@ -1,4 +1,6 @@
 ﻿
+
+
 /* Icon action of maps actions (edit and view) */
 .icon-action
 {
@@ -109,4 +111,24 @@
   height: 22px;
   margin-top: 2px;
   margin-bottom: 2px;
+}
+
+/* iframe button for public map */
+.iframe-publicmap
+{
+  width: 25px;
+  vertical-align:middle;
+  margin-left: 5px;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+/* iframe button for user map */
+.iframe-usermap
+{
+  width: 25px;
+  vertical-align:middle;
+  margin-left: 5px;
+  cursor: pointer;
+  border-radius: 3px;
 }

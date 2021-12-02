@@ -29,6 +29,8 @@ var LayersManager = L.Class.extend({
     this.init();
 
     this.actionsControl = null;
+
+    this.markers = [];
   },
 
   /*
@@ -199,6 +201,12 @@ var LayersManager = L.Class.extend({
       content.layers.push(this.layerGroups[i].toJson());
     }
 
+    content.markers = [];
+    for(let i = 0; i < this.markers.length; i++)
+    {
+      content.markers.push(this.markers[i].toJson());
+    }
+
     return content;
   },
 
@@ -216,6 +224,15 @@ var LayersManager = L.Class.extend({
 
     this.selectedLayer = this.layerGroups[0];
 
+    if(contentObj["markers"])
+    {
+      for(let i = 0; i < contentObj["markers"].length; i++)
+      {
+        this.markers.push(new Marker(this.paintParams, i));
+        this.markers[i].fromJson(contentObj["markers"][i]);
+      }
+    }
+
     this.layersControl.updateLayersContent(this);
   },
 
@@ -230,6 +247,12 @@ var LayersManager = L.Class.extend({
     }
 
     this.layerGroups = [];
+
+    for(let i = 0; i < this.markers.length; i++)
+    {
+      this.markers[i].clear();
+    }
+    this.markers = [];
   },
 
   /*
@@ -265,6 +288,11 @@ var LayersManager = L.Class.extend({
     {
       this.layerGroups[i].changeZoneFromTime(timeValue);
     }
+
+    for(let i = 0; i < this.markers.length; i++)
+    {
+      this.markers[i].updateVisibilityFromTime(timeValue, this.map, this.params); 
+    }
   },
 
   /*
@@ -297,6 +325,11 @@ var LayersManager = L.Class.extend({
     {
       this.layerGroups[i].changeSelectZoneWithoutTime();
     }
+
+    for(let i = 0; i < this.markers.length; i++)
+    {
+      this.markers[i].draw(this.map);
+    }
   },
 
   /**
@@ -309,7 +342,7 @@ var LayersManager = L.Class.extend({
       this.selectedLayer.selectedZone.fillIn();
     }
 
-    this.selectedLayer.redraw();
+    this.selectedLayer.redraw(true);
   },
 
   /**
@@ -320,7 +353,7 @@ var LayersManager = L.Class.extend({
   {
     this.selectedLayer.selectedZone.simplify(tolerance);
 
-    this.selectedLayer.redraw();
+    this.selectedLayer.redraw(true);
   },
 
   /**
@@ -333,6 +366,11 @@ var LayersManager = L.Class.extend({
     for(let i = 0; i < this.layerGroups.length; i++)
     {
       this.layerGroups[i].updateTypeDate(oldTypeDate, newTypeDate);
+    }
+
+    for(let i = 0; i < this.markers.length; i++)
+    {
+      this.markers[i].updateTypeDate(oldTypeDate, newTypeDate);
     }
   }
 });

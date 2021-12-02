@@ -89,6 +89,18 @@ class Label
   }
 
   /*
+   * Hide the label
+   * @param {L.layerGroup}        layer                The parent drawing layer
+   */
+  hide(layer)
+  {
+    if(this.tooltip)
+    {
+      layer.removeLayer(this.tooltip);
+    }
+  }
+
+  /*
    * Export to json
    */
   toJson()

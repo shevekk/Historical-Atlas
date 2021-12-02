@@ -17,5 +17,10 @@
     "url" : "http://ows.mundialis.de/services/service?",
     "layers": "SRTM30-Colored-Hillshade",
     "attribution" : ""
+  },
+  "empty" : {
+    "name" : "Vide",
+    "type" : "empty",
+    "attribution" : ""
   }
 }

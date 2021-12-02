@@ -32,10 +32,15 @@ class Main
   {
     let me = this;
     let urlParams = me.getUrlParams();
+    let defaultFullScreen = false;
 
     if(urlParams["edit"] == "false")
     {
       me.params.editMode = false;
+    }
+    if(urlParams["defaultFullScreen"] == "true")
+    {
+      defaultFullScreen = true;
     }
 
     $.getJSON("config/backgounds.json", function(jsonBackgrounds) 
@@ -44,13 +49,18 @@ class Main
 
       me.map = L.map('map', {
         center: centerMap,
-        zoom : 6
+        zoom : 6,
+        fullscreenControl: !defaultFullScreen,
+        fullscreenControlOptions: {
+          position: 'topleft'
+        }
       });
 
       me.actionsList = new ActionList();
 
       me.backMenuControl = new BackMenuControl({params : me.params}).addTo(me.map);
       me.backgroundControl = new BackgroundControl({paintParams : me.paintParams, jsonBackgrounds : jsonBackgrounds}).addTo(me.map);
+      me.backgroundControl.updateList(me.params.backgrounds, jsonBackgrounds);
       me.backgroundControl.manageEvents()
       me.timeControl = new TimeControl({params : me.params, paintParams : me.paintParams}).addTo(me.map);
       me.layersControl = new LayersControl({paintParams : me.paintParams, params : me.params, timeControl : me.timeControl, actionsList : me.actionsList});
@@ -61,7 +71,7 @@ class Main
 
       me.layersManager = new LayersManager({params : me.params, paintParams : me.paintParams, cursorManager : me.cursorManager, map: me.map, layersControl :me.layersControl});
 
-      me.loadSaveManager = new LoadSaveManager(me.map, me.layersManager, me.params, me.backgroundControl, me.timeControl, me.layersControl, jsonBackgrounds);
+      me.loadSaveManager = new LoadSaveManager(me.map, me.layersManager, me.params, me.backgroundControl, me.timeControl, me.layersControl, me.actionsList, jsonBackgrounds);
 
       me.actionsControl = new ActionsControl({cursorManager : me.cursorManager, paintParams : me.paintParams, layersManager: me.layersManager, params : me.params, loadSaveManager : me.loadSaveManager, layersControl : me.layersControl, actionsList : me.actionsList}).addTo(me.map);
 
@@ -87,6 +97,8 @@ class Main
         {
           $("#loading").html("");
           $("#description-text").html(me.params.description);
+
+          me.manageControlFromWindowSize();
         });
       }
       else if(urlParams["mapId"])
@@ -95,16 +107,26 @@ class Main
         {
           $("#loading").html("");
           $("#description-text").html(me.params.description);
+
+          me.manageControlFromWindowSize();
         });
       }
       else
       {
         me.loadSaveManager.createEmptyMap();
-        $("#loading").html("")
+        $("#loading").html("");
+
+        me.manageControlFromWindowSize();
       }
 
       me.manageDescription();
       me.manageMapEvents();
+
+      // you can also toggle fullscreen from map object
+      if(defaultFullScreen)
+      {
+        me.toggleFullScreen();
+      }
     });
   }
 
@@ -121,6 +143,22 @@ class Main
       me.paintParams.mouseDown = true;
 
       me.actionsList.addActionPaint(me.layersManager);
+
+      /*
+      if(me.paintParams.moveLabel)
+      {
+        me.layersManager.moveLabel(e);
+        me.actionsControl.changeMoveLabelState();
+        me.map.dragging.enable();
+      }
+
+      else if(me.paintParams.moveMarker)
+      {
+        me.paintParams.moveMarker = false;
+        me.layersControl.markersControl.setPosition(e);
+        me.map.dragging.enable();
+      }
+      */
     });
     
     me.map.on('mouseup', function(e)
@@ -128,22 +166,38 @@ class Main
       me.paintParams.mouseDown = false;
 
       me.actionsList.checkActionPaint(me.layersManager);
+
+      
+      if(me.paintParams.moveLabel)
+      {
+        me.layersManager.moveLabel(e);
+        me.paintParams.autoClosePopUp = true;
+        me.actionsControl.changeMoveLabelState();
+        //me.map.dragging.enable();
+      }
+
+      else if(me.paintParams.moveMarker)
+      {
+        me.paintParams.moveMarker = false;
+        me.paintParams.autoClosePopUp = true;
+        me.layersControl.markersControl.setPosition(e);
+        me.map.dragging.enable();
+      }
+
+      else if(me.paintParams.selectionState)
+      {
+        me.actionsControl.manageSelection(e);
+      }      
     });
     
     me.map.on('click', function(e)
     {
       if(me.paintParams.uiClick == false)
       {
-        if(me.paintParams.moveLabel)
-        {
-          me.layersManager.moveLabel(e);
-          me.actionsControl.changeMoveLabelState();
-        }
-        else if(me.paintParams.selectionState)
-        {
-          me.actionsControl.manageSelection(e);
-        }
-        else
+        me.layersManager.layerGroups[0].layer.closePopup();
+
+        
+        if(!me.paintParams.selectionState)
         {
           if(me.paintParams.scrollDisable)
           {
@@ -155,6 +209,8 @@ class Main
       {
         me.paintParams.uiClick = false;
       }
+
+      me.paintParams.autoClosePopUp = false;
     });
     
     me.map.on('mousemove', function(e) 
@@ -237,5 +293,43 @@ class Main
         }
       });
     });
+  }
+
+  /**
+   * Manual toggle to the fullscreen mode
+   */
+  toggleFullScreen() 
+  {
+    var map = this.map;
+    map._exitFired = false;
+    if (map._isFullscreen) {
+      if (this._screenfull.isEnabled && !this.options.forcePseudoFullscreen) {
+        this._screenfull.exit();
+      } else {
+        leaflet.DomUtil.removeClass(this.options.fullscreenElement ? this.options.fullscreenElement : map._container, 'leaflet-pseudo-fullscreen');
+        map.invalidateSize();
+      }
+      map.fire('exitFullscreen');
+      map._exitFired = true;
+      map._isFullscreen = false;
+    }
+    else {
+      L.DomUtil.addClass(map._container, 'leaflet-pseudo-fullscreen');
+        map.invalidateSize();
+      map.fire('enterFullscreen');
+      map._isFullscreen = true;
+    }
+  }
+
+  /**
+   * If the size of screen is small, reduce ui size
+   */
+  manageControlFromWindowSize()
+  {
+    if($(window).width() < 800 || $(window).height() < 800)
+    {
+      this.layersControl.changeVisibilityState();
+      this.backgroundControl.changeVisibilityState();
+    }
   }
 }

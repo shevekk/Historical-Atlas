@@ -29,7 +29,7 @@ class Params
     this.defaultPosition = [46.7213889, 2.4011111];
 
     this.backgroundDefault = "openstreetmap";
-    this.backgrounds = [];
+    this.backgrounds = ["openstreetmap", "arcgis", "mundialis", "empty"];
 
     this.timeEnable = false;
     this.timeMin = 1900;

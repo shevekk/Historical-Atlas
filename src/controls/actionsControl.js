@@ -221,6 +221,12 @@ var ActionsControl = L.Control.extend({
     {
       this._changeSelectionState();
     }
+
+    // Redraw for display label
+    if(this.layersManager.selectedLayer)
+    {
+      this.layersManager.selectedLayer.redraw(false);
+    }
   },
 
   /*
@@ -250,6 +256,9 @@ var ActionsControl = L.Control.extend({
     this.buttons["back"].show();
     this.buttons["filling"].show();
     this.buttons["simplify"].show();
+
+    // Hide label
+    this.layersManager.selectedLayer.label.hide(this.layersManager.selectedLayer.layer);
 
     this.disableScroll();
     this.map.dragging.disable();
@@ -348,6 +357,9 @@ var ActionsControl = L.Control.extend({
     {
       this.buttons["move_label"].setSelectedState(false);
     }
+
+    this.map.dragging.disable();
+    //this.disableScroll();
   },
 
   /*

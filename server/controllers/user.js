@@ -35,7 +35,7 @@ exports.login = (req, res, next) =>
             // Update connexion date
             let sqlDateUpdate = `UPDATE users SET login_date = '${new Date().toISOString().slice(0, 19).replace("T", " ")}' WHERE name = "${req.body.name}"`;
 
-            console.log(sqlDateUpdate);
+            //console.log(sqlDateUpdate);
 
             db.query(sqlDateUpdate).then((result) => {
 
@@ -87,7 +87,7 @@ exports.registration = (req, res, next) =>
         }
         else
         {
-          let sql = `INSERT INTO users (name, password, mail, admin, lang, newsletter, registration_date) VALUES ('${req.body.name}', '${hash}', '${req.body.mail}', 0, 'fr', ${req.body.newsletter}, '${new Date().toISOString().slice(0, 19).replace('T', ' ')}')`;
+          let sql = `INSERT INTO users (name, password, mail, admin, lang, newsletter, registration_date, login_date) VALUES ('${req.body.name}', '${hash}', '${req.body.mail}', 0, 'fr', ${req.body.newsletter}, '${new Date().toISOString().slice(0, 19).replace('T', ' ')}', '${new Date().toISOString().slice(0, 19).replace('T', ' ')}')`;
 
           db.query(sql).then(result => {
 
@@ -271,55 +271,60 @@ exports.forgotPassword = (req, res, next) =>
   config.connectBDD().then((db) => {
 
     let generated_key = uuidv4();
-    let sqlInsert = `INSERT INTO password_reset (user_name, generated_key, date) VALUES ('${req.body.userName}', '${generated_key}', '${new Date().toISOString().slice(0, 19).replace('T', ' ')}')`;
 
-    db.query(sqlInsert).then(result => {
+    let sqlGetMail = `SELECT * FROM users WHERE name = "${req.body.userName}"`;
 
-      let sqlGetMail = `SELECT * FROM users WHERE name = "${req.body.userName}"`;
+    db.query(sqlGetMail).then(resultGetMail => {
 
-      db.query(sqlGetMail).then(resultGetMail => {
-
+      if(resultGetMail.length > 0)
+      {
         let targetMail = resultGetMail[0]['mail'];
 
-        db.end();
+        let sqlInsert = `INSERT INTO password_reset (user_name, generated_key, date) VALUES ('${req.body.userName}', '${generated_key}', '${new Date().toISOString().slice(0, 19).replace('T', ' ')}')`;
 
-        config.getMailInfos().then((mailInfos) => {
+        db.query(sqlInsert).then(result => {
 
-          let mailContent = `Bonjour \n\nPour réinitialiser votre mot de passe cliquez sur le lien : http://www.histoatlas.org/pages/resetPassword.html?token=${generated_key} \n\nVotre clé sera valide une journée`
+          db.end();
 
-          var transporter = nodemailer.createTransport({
-            host: mailInfos['host'],
-            port: mailInfos['port'],  //25,
-            auth: {
-              user: mailInfos['auth_user'],
-              pass: mailInfos['auth_pass'],
-            },
-            tls: {
-              rejectUnauthorized: false
-            },
-          });
-          var mailOptions = {
-            from: "histoatlas3@gmail.com", 
-            to: targetMail, 
-            subject: "[HistoAtlas] Changement de mot de passe", 
-            text: mailContent
-          };
+          config.getMailInfos().then((mailInfos) => {
 
-          transporter.sendMail(mailOptions, function(error, info){
-            if (error) {
-              res.status(500).send({ });
-            } else {
-              //console.log('Email sent: ' + info.response);
-              res.status(200).send({ });
-            }
-          });
-        }).catch(error => res.status(500).send({ }));
+            let mailContent = `Bonjour \n\nPour réinitialiser votre mot de passe cliquez sur le lien : http://www.histoatlas.org/pages/resetPassword.html?token=${generated_key} \n\nVotre clé sera valide une journée`
 
+            var transporter = nodemailer.createTransport({
+              host: mailInfos['host'],
+              port: mailInfos['port'],  //25,
+              auth: {
+                user: mailInfos['auth_user'],
+                pass: mailInfos['auth_pass'],
+              },
+              tls: {
+                rejectUnauthorized: false
+              },
+            });
+            var mailOptions = {
+              from: "histoatlas3@gmail.com", 
+              to: targetMail, 
+              subject: "[HistoAtlas] Changement de mot de passe", 
+              text: mailContent
+            };
 
-        res.status(200).send({});
-      });
+            transporter.sendMail(mailOptions, function(error, info){
+              if (error) {
+                res.status(500).send({ error : "Echec de l'envoit de l'email" });
+              } else {
+                //console.log('Email sent: ' + info.response);
+                res.status(200).send({ });
+              }
+            });
+          }).catch(error => res.status(500).send({ error : "Echec de la requête" }));
+        }).catch(error => { db.end(); res.status(500).send({ error : "Echec de la requête" }); });
+      }
+      else
+      {
+        res.status(500).send({ error : "L'utilisateur cible n'existe pas" });
+      }
 
-    }).catch(error => { db.end(); res.status(500).send({ }); });
+    }).catch(error => { db.end(); res.status(500).send({ error : "Echec de la requête" }); });
 
   }).catch(error => { res.status(500).json({ error }) });
 }

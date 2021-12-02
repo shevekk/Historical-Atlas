@@ -398,6 +398,8 @@ class ParentLayerDiv
    */
   unselect()
   {
+    this.parentLayer.redraw(false);
+    
     this.selected = false;
     this.parentLineDiv.style = "background-color : #ffffff";
     for(let i = 0; i < this.paintZoneDiv.length; i++)

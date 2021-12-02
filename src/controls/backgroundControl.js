@@ -13,12 +13,13 @@ var BackgroundControl = L.Control.extend({
   * @property {PaintParams}         paintParams             The paint params
   * @property {Object}              jsonBackgrounds         The json background
   * @property {String}              selectedBackground      The selected background key name
-   */
+  * @property {L.DomUtil}           imageHide               The image dom for hide menu
+  */
   initialize: function (options) 
   {
     this.paintParams = options.paintParams;
     this.jsonBackgrounds = options.jsonBackgrounds;
-    this.selectedBackground = "";
+    this.selectedBackground = "openstreetmap";
     this.selectedTile = null;
   },
 
@@ -31,18 +32,45 @@ var BackgroundControl = L.Control.extend({
     this.map = map;
 
     this.div = L.DomUtil.create('div', 'background-div');
-    this.div.innerHTML += '<div style="text-align:center;"><b>Fond de Plan :</b><div>';
 
-    this.div.innerHTML += '<input id="openstreetmap" type="radio" name="selectMapBackgoundType" class="selectMapBackgoundType" checked/><label for="openstreetmap">OpenStreetMap</label><br/>';
-    this.div.innerHTML += '<input id="arcgis" type="radio" name="selectMapBackgoundType" class="selectMapBackgoundType"/><label for="arcgis">ArcGIS</label><br/>';
-    this.div.innerHTML += '<input id="mundialis" type="radio" name="selectMapBackgoundType" class="selectMapBackgoundType"/><label for="mundialis">Mundialis</label><br/>';
+    let titleDiv = L.DomUtil.create('div', 'layers-list-title', this.div);
+    let title = L.DomUtil.create('b', '', titleDiv);
+    title.innerHTML = "Fonds de Plan :";
+    this.imageHide = L.DomUtil.create('img', 'layers-list-icon-hide', titleDiv);
+    this.imageHide.src = "img/menu/minus-solid.svg";
+
+    this.contentDiv = L.DomUtil.create('div', '', this.div);
     
     L.DomEvent.on(this.div, 'click', function(e) { this.paintParams.uiClick = true; }, this);
     L.DomEvent.addListener(this.div, 'dblclick', L.DomEvent.stop);
     L.DomEvent.addListener(this.div, 'mousedown', L.DomEvent.stop);
     L.DomEvent.addListener(this.div, 'mouseup', L.DomEvent.stop);
 
+    L.DomEvent.on(this.imageHide, 'click', function(e) { this.changeVisibilityState();  } , this);
+
     return this.div;
+  },
+
+  /* 
+   * Change the visibility state
+   * @param {L.DomUtil}        imageHide           The image dom
+   */
+  changeVisibilityState()
+  {
+    if(this.contentDiv.style["display"] == "none")
+    {
+      this.contentDiv.style["display"] = "inline-block";
+      this.imageHide.src = "img/menu/minus-solid.svg";
+
+      this.div.style["background"] = "rgba(255, 255, 255, 0.8)";
+    }
+    else
+    {
+      this.contentDiv.style["display"] = "none";
+      this.imageHide.src = "img/menu/plus-solid.svg";
+
+      this.div.style["background"] = "rgba(255, 255, 255, 0.5)";
+    }
   },
 
   /*
@@ -52,7 +80,8 @@ var BackgroundControl = L.Control.extend({
    */
   updateList(backgrounds, jsonBackgrounds)
   {
-    this.div.innerHTML = '<div style="text-align:center;"><b>Fond de Plan :</b><div>';
+    //this.contentDiv.innerHTML = '<div style="text-align:center;"><b>Fond de Plan :</b><img class="layers-list-icon-hide" src="img/menu/minus-solid.svg" /><div>';
+    this.contentDiv.innerHTML = '';
     for(let i = 0; i < backgrounds.length; i++)
     {
       let id = backgrounds[i];
@@ -60,11 +89,11 @@ var BackgroundControl = L.Control.extend({
 
       if(this.selectedBackground == id)
       {
-        this.div.innerHTML += `<input id="${id}" type="radio" name="selectMapBackgoundType" class="selectMapBackgoundType" checked="checked"/><label for="${id}">${name}</label><br/>`;
+        this.contentDiv.innerHTML += `<input id="${id}" type="radio" name="selectMapBackgoundType" class="selectMapBackgoundType" checked="checked"/><label for="${id}">${name}</label><br/>`;
       }
       else
       {
-        this.div.innerHTML += `<input id="${id}" type="radio" name="selectMapBackgoundType" class="selectMapBackgoundType"/><label for="${id}">${name}</label><br/>`;
+        this.contentDiv.innerHTML += `<input id="${id}" type="radio" name="selectMapBackgoundType" class="selectMapBackgoundType"/><label for="${id}">${name}</label><br/>`;
       }
     }
 
@@ -114,6 +143,10 @@ var BackgroundControl = L.Control.extend({
         attribution: this.jsonBackgrounds[id].attribution,
         noWrap: true
       }).addTo(this.map);
+    }
+    else if(this.jsonBackgrounds[id].type == "empty")
+    {
+
     }
   }
 });

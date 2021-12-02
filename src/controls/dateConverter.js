@@ -174,6 +174,80 @@ class DateConverter
       return true;
     }
   }
+
+  /**
+   * Update date values for change date type
+   * @param {String}               oldTypeDate                   The old date type
+   * @param {String}               newTypeDate                   The new date type
+   */
+  static updateTypeDate(oldDate, oldTypeDate, newTypeDate, endDate)
+  {
+    let newDate = null;
+
+    if(oldTypeDate == "days" && newTypeDate == "months")
+    {
+      let year = Math.floor(oldDate / 366);
+      let dateObject = new Date(year, 0, 1);
+      dateObject.setDate(1 + oldDate % 366);
+      newDate = startYear * 12 + dateObject.getMonth();
+    }
+    else if(oldTypeDate == "days" && newTypeDate == "years")
+    {
+      newDate = Math.floor(oldDate/ 366);
+    }
+    else if(oldTypeDate == "months" && newTypeDate == "days")
+    {
+      if(!endDate)
+      {
+        let startYear = Math.floor(oldDate / 12);
+        let startDateObject = new Date(startYear, oldDate % 12, 1);
+        newDate = startYear * 366 + (startDateObject.getDOY() - 1);
+      }
+      else
+      {
+        let endYear = Math.floor(oldDate / 12);
+        let endDateObject = new Date(endYear, (oldDate % 12) + 1, 0);
+        newDate = endYear * 366 + (endDateObject.getDOY() - 1);
+      }
+    }
+    else if(oldTypeDate == "months" && newTypeDate == "years")
+    {
+      newDate = Math.floor(oldDate / 12);
+    }
+    else if(oldTypeDate == "years" && newTypeDate == "days")
+    {
+      if(!endDate)
+      {
+        newDate = oldDate * 366;
+      }
+      else
+      {
+        let endDateObject = new Date();
+        endDateObject.setFullYear(oldDate);
+        if(endDateObject.isLeapYear())
+        {
+          newDate = oldDate * 366 + 365;
+        }
+        else
+        {
+          newDate = oldDate * 366 + 364;
+        }
+      }
+    }
+    else if(oldTypeDate == "years" && newTypeDate == "months")
+    {
+      if(!endDate)
+      {
+        newDate = oldDate * 12;
+      }
+      else
+      {
+        newDate = oldDate * 12 + 11;
+      }
+    }
+
+    return newDate;
+  }
 }
 
 Date.prototype.isLeapYear = function() {

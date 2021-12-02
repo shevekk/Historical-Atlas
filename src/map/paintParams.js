@@ -11,7 +11,9 @@
  * @property {Boolean}           uiClick                  UI click state (Click in a control button)
  * @property {Boolean}           selectionState           The selection state (action selection label enable)
  * @property {Boolean}           moveLabel                The move label state (action move label enable)
+ * @property {Boolean}           moveMarker               The move marker state (action move marker enable)
  * @property {Boolean}           mouseDown                State of mouse clic (true is down)
+ * @property {Boolean}           autoClosePopUp           Action of autoclose popup on clic
  */
 class PaintParams
 {
@@ -28,7 +30,9 @@ class PaintParams
     this.uiClick = false;
     this.selectionState = false;
     this.moveLabel = false;
+    this.moveMarker = false;
 
     this.mouseDown = false;
+    this.autoClosePopUp = false;
   }
 }

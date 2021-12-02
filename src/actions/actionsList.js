@@ -169,6 +169,34 @@ class ActionList
     this.actionsControl.buttons["redo"].setActiveState(false);
   }
 
+  /**
+   * add an action of add, delete and remove a marker
+   * @param {String}                    type                          The action type (add, delete, edit)
+   * @param {Marker}                    marker                        The marker object
+   * @param {LayersManager}             layersManager                 The layer manager
+   * @param {LayersControl}             layersControl                 The layer control
+   * @param {TimeControl}               timeControl                   The time control
+   * @param {L.Map}                     map                           The map
+   * @param {Params}                    params                        The params
+   */
+  addActionMarker(type, marker, layersManager, layersControl, timeControl, map, params)
+  {
+    this.actions.push(new ActionMarker(type, marker, layersManager, layersControl, timeControl, map, params));
+
+    this.addAction();
+  }
+
+  /**
+   * add an action of load a histoatlas json file
+   * @param {LoadSaveManager}               loadSaveManager                   The save and load manager
+   */
+  addActionLoadJson(loadSaveManager)
+  {
+    this.actions.push(new ActionLoadJson(loadSaveManager));
+
+    this.addAction();
+  }
+
   /*
    * Undo last actions
    */

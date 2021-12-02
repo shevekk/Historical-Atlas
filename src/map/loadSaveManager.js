@@ -14,9 +14,10 @@ class LoadSaveManager
    * @property {LayersControl}              layersControl            The layers control
    * @property {Object}                     jsonBackgrounds          The json background
    * @property {Boolean}                    logged                   The logged state 
+   actionsList
    * @property {ActionsControl}             actionsControl           The action control
    */
-  constructor(map, layersManager, params, backgroundControl, timeControl, layersControl, jsonBackgrounds)
+  constructor(map, layersManager, params, backgroundControl, timeControl, layersControl, actionsList, jsonBackgrounds)
   {
     this.map = map;
     this.layersManager = layersManager;
@@ -26,6 +27,7 @@ class LoadSaveManager
     this.backgroundControl = backgroundControl;
     this.jsonBackgrounds = jsonBackgrounds;
     this.timeControl = timeControl;
+    this.actionsList = actionsList;
 
     if(localStorage.getItem('session-id-histoatlas'))
     {
@@ -65,7 +67,7 @@ class LoadSaveManager
   * Load a json file
   */
   importManagement()
-   {
+  {
     let me = this;
 
     var fileInput = document.getElementById("inputImportFile"),
@@ -74,6 +76,8 @@ class LoadSaveManager
       reader.fileName = document.querySelector('input[type=file]').files[0];
       reader.onload = function (readerEvt) 
       {
+        me.actionsList.addActionLoadJson(me);
+
         var isJsonFile = reader.fileName.name.endsWith(".json");
         
         if(isJsonFile)

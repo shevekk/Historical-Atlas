@@ -37,7 +37,7 @@ class PaintZone
       }
       catch (error) {
         console.error(error);
-        alert("geométrie non valide");
+        //alert("geométrie non valide");
       }
     }
     else
@@ -138,57 +138,7 @@ class PaintZone
    */
   updateTypeDate(oldTypeDate, newTypeDate)
   {
-    if(oldTypeDate == "days" && newTypeDate == "months")
-    {
-      let startYear = Math.floor(this.startDate / 366);
-      let startDateObject = new Date(startYear, 0, 1);
-      startDateObject.setDate(1 + this.startDate % 366);
-      this.startDate = startYear * 12 + startDateObject.getMonth();
-
-      let endYear = Math.floor(this.endDate / 366);
-      let endDateObject = new Date(endYear, 0, 1);
-      endDateObject.setDate(1 + this.endDate % 366);
-      this.endDate = endYear * 12 + endDateObject.getMonth();
-    }
-    else if(oldTypeDate == "days" && newTypeDate == "years")
-    {
-      this.startDate = Math.floor(this.startDate / 366);
-      this.endDate = Math.floor(this.endDate / 366);
-    }
-    else if(oldTypeDate == "months" && newTypeDate == "days")
-    {
-      let startYear = Math.floor(this.startDate / 12);
-      let startDateObject = new Date(startYear, this.startDate % 12, 1);
-      this.startDate = startYear * 366 + (startDateObject.getDOY() - 1);
-
-      let endYear = Math.floor(this.endDate / 12);
-      let endDateObject = new Date(endYear, (this.endDate % 12) + 1, 0);
-      this.endDate = endYear * 366 + (endDateObject.getDOY() - 1);
-    }
-    else if(oldTypeDate == "months" && newTypeDate == "years")
-    {
-      this.startDate = Math.floor(this.startDate / 12);
-      this.endDate = Math.floor(this.endDate / 12);
-    }
-    else if(oldTypeDate == "years" && newTypeDate == "days")
-    {
-      this.startDate = this.startDate * 366;
-
-      let endDateObject = new Date();
-      endDateObject.setFullYear(this.endDate);
-      if(endDateObject.isLeapYear())
-      {
-        this.endDate = this.endDate * 366 + 365;
-      }
-      else
-      {
-        this.endDate = this.endDate * 366 + 364;
-      }
-    }
-    else if(oldTypeDate == "years" && newTypeDate == "months")
-    {
-      this.startDate = this.startDate * 12;
-      this.endDate = this.endDate * 12 + 11;
-    }
+    this.startDate = DateConverter.updateTypeDate(this.startDate, oldTypeDate, newTypeDate, false);
+    this.endDate = DateConverter.updateTypeDate(this.endDate, oldTypeDate, newTypeDate, true);
   }
 }
