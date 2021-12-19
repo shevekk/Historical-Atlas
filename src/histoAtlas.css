@@ -504,6 +504,44 @@
   padding-right: 5px;
 }
 
+/* Div change language */
+.div-change-lang
+{
+  background-color: white;
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: 1px solid #aaaaaa;
+}
+
+/* Bouton change language */
+.change-lang-left
+{
+  width:10px;
+  float: left;
+  margin-left: 0px;
+  margin-top: 5px;
+  vertical-align: middle;
+}
+
+.change-lang-left:hover
+{
+  background-color: #cccccc;
+}
+
+.change-lang-right
+{
+  width:10px;
+  float: right;
+  margin-right: 0px;
+  margin-top: 5px;
+}
+
+.change-lang-right:hover
+{
+  background-color: #cccccc;
+}
+
+
 /* */
 #description
 {
@@ -529,9 +567,22 @@
   padding-top: 3px;
   height: 20px;
   user-select: none;
+  display: block;
 }
 
 .layers-marker-line:hover
+{
+  
+}
+
+.layers-marker-select
+{
+  width: 270px;
+  max-height: 20px;
+  display: inline-block;
+}
+
+.layers-marker-select:hover
 {
   background-color: #cccccc;
 }

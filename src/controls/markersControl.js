@@ -47,7 +47,7 @@ class MarkersControl
       "crown" : "img/markers/crown-solid.svg",
       "marker" : "img/markers/map-marker-solid.svg",
       "scroll" : "img/markers/scroll-unfurled.svg",
-      "siege" : "img/markers/siege-tower.svg",
+      "siege" : "img/markers/siege-tower.png",
       "skull" : "img/markers/skull-crossbones-solid.svg",
       "users" : "img/markers/users-solid.svg"
     }
@@ -68,13 +68,13 @@ class MarkersControl
       }
     }
 
-    content += `<br/><br/><label for="dialog-marker-label">Label : </label><input id="dialog-marker-label" type="text" style="width: 250px;"><br/><br/>
-                    <div id="dialog-marker-start-div"><label for="dialog-marker-start">Date de début : </label><input id="dialog-marker-start" type="text" style="width: 200px;"><br/><br/></div>
-                    <div id="dialog-marker-end-div"><label for="dialog-marker-end">Date de fin : </label><input id="dialog-marker-end" type="text" style="width: 200px;"><br/><br/></div>
-                    <label for="dialog-marker-position-lng">Position : </label><input id="dialog-marker-position-lng" type="text" style="width: 90px;"><input id="dialog-marker-position-lat" type="text" style="width: 90px;margin-left: 3px;"><img id="dialog-marker-position-select" src="img/menu/bullseye-solid.svg"><br/><br/>
-                    <label for="dialog-marker-color">Couleur : </label><input id="dialog-marker-color" type="color"><br/><br/>
-                    <label for="dialog-marker-size">Taille : </label><input id="dialog-marker-size" type="number" value="30" style="width: 90px;"><br/><br/>
-                    <label for="dialog-marker-popup">Pop-up : </label><textarea id="dialog-marker-popup" name="dialog-marker-popup" style="width: 300px;height : 80px;"></textarea>`;
+    content += `<br/><br/><label for="dialog-marker-label">${Dictionary.get("MAP_MARKERS_LABEL")}</label><input id="dialog-marker-label" type="text" style="width: 250px;"><br/><br/>
+                    <div id="dialog-marker-start-div"><label for="dialog-marker-start">${Dictionary.get("MAP_MARKERS_START_DATE")}</label><input id="dialog-marker-start" type="text" style="width: 200px;"><br/><br/></div>
+                    <div id="dialog-marker-end-div"><label for="dialog-marker-end">${Dictionary.get("MAP_MARKERS_END_DATE")}</label><input id="dialog-marker-end" type="text" style="width: 200px;"><br/><br/></div>
+                    <label for="dialog-marker-position-lng">${Dictionary.get("MAP_MARKERS_POSITION")}</label><input id="dialog-marker-position-lng" type="text" style="width: 90px;"><input id="dialog-marker-position-lat" type="text" style="width: 90px;margin-left: 3px;"><img id="dialog-marker-position-select" src="img/menu/bullseye-solid.svg"><br/><br/>
+                    <label for="dialog-marker-color">${Dictionary.get("MAP_MARKERS_COLOR")}</label><input id="dialog-marker-color" type="color"><br/><br/>
+                    <label for="dialog-marker-size">${Dictionary.get("MAP_MARKERS_SIZE")}</label><input id="dialog-marker-size" type="number" value="30" style="width: 90px;"><br/><br/>
+                    <label for="dialog-marker-popup">${Dictionary.get("MAP_MARKERS_POPUP")}</label><br/><textarea id="dialog-marker-popup" name="dialog-marker-popup" style="width: 450px;height : 80px;"></textarea>`;
 
     $("#dialog-marker").html(content);
 
@@ -126,8 +126,8 @@ class MarkersControl
     this.div = L.DomUtil.create('div', '', div)
 
     this.titleDiv = L.DomUtil.create('div', 'layers-list-title', this.div);
-    let title = L.DomUtil.create('b', '', this.titleDiv);
-    title.innerHTML = "Marqueurs :";
+    this.title = L.DomUtil.create('b', '', this.titleDiv);
+    this.title.innerHTML = Dictionary.get("MAP_MARKERS_TITLE");
 
     this.contentDiv = L.DomUtil.create('div', '', this.div);
 
@@ -136,13 +136,29 @@ class MarkersControl
       this.divAddMarker = L.DomUtil.create('div', 'layers-list-line-add-parent-layer', this.div);
       this.divAddMarker.style = `border: 2px solid black`;
 
-      let nameCmp = L.DomUtil.create('p', 'layers-list-text', this.divAddMarker);
-      nameCmp.innerHTML = "Ajout d'une marqueur";
+      this.nameAddCmp = L.DomUtil.create('p', 'layers-list-text', this.divAddMarker);
+      this.nameAddCmp.innerHTML = Dictionary.get("MAP_MARKERS_ADD");
 
       L.DomEvent.on(this.divAddMarker, 'click', function(e) { this.addMarker() } , this);
     }
 
     this.updateContent();
+  }
+
+  /*
+   * Redraw for lang change
+   */
+  redraw()
+  {
+    this.initForm();
+    this.updateContent();
+
+    this.title.innerHTML = Dictionary.get("MAP_MARKERS_TITLE");
+
+    if(this.params.editMode)
+    {
+      this.nameAddCmp.innerHTML = Dictionary.get("MAP_MARKERS_ADD");
+    }
   }
 
   /**
@@ -160,22 +176,35 @@ class MarkersControl
     for(let i = 0; i < this.layersManager.markers.length; i++)
     {
       let lineDiv = L.DomUtil.create('div', 'layers-marker-line', this.contentDiv);
-      lineDiv.innerHTML = this.layersManager.markers[i].label;
+      //lineDiv.innerHTML = this.layersManager.markers[i].label;
 
-      let imageIcon = L.DomUtil.create('img', '', lineDiv);
+      let selectDiv = L.DomUtil.create('div', 'layers-marker-select', lineDiv);
+      //selectDiv.innerHTML = this.layersManager.markers[i].label;
+
+      let imageIcon = L.DomUtil.create('img', '', selectDiv);
       imageIcon.src = this.layersManager.markers[i].img;
       imageIcon.style = `width:16px;margin-right:2px;float:left;${this.layersManager.markers[i].icon.options.filter}`;
 
+      let nameCmp = L.DomUtil.create('p', 'layers-list-text', selectDiv);
+      if(this.layersManager.markers[i].label.length > 35)
+      {
+        nameCmp.innerHTML = this.layersManager.markers[i].label.slice(0,33) + "...";
+      }
+      else
+      {
+        nameCmp.innerHTML = this.layersManager.markers[i].label;
+      }
+      
       if(this.params.editMode)
       {
         let imageEdit = L.DomUtil.create('img', 'layers-list-zone-icon', lineDiv);
         imageEdit.src = "img/menu/edit-solid.svg";
-        imageEdit.title = "Editer le marqueur";
+        imageEdit.title = Dictionary.get("MAP_MARKERS_EDIT");
         L.DomEvent.on(imageEdit, 'click', function(e) { this.editMarker(this.layersManager.markers[i]); } , this);
 
         let imageDelete = L.DomUtil.create('img', 'layers-list-zone-icon', lineDiv);
         imageDelete.src = "img/menu/trash-solid.svg";
-        imageDelete.title = "Supprimer le marqueur";
+        imageDelete.title = Dictionary.get("MAP_MARKER_DELETE");
         L.DomEvent.on(imageDelete, 'click', function(e) { this.deleteMarker(i); } , this);
       }
 
@@ -196,7 +225,7 @@ class MarkersControl
    */
   deleteMarker(indexToDelete)
   {
-    if(confirm(`Etes-vous sur de vouloir supprimer la marqueur "${this.layersManager.markers[indexToDelete].label}" `))
+    if(confirm(`${Dictionary.get("MAP_MARKER_DELETE_VALIDATION")} "${this.layersManager.markers[indexToDelete].label}" `))
     {
       this.actionsList.addActionMarker("delete", this.layersManager.markers[indexToDelete], this.layersManager, this.layersControl, this.timeControl, this.map, this.params);
 
@@ -215,7 +244,7 @@ class MarkersControl
   {
     let me = this;
 
-    $("#dialog-marker").prop("title", "Ajout d'un Marqueur");
+    $("#dialog-marker").prop("title", Dictionary.get("MAP_MARKERS_ADD_WINDOW_TITLE"));
 
     $("#dialog-marker-label").val("");
     $("#dialog-marker-start").val("");
@@ -309,7 +338,7 @@ class MarkersControl
     }
     else
     {
-      alert("Votre marqueur doit obligatoirement posséder un label");
+      alert(Dictionary.get("MAP_MARKER_LABEL_REQUIRED"));
     }
   }
 
@@ -343,12 +372,12 @@ class MarkersControl
     {
       if(isEndDate)
       {
-        alert("La date de fin n'est pas valide");
+        alert(Dictionary.get("MAP_MARKER_END_DATE_INVALID"));
         date = DateConverter.dateToNumber(this.params.timeMax, isEndDate, this.params);
       }
       else
       {
-        alert("La date de début n'est pas valide")
+        alert(Dictionary.get("MAP_MARKER_START_DATE_INVALID"))
         date = DateConverter.dateToNumber(this.params.timeMin, isEndDate, this.params);
       }
     }
@@ -364,7 +393,7 @@ class MarkersControl
   {
     let me = this;
 
-    $("#dialog-marker").prop("title", "Ajout d'un Marqueur");
+    $("#dialog-marker").prop("title", Dictionary.get("MAP_MARKERS_EDIT_WINDOW_TITLE"));
 
     $("#dialog-marker-label").val(marker.label);
     $("#dialog-marker-start").val(DateConverter.numberToDate(marker.startDate, this.params));
@@ -443,7 +472,7 @@ class MarkersControl
     }
     else
     {
-      alert("Votre marqueur doit obligatoirement posséder un label");
+      alert(Dictionary.get("MAP_MARKER_LABEL_REQUIRED"));
     }
   }
 

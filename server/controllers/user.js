@@ -29,7 +29,7 @@ exports.login = (req, res, next) =>
         bcrypt.compare(req.body.password, userPassword)
           .then(valid => {
             if (!valid) {
-              return res.status(401).json({ error: 'Utilisateur ou Mot de passe incorrect !' });
+              return res.status(401).json({ error: 'SERVER_USER_OR_PASS_INVALID' });
             }
 
             // Update connexion date
@@ -50,14 +50,14 @@ exports.login = (req, res, next) =>
                     { expiresIn: '24h' }
                   )
                 });
-              }).catch(error => res.status(500).json({ error : "Echec de lecture de la configuration du server" }));
+              }).catch(error => res.status(500).json({ error : "SERVER_READ_CONFIG_FAIL" }));
 
-            }).catch(error => res.status(500).json({ error : 'Impossible de mettre à jour la base de donnée' }));
+            }).catch(error => res.status(500).json({ error : 'SERVER_DATABASE_UPDATE_FAIL' }));
           }).catch(error => res.status(500).json({ error }));
       }
       else
       {
-        return res.status(401).json({ error: 'Utilisateur ou Mot de passe incorrect !' });
+        return res.status(401).json({ error: 'SERVER_USER_OR_PASS_INVALID' });
       }
     }).catch(error => { res.status(500).json({ error }) });
   });
@@ -83,12 +83,12 @@ exports.registration = (req, res, next) =>
 
         if(result.length > 0)
         {
-          return res.status(500).json({ error: "Le nom d'utiliseur choisie est déja utilisé" })
+          return res.status(500).json({ error: "SERVER_USER_NAME_NOT_AVAILABLE" })
         }
         else
         {
-          let sql = `INSERT INTO users (name, password, mail, admin, lang, newsletter, registration_date, login_date) VALUES ('${req.body.name}', '${hash}', '${req.body.mail}', 0, 'fr', ${req.body.newsletter}, '${new Date().toISOString().slice(0, 19).replace('T', ' ')}', '${new Date().toISOString().slice(0, 19).replace('T', ' ')}')`;
-
+          let sql = `INSERT INTO users (name, password, mail, admin, lang, newsletter, registration_date, login_date) VALUES ('${req.body.name}', '${hash}', '${req.body.mail}', 0, '${req.body.lang}', ${req.body.newsletter}, '${new Date().toISOString().slice(0, 19).replace('T', ' ')}', '${new Date().toISOString().slice(0, 19).replace('T', ' ')}')`;
+          // connection.escape(${req.body.name})
           db.query(sql).then(result => {
 
             db.end();
@@ -102,10 +102,10 @@ exports.registration = (req, res, next) =>
                   { expiresIn: '24h' }
                 )
               });
-            }).catch(error => res.status(500).json({ error : "Echec de lecture de la configuration du server" }));
-          }).catch(error => { db.end(); res.status(500).json({ error: 'Echec de la requête de la création' }) });
+            }).catch(error => res.status(500).json({ error : "SERVER_READ_CONFIG_FAIL" }));
+          }).catch(error => { db.end(); res.status(500).json({ error: 'SERVER_QUERY_CREATION_FAIL' }) });
         }
-      }).catch(error => { db.end(); res.status(500).send({ error: 'Echec de la requête' }) });
+      }).catch(error => { db.end(); res.status(500).send({ error: 'SERVER_QUERY_FAIL' }) });
     }).catch(error => { res.status(500).json({ error }) });
   });
 }
@@ -288,7 +288,7 @@ exports.forgotPassword = (req, res, next) =>
 
           config.getMailInfos().then((mailInfos) => {
 
-            let mailContent = `Bonjour \n\nPour réinitialiser votre mot de passe cliquez sur le lien : http://www.histoatlas.org/pages/resetPassword.html?token=${generated_key} \n\nVotre clé sera valide une journée`
+            let mailContent = `${req.body.messagePart1} : http://www.histoatlas.org/pages/resetPassword.html?token=${generated_key} \n\n${req.body.messagePart2}`
 
             var transporter = nodemailer.createTransport({
               host: mailInfos['host'],
@@ -304,27 +304,27 @@ exports.forgotPassword = (req, res, next) =>
             var mailOptions = {
               from: "histoatlas3@gmail.com", 
               to: targetMail, 
-              subject: "[HistoAtlas] Changement de mot de passe", 
+              subject: req.body.messageTitle, 
               text: mailContent
             };
 
             transporter.sendMail(mailOptions, function(error, info){
               if (error) {
-                res.status(500).send({ error : "Echec de l'envoit de l'email" });
+                res.status(500).send({ error : "SERVER_MAIL_SEND_FAIL" });
               } else {
                 //console.log('Email sent: ' + info.response);
                 res.status(200).send({ });
               }
             });
-          }).catch(error => res.status(500).send({ error : "Echec de la requête" }));
-        }).catch(error => { db.end(); res.status(500).send({ error : "Echec de la requête" }); });
+          }).catch(error => res.status(500).send({ error : "SERVER_QUERY_FAIL" }));
+        }).catch(error => { db.end(); res.status(500).send({ error : "SERVER_QUERY_FAIL" }); });
       }
       else
       {
-        res.status(500).send({ error : "L'utilisateur cible n'existe pas" });
+        res.status(500).send({ error : "SERVER_USER_NOT_EXIST" });
       }
 
-    }).catch(error => { db.end(); res.status(500).send({ error : "Echec de la requête" }); });
+    }).catch(error => { db.end(); res.status(500).send({ error : "SERVER_QUERY_FAIL" }); });
 
   }).catch(error => { res.status(500).json({ error }) });
 }
@@ -377,7 +377,7 @@ exports.resetPassword = (req, res, next) =>
 
         res.status(200).send({});
 
-        }).catch(error => { db.end(); res.status(500).send({ error : "Echec de la requête" }); });
+        }).catch(error => { db.end(); res.status(500).send({ error : "SERVER_QUERY_FAIL" }); });
       }).catch(error => { db.end(); res.status(500).json({ error }) });
     })
     .catch((error) => { db.end(); res.status(500).send({ error : error }) });
@@ -409,7 +409,7 @@ exports.resetPasswordCheckVality = (db, token) =>
 
         if(diffDays > 1)
         {
-          reject("Votre clé à expirée");
+          reject("SERVER_KEY_EXPIRED");
         }
         else
         {
@@ -418,9 +418,9 @@ exports.resetPasswordCheckVality = (db, token) =>
       }
       else
       {
-        reject("Votre clé n'est pas valide");
+        reject("SERVER_KEY_INVALID");
       }
-    }).catch(error => { reject("Votre clé n'est pas valide"); });
+    }).catch(error => { reject("SERVER_KEY_INVALID"); });
   });
 }
 
@@ -489,6 +489,6 @@ exports.changeNewsletterState = (req, res, next) =>
 
       res.status(200).send({});
 
-    }).catch(error => { db.end(); res.status(500).send({ error : "Echec de la requête" }); });
-  }).catch(error => { res.status(500).send({ error : "Echec de la connexion" }); });
+    }).catch(error => { db.end(); res.status(500).send({ error : "SERVER_QUERY_FAIL" }); });
+  }).catch(error => { res.status(500).send({ error : "SERVER_QUERY_FAIL" }); });
 }

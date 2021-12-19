@@ -3,64 +3,79 @@
   <head>
     <title>Histo Atlas</title>
     <link rel="icon" type="image/png" href="img/icon.png" />
-    <link rel="stylesheet" href="index.css?v=7" />
+    <link rel="stylesheet" href="index.css?v=7.5" />
   </head>
   <body>
 
   <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
 
-  <div id="connexion-registration-div">
-    <div id="connexion-div"><button id="connexion-button" class="button-loggin">Connexion</button></div><br/>
-    <a href="pages/registration.html"><button class="button-loggin">Inscription</button></a>
+  <div id="index-page-content">
+
+    <div id="connexion-registration-div">
+      <div id="connexion-div"><button id="connexion-button" class="button-loggin">Connexion</button></div><br/>
+      <a href="pages/registration.html"><button id="registration-button" class="button-loggin">Inscription</button></a>
+    </div>
+
+    <div id="menu"></div><br/><br/>
+
+    <h2 id="index-title">Histo Atlas</h2>
+
+    <p id="description">Histo Atlas est un logiciel libre et gratuit permettant de dessiner et de visualiser des cartes historiques avec la visualisation d’évolution dans le temps de frontières, zones culturelles ou autres.<br/>
+    Le logiciel permet de dessiner des zones, d'ajouter des labels, de choisir un fond de plan, de définir des zones de temps.<br/>
+    Vous pouvez vous inscrire pour pouvoir sauvegarder vos propres carte et les partager en ligne.</p>
+
+    <img id="index-img-desc" src="img/captures/map_rome.png" />
+    <br/><br/>
+    <!-- <a href="histoAtlas.html"><button id="create_empty_map">Créer une nouvelle carte</button></a> -->
+    <a id="create-empty-map-link" href="histoAtlas.html"><img src="img/menu/plus-solid.svg" class="icon-menu" /> <text id="create_empty_map">Créer une nouvelle carte</text></a>
+
+    <!-- Display user maps -->
+    <div id="user-maps-div">
+      <h4 id="user-maps-title">Vos Cartes :</h4>
+      <div id="user-maps"></div>
+    </div>
+
+    <!-- Display user maps -->
+    <div id="public-maps-div">
+      <h4 id="public-maps-title">Cartes publiques :</h4>
+      <div id="public-maps"></div>
+    </div>
+
+    <!--
+    <br/><br/>
+    <a href="files/HistoAtlas_Help.pdf"><button>Accéder au menu d'aide</button></a>
+    -->
+    <br/><br/>
+
+    <div id="index-links">
+      
+      <a id="help-menu-link" href="files/HistoAtlas_Help.pdf"><img src="img/menu/question-circle-solid.svg" class="icon-menu" /> <text id="help-menu-link-text">Menu aide.</text></a><br/>
+
+      <a href="https://www.youtube.com/channel/UCVuK-EYlX5qDi8KaOtUQ8JQ"><img src="img/menu/youtube-brands.svg" class="icon-menu" /> <text id="video-link-text">Vidéos tutoriel.</text></a><br/>
+
+      <a id="version-link" href="pages/version7.html"><img src="img/menu/calendar-alt-solid.svg" class="icon-menu" /> <text id="version-link-text">Version actuelle : V7.</text></a><br/>
+      
+      <a href="pages/contact.html"><img src="img/menu/envelope-solid.svg" class="icon-menu" /> <text id="contact-link-text">Contactez-moi pour remonter un bug, une suggestion, un avis ou si vous avez besoin d'aide.</text></a><br/>
+
+      <a href="pages/support.html"><img src="img/menu/hands-helping-solid.svg" class="icon-menu" /> <text id="support-link-text">Soutenir le projet.</text></a><br/>
+
+      <a href="https://github.com/shevekk/Historical-Atlas"><img src="img/menu/git-hub.png" class="icon-menu"  /> <text id="source-code-link-text">Dépôt du code source</text></a><br/>
+
+      <a href="https://twitter.com/HistoAtlas"><img src="img/menu/twitter.png" class="icon-menu" /><text id="twitter-link-text">Twitter</text></a>
+
+      <p><a id="creator-link" href="http://dataexplorer.hd.free.fr/Presentation/index.html"><text id="creator-link-text">Crée par Maxence MARTIN</text></a></p>
+
+    </div>
+
   </div>
 
-  <h3>Histo Atlas</h3>
-
-  <p>Histo Atlas est un logiciel libre et gratuit permettant de dessiner et de visualiser des cartes historiques avec la visualisation d’évolution dans le temps de frontières, zones culturelles ou autres.<br/>
-  Le logiciel permet de dessiner des zones, d'ajouter des labels, de choisir un fond de plan, de définir des zones de temps.<br/>
-  Vous pouvez vous inscrire pour pouvoir sauvegarder vos propres carte et les partager en ligne.</p>
-
-  <img src="img/captures/map_rome.png" />
-  <br/><br/>
-  <a href="histoAtlas.html"><button id="create_empty_map">Créer une nouvelle carte</button></a>
+  <script type="text/javascript" src="config/config.js?v=7.5"></script>
+  <script type="text/javascript" src="data/mapData.js?v=7.5"></script>
+  <script type="text/javascript" src="dictionary/dictionary.js?v=7.5"></script>
+  <script type="text/javascript" src="pages/menu.js?v=7.5"></script>
   
-  <!-- Display disponible maps -->
-  <h4>Cartes d'exemple :</h4>
-  <div id="maps"></div>
-
-  <!-- Display user maps -->
-  <h4>Vos Cartes :</h4>
-  <div id="user-maps"></div>
-
-  <!-- Display user maps -->
-  <h4>Cartes publiques :</h4>
-  <div id="public-maps"></div>
-
-  <!--
-  <br/><br/>
-  <a href="files/HistoAtlas_Help.pdf"><button>Accéder au menu d'aide</button></a>
-  -->
-  <br/><br/>
-
-  <a href="files/HistoAtlas_Help.pdf"><img src="img/menu/question-circle-solid.svg" class="icon-menu" /> Menu aide.</a><br/>
-
-  <a href="https://www.youtube.com/channel/UCVuK-EYlX5qDi8KaOtUQ8JQ"><img src="img/menu/youtube-brands.svg" class="icon-menu" /> Vidéos tutoriel.</a><br/>
-
-  <a href="pages/version7.html"><img src="img/menu/calendar-alt-solid.svg" class="icon-menu" /> Version actuelle : V7.</a><br/>
+  <script type="text/javascript" src="index.js?v=7.5"></script>
   
-  <a href="pages/contact.html"><img src="img/menu/envelope-solid.svg" class="icon-menu" /> Contactez-moi pour remonter un bug, une suggestion, un avis ou si vous avez besoin d'aide.</a><br/>
-
-  <a href="pages/support.html"><img src="img/menu/hands-helping-solid.svg" class="icon-menu" /> Soutenir le projet.</a><br/>
-
-  <a href="https://github.com/shevekk/Historical-Atlas"><img src="img/menu/git-hub.png" class="icon-menu"  /> Dépôt du code source</a><br/>
-
-  <a href="https://twitter.com/HistoAtlas"><img src="img/menu/twitter.png" class="icon-menu" />Twitter</a>
-
-  <p><a href="http://dataexplorer.hd.free.fr/Presentation/index.html">Crée par Maxence MARTIN</a></p>
-
-  <script type="text/javascript" src="config/config.js?v=7"></script>
-  <script type="text/javascript" src="index.js?v=7"></script>
-  <script type="text/javascript" src="data/mapData.js?v=7"></script>
 
   </body>
 </html>

@@ -36,11 +36,19 @@ var TimeControl = L.Control.extend({
 
     this.leftButton = L.DomUtil.create('img', 'timeControl-change-img', this._container);
     this.leftButton.src = "img/menu/caret-left-solid.svg";
-    this.leftButton.title = "Déplacer vers l'événement précédent";
+    this.leftButton.title = Dictionary.get("MAP_TIME_LAST");
+
+    L.DomEvent.addListener(this.leftButton, 'dblclick', L.DomEvent.stop);
+    L.DomEvent.addListener(this.leftButton, 'mousedown', L.DomEvent.stop);
+    L.DomEvent.addListener(this.leftButton, 'mouseup', L.DomEvent.stop);
 
     this.rightButton = L.DomUtil.create('img', 'timeControl-change-img', this._container);
     this.rightButton.src = "img/menu/caret-right-solid.svg";
-    this.rightButton.title = "Déplacer vers l'événement suivant";
+    this.rightButton.title = Dictionary.get("MAP_TIME_NEXT");
+
+    L.DomEvent.addListener(this.rightButton, 'dblclick', L.DomEvent.stop);
+    L.DomEvent.addListener(this.rightButton, 'mousedown', L.DomEvent.stop);
+    L.DomEvent.addListener(this.rightButton, 'mouseup', L.DomEvent.stop);
 
     this.title = L.DomUtil.create('p', 'time-slider-title', this._container);
     this.title.innerHTML = this.value;
@@ -52,16 +60,27 @@ var TimeControl = L.Control.extend({
     this.cursor.min = this.params.timeMin;
     this.cursor.max = this.params.timeMax;
 
+    L.DomEvent.addListener(this.cursor, 'click', function(e) { this.paintParams.uiClick = true; }, this);
+
     L.DomEvent.addListener(this._container, 'dblclick', L.DomEvent.stop);
     L.DomEvent.addListener(this._container, 'mousedown', function(e) { L.DomEvent.stopPropagation(e); if(!me.paintParams.scrollDisable) { me.map.dragging.disable(); } });
     L.DomEvent.addListener(this._container, 'mouseup', function(e) { L.DomEvent.stopPropagation(e); if(!me.paintParams.scrollDisable) { me.map.dragging.enable(); } });
 
-    L.DomEvent.on(this.rightButton, 'click', function(e) { this.moveWithButton(true) }, this);
-    L.DomEvent.on(this.leftButton, 'click', function(e) { this.moveWithButton(false) }, this);
+    L.DomEvent.on(this.rightButton, 'click', function(e) { this.moveWithButton(true); this.paintParams.uiClick = true; }, this);
+    L.DomEvent.on(this.leftButton, 'click', function(e) { this.moveWithButton(false); this.paintParams.uiClick = true; }, this);
 
     L.DomEvent.on(this.cursor, 'input change', this.changeValue, this);
 
     return this._container;
+  },
+
+  /*
+   * Redraw for lang change
+   */
+  redraw()
+  {
+    this.leftButton.title = Dictionary.get("MAP_TIME_LAST");
+    this.rightButton.title = Dictionary.get("MAP_TIME_NEXT");
   },
 
   /*

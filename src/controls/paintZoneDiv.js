@@ -53,7 +53,7 @@ class PaintZoneDiv
       {
         imageDelete = L.DomUtil.create('img', 'layers-list-zone-icon', this.div);
         imageDelete.src = "img/menu/trash-solid.svg";
-        imageDelete.title = "Supprimer la sous-couche";
+        imageDelete.title = Dictionary.get("MAP_LAYERS_ZONE_DELETE");
 
         L.DomEvent.on(imageDelete, 'click', function(e) { this.delete(namePaintZone); } , this);
       }
@@ -61,12 +61,12 @@ class PaintZoneDiv
       // Change PopUp text
       let imagePopUp = L.DomUtil.create('img', 'layers-list-zone-icon', this.div);
       imagePopUp.src = "img/menu/comment-alt-solid.svg";
-      imagePopUp.title = "Ajout d'un popUp";
+      imagePopUp.title = Dictionary.get("MAP_LAYERS_ZONE_POPUP");
 
       // Edit
       let imageEdit = L.DomUtil.create('img', 'layers-list-zone-icon', this.div);
       imageEdit.src = "img/menu/edit-solid.svg";
-      imageEdit.title = "Editer les dates";
+      imageEdit.title = Dictionary.get("MAP_LAYERS_ZONE_EDIT");
       
       L.DomEvent.on(imageEdit, 'click', function(e) { this.editValue(selectDiv, imageEdit, imageDelete, imagePopUp); } , this);
       L.DomEvent.on(imagePopUp, 'click', function(e) { this.modifyPopUp(); } , this);
@@ -89,6 +89,7 @@ class PaintZoneDiv
       height: 400,
       width: 500,
       modal: true,
+      title: Dictionary.get("MAP_LAYERS_POPUP_WINDOW_TITLE"),
       buttons: {
         Cancel: function() {
           dialogUpdatePopUp.dialog( "close" );
@@ -146,7 +147,7 @@ class PaintZoneDiv
 
 
     let btnOk = L.DomUtil.create('button', '', this.div);
-    btnOk.innerHTML = "OK";
+    btnOk.innerHTML = Dictionary.get("MAP_LAYERS_OK");
 
     L.DomEvent.on(btnOk, 'click', function(e) { this.savValue(inputStart, label, inputEnd, btnOk); } , this);
   }
@@ -174,7 +175,7 @@ class PaintZoneDiv
     }
     else
     {
-      alert("Dates invalides");
+      alert(Dictionary.get("MAP_LAYERS_ZONE_DATES_INVALID"));
     }
 
     this.redraw();
@@ -185,7 +186,7 @@ class PaintZoneDiv
    */
   delete(namePaintZone)
   {
-    if(confirm(`Etes-vous sur de vouloir supprimer la sous-couche "${this.parentLayer.label.value}"-"${namePaintZone.innerHTML}" `))
+    if(confirm(`${Dictionary.get("MAP_LAYERS_ZONE_DELETE_VALIDATION")} "${this.parentLayer.label.value}"-"${namePaintZone.innerHTML}" `))
     {
       this.layersControl.actionsList.addActionDeleteZone(this.paintZone, this.parentLayer, this.parentLayerDiv, this.layersManager);
 

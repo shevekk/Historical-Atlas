@@ -6,14 +6,60 @@
   </head>
   <body>
 
-  <link rel="stylesheet" href="../index.css" />
+  <link rel="stylesheet" href="../index.css?v=7.5" />
 
-  <p><a href="../index.html">Retour au menu</a></p>
+  <script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
 
-  <h3>Soutenir le projet</h3>
+  <div id="index-page-content">
 
-  <p>Pour soutenir le projet vous pouvez le partager le projet, contribuer à son code source, créer vos cartes et les partagées.</p>
-  <p>Si vous souhaitez soutenir financièrement le projet, <a href="contact.html">contacter moi</a></p>
+    <div id="menu"></div>
+
+    <p><a href="../index.html" id="link-back-menu">Retour au menu</a></p>
+
+    <h3 id="support-title">Soutenir le projet</h3>
+
+    <p id="support-line1">Pour soutenir le projet vous pouvez le partager le projet, contribuer à son code source, créer vos cartes et les partagées.</p>
+    <p id="support-line2">Si vous souhaitez soutenir financièrement le projet, <a href="contact.html">contacter moi</a></p>
+  </div>
+
+  <script type="text/javascript" src="../config/config.js?v=7.5"></script>
+  <script type="text/javascript" src="../dictionary/dictionary.js?v=7.5"></script>
+  <script type="text/javascript" src="menu.js?v=7.5"></script>
+
+  <script>
+
+    // If HTTPS -> reload to http
+    if(window.location.protocol == "https:")
+    {
+        location.href = "http://" + window.location.host + window.location.pathname + window.location.search
+    }
+    
+    let lang = "en";
+
+    if(Config.getCookie("lang"))
+    {
+      lang = Config.getCookie("lang");
+    }
+    
+    let params = Config.getUrlParams();
+    if(params["lang"])
+    {
+      lang = params["lang"];
+    }
+
+    Dictionary.load(lang, "../", function()
+    {
+      Menu.init(lang);
+
+      $("#link-back-menu").html(Dictionary.get('BACK_MENU'));
+      $("#support-title").html(Dictionary.get('SUPPORT_TITLE'));
+      $("#support-line1").html(Dictionary.get('SUPPORT_LINE1'));
+      $("#support-line2").html(Dictionary.get('SUPPORT_LINE2'));
+
+      document.title = "Histo Atlas - " + Dictionary.get('SUPPORT_TITLE');
+    });
+
+  </script>
 
   </body>
 </html>

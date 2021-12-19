@@ -34,8 +34,8 @@ var BackgroundControl = L.Control.extend({
     this.div = L.DomUtil.create('div', 'background-div');
 
     let titleDiv = L.DomUtil.create('div', 'layers-list-title', this.div);
-    let title = L.DomUtil.create('b', '', titleDiv);
-    title.innerHTML = "Fonds de Plan :";
+    this.title = L.DomUtil.create('b', '', titleDiv);
+    this.title.innerHTML = Dictionary.get("MAP_BACKGROUND_TITLE");
     this.imageHide = L.DomUtil.create('img', 'layers-list-icon-hide', titleDiv);
     this.imageHide.src = "img/menu/minus-solid.svg";
 
@@ -49,6 +49,14 @@ var BackgroundControl = L.Control.extend({
     L.DomEvent.on(this.imageHide, 'click', function(e) { this.changeVisibilityState();  } , this);
 
     return this.div;
+  },
+
+  /*
+   * Redraw for lang change
+   */
+  redraw()
+  {
+    this.title.innerHTML = Dictionary.get("MAP_BACKGROUND_TITLE");
   },
 
   /* 
@@ -126,7 +134,7 @@ var BackgroundControl = L.Control.extend({
     if(this.selectedTile)
     {
       //this.selectedTile.removeTo(this.map);
-      this.map.removeLayer(this.selectedTile)
+      this.map.removeLayer(this.selectedTile);
     }
 
     if(this.jsonBackgrounds[id].type == "tile")

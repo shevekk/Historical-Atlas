@@ -53,8 +53,8 @@ var LayersControl = L.Control.extend({
     this.div = div;
 
     let titleDiv = L.DomUtil.create('div', 'layers-list-title', div);
-    let title = L.DomUtil.create('b', '', titleDiv);
-    title.innerHTML = "Couches :";
+    this.title = L.DomUtil.create('b', '', titleDiv);
+    this.title.innerHTML = Dictionary.get("MAP_LAYERS_TITLE");
     this.imageHide = L.DomUtil.create('img', 'layers-list-icon-hide', titleDiv);
     this.imageHide.src = "img/menu/minus-solid.svg";
 
@@ -69,8 +69,8 @@ var LayersControl = L.Control.extend({
       let colorDiv = L.DomUtil.create('div', 'layers-list-color', this.divAddParentLayer);
       colorDiv.style = `background-color:#cccccc; border: 2px solid black`;
 
-      let nameCmp = L.DomUtil.create('p', 'layers-list-text', this.divAddParentLayer);
-      nameCmp.innerHTML = "Ajout d'une couche";
+      this.nameAddCmp = L.DomUtil.create('p', 'layers-list-text', this.divAddParentLayer);
+      this.nameAddCmp.innerHTML = Dictionary.get("MAP_LAYERS_ADD_LAYER");
 
       L.DomEvent.on(this.divAddParentLayer, 'click', function(e) { this.addParentLayer() } , this);
     }
@@ -278,5 +278,24 @@ var LayersControl = L.Control.extend({
       this.actionsControl.updateParamsFromLayerOptions(this.layersManager.selectedLayer.polygonOptions);
 
       this.actionsList.addActionAddLayer(this.layersManager.selectedLayer, this, this.layersManager);
+    },
+
+    /*
+     * Redraw for lang change
+     */
+    redraw()
+    {
+      for(let i = 0; i < this.parentsLayersDiv.length; i++)
+      {
+        this.parentsLayersDiv[i].redraw();
+      }
+
+      if(this.params.editMode)
+      {
+        this.nameAddCmp.innerHTML = Dictionary.get("MAP_LAYERS_ADD_LAYER");
+      }
+      this.title.innerHTML = Dictionary.get("MAP_LAYERS_TITLE");
+
+      this.markersControl.redraw();
     }
 });

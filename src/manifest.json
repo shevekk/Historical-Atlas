@@ -1,0 +1,6 @@
+{
+	"permissions": [
+	  "*://histoatlas.org/*",
+	  "cookies"
+	]
+}

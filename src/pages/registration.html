@@ -8,96 +8,151 @@
 
   <script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
 
-  <link rel="stylesheet" href="../index.css" />
+  <link rel="stylesheet" href="../index.css?v=7.5" />
 
-  <p><a href="../index.html">Retour au menu</a></p>
+  <div id="index-page-content">
 
-  <h3>Inscription</h3>
-  <p>L'inscription est neccésaire pour sauvegarder vos cartes en ligne, mais pour consulter les cartes elle n'est pas nécessaire.</p>
-  <label for="name">Nom d'utilisateur : </label><input id="name" type="text"></input><br/><br/>
-  <label for="password">Mot de passe : </label><input id="password" type="password"></input><br/><br/>
-  <label for="confirm-password">Confirmer le mot de passe : </label><input id="confirm-password" type="password"></input><br/><br/>
-  <label for="mail">Mail : </label><input id="mail" type="text"></input><br/><br/>
-  <input type="checkbox" id="newsletter" name="newsletter"><label for="newsletter">Inscription à la newsletter</label><br/><br/>
-  <button id="registrationButton">Inscription</button>
+    <div id="menu"></div>
 
-  <script type="text/javascript" src="../config/config.js"></script>
+    <p><a href="../index.html" id="link-back-menu">Retour au menu</a></p>
+
+    <h3 id="registration-title">Inscription</h3>
+    <p id="registration-description">L'inscription est neccésaire pour sauvegarder vos cartes en ligne, mais pour consulter les cartes elle n'est pas nécessaire.</p>
+    <label for="name" id="registration-name-label">Nom d'utilisateur : </label><input id="name" type="text"></input><br/><br/>
+    <label for="password" id="registration-password-label">Mot de passe : </label><input id="password" type="password"></input><br/><br/>
+    <label for="confirm-password" id="registration-confirm-password-label">Confirmer le mot de passe : </label><input id="confirm-password" type="password"></input><br/><br/>
+    <label for="mail" id="registration-mail-label">Mail : </label><input id="mail" type="text"></input><br/>
+    <p id="language-choise-text">Langue : </p><input type="radio" id="lang-en" name="lang" value="en"><label for="lang-en">EN</label><input type="radio" id="lang-fr" name="lang" value="fr"><label for="lang-fr">FR</label><br/><br/>
+    <input type="checkbox" id="newsletter" name="newsletter"><label for="newsletter" id="registration-newsletter-label">Inscription à la newsletter</label><br/><br/>
+    
+    <button id="registration-button">Inscription</button>
+
+  </div>
+
+  <script type="text/javascript" src="../config/config.js?v=7.5"></script>
+  <script type="text/javascript" src="../dictionary/dictionary.js?v=7.5"></script>
+  <script type="text/javascript" src="menu.js?v=7.5"></script>
 
   <script>
 
+    // If HTTPS -> reload to http
+    if(window.location.protocol == "https:")
+    {
+        location.href = "http://" + window.location.host + window.location.pathname + window.location.search
+    }
+
+    let lang = "en";
+
+    if(Config.getCookie("lang"))
+    {
+      lang = Config.getCookie("lang");
+    }
+    
+    let params = Config.getUrlParams();
+    if(params["lang"])
+    {
+      lang = params["lang"];
+    }
+
+    $('#lang-' + lang).prop("checked", true);
+
     Config.load(true).then((config) =>
     {
-      function validateEmail(email) 
+      Dictionary.load(lang, "../", function()
       {
-        const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(email);
-      }
-
-      function validateName(name)
-      {
-        var usernameRegex = /^[a-zA-Z0-9]+$/;
-        return usernameRegex.test(name);
-      }
-
-
-      $("#registrationButton").click(function() 
-      {
-        let name = $("#name").val();
-        let password = $("#password").val();
-        let confirmPassword = $("#confirm-password").val();
-        let mail = $("#mail").val();
-        let newsletter = $("#newsletter")[0].checked;
-
-        if(name.length == 0)
+        Menu.init(lang);
+        
+        function validateEmail(email) 
         {
-          alert("Inscription impossible : nom d'utilisateur vide");
+          const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+          return re.test(email);
         }
-        else if(!validateName(name))
-        {
-          alert("Inscription impossible : nom d'utilisateur invalide doit contenir uniquement des lettre et des chiffres");
-        }
-        else if(password.length == 0)
-        {
-          alert("Inscription impossible : mot de passe vide");
-        }
-        else if(mail.length == 0)
-        {
-          alert("Inscription impossible : mail vide");
-        }
-        else if(!validateEmail(mail))
-        {
-          alert("Inscription impossible : adresse mail invalide");
-        }
-        else if(confirmPassword != password)
-        {
-          alert("Les deux mots de passe entrés ne sont pas identiques");
-        }
-        else
-        {
-          // Call registration API
-          let urlServer = config.serverUrl + "/api/user/registration";
 
-          $.ajax({
-            url: urlServer,
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({name : name, password : password, mail : mail, newsletter : newsletter}),
-            success: (response) => {
+        function validateName(name)
+        {
+          var usernameRegex = /^[a-zA-Z0-9]+$/;
+          return usernameRegex.test(name);
+        }
 
-              localStorage.setItem('session-token-histoatlas', response.token);
-              localStorage.setItem('session-id-histoatlas', response.userId);
 
-              window.location.href = "../index.html";
-            },
-            error: (err) => {
-              alert("Inscription impossible : " + err.responseJSON.error);
-              //reject(err);
+        $("#registration-button").click(function() 
+        {
+          let selectLang = "";
+          $('input[name="lang"]').each(function() {
+            if(this.checked)
+            {
+              selectLang = this.value;
             }
           });
-        }
+
+          let name = $("#name").val();
+          let password = $("#password").val();
+          let confirmPassword = $("#confirm-password").val();
+          let mail = $("#mail").val();
+          let newsletter = $("#newsletter")[0].checked;
+
+          if(name.length == 0)
+          {
+            alert(Dictionary.get('REGISTRATION_UNABLE_EMPTY_USERNAME'));
+          }
+          else if(!validateName(name))
+          {
+            alert(Dictionary.get('REGISTRATION_UNABLE_USERNAME_INVALID'));
+          }
+          else if(password.length == 0)
+          {
+            alert(Dictionary.get('REGISTRATION_UNABLE_EMPTY_PASSWORD'));
+          }
+          else if(mail.length == 0)
+          {
+            alert(Dictionary.get('REGISTRATION_UNABLE_EMPTY_MAIL'));
+          }
+          else if(!validateEmail(mail))
+          {
+            alert(Dictionary.get('REGISTRATION_UNABLE_MAIL_INVALID'));
+          }
+          else if(confirmPassword != password)
+          {
+            alert(Dictionary.get('REGISTRATION_UNABLE_PASSWORDS_NO_IDENTICAL'));
+          }
+          else
+          {
+            // Call registration API
+            let urlServer = config.serverUrl + "/api/user/registration";
+
+            $.ajax({
+              url: urlServer,
+              method: "POST",
+              contentType: "application/json",
+              data: JSON.stringify({name : name, password : password, mail : mail, newsletter : newsletter, lang : selectLang}),
+              success: (response) => {
+
+                localStorage.setItem('session-token-histoatlas', response.token);
+                localStorage.setItem('session-id-histoatlas', response.userId);
+
+                window.location.href = "../index.html";
+              },
+              error: (err) => {
+                alert(Dictionary.get('REGISTRATION_FAIL') + Dictionary.get(err.responseJSON.error));
+                //reject(err);
+              }
+            });
+          }
+        });
+
+        $("#link-back-menu").html(Dictionary.get('BACK_MENU'));
+
+        $("#registration-title").html(Dictionary.get('REGISTRATION_TITLE'));
+        $("#registration-description").html(Dictionary.get('REGISTRATION_DESCRIPTION'));
+        $("#registration-name-label").html(Dictionary.get('REGISTRATION_NAME_LABEL'));
+        $("#registration-password-label").html(Dictionary.get('REGISTRATION_PASSWORD_LABEL'));
+        $("#registration-confirm-password-label").html(Dictionary.get('REGISTRATION_COMFIRM_PASSWORD_LABEL'));
+        $("#registration-mail-label").html(Dictionary.get('REGISTRATION_MAIL_LABEL'));
+        $("#registration-newsletter-label").html(Dictionary.get('REGISTRATION_NEWSLETTER_LABEL'));
+        $("#registration-button").html(Dictionary.get('REGISTRATION_SAVE_BUTTON'));
+        $("#language-choise-text").html(Dictionary.get("MAP_DESC_LANG_CHOISE"));
 
       });
-
     });
 
   </script>

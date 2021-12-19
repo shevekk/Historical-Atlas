@@ -92,12 +92,12 @@ class LoadSaveManager
           }
           else
           {
-            alert("Le fichier est invalide");
+            alert(Dictionary.get("MAP_SAVEANDLOAD_IMPORTFILE_INVALID"));
           }
         }
         else
         {
-          alert('Le fichier importer doit être de type JSON');
+          alert(Dictionary.get("MAP_SAVEANDLOAD_IMPORTFILE_FORMAT"));
         }
       };
       // start reading the file. When it is done, calls the onload event defined above.
@@ -136,7 +136,7 @@ class LoadSaveManager
         }
         catch (error) 
         {
-          alert("Le fichier carte cible est invalide");
+          alert(Dictionary.get("MAP_SAVEANDLOAD_LOADFILE_INVALID"));
           console.log( "Load map fail" );
 
           me.layersManager.init();
@@ -147,12 +147,12 @@ class LoadSaveManager
       }
       else
       {
-        alert("Le fichier est invalide");
+        alert(Dictionary.get("MAP_SAVEANDLOAD_LOADFILE_INVALID"));
       }
     })
     .fail(function() 
     {
-      alert("Le fichier carte cible est inexistant ou invalide");
+      alert(Dictionary.get("MAP_SAVEANDLOAD_LOADFILE_INVALID_OR_NOTEXIST"));
       console.log( "Load map fail" );
 
       me.createEmptyMap();
@@ -217,14 +217,14 @@ class LoadSaveManager
   {
     if(name.length == 0)
     {
-      alert("Sauvegarde Impossible : Le nom de fichier est vide");
+      alert(Dictionary.get("MAP_SAVEANDLOAD_SAVE_FILENAME_EMPTY"));
       return;
     }
 
     var nameRegex = /^[a-zA-Z0-9\s]+$/;
     if(!nameRegex.test(name))
     {
-      alert("Sauvegarde Impossible : Le nom de fichier n'est pas valide, il doit contenir uniquement des chiffres, des lettres et des espaces");
+      alert(Dictionary.get("MAP_SAVEANDLOAD_SAVE_FILENAME_INVALID"));
       return;
     }
     let fileName = name.replaceAll(" ", "_");
@@ -235,23 +235,31 @@ class LoadSaveManager
 
     this.callServer("map/checkIfFileExist", "POST", {name : name, user : localStorage.getItem('session-id-histoatlas')}).then((result) => {
 
-      $("#loading").html("Sauvegarde en cours, cela peut prendre une minute");
+      $("#loading").html(Dictionary.get("MAP_SAVEANDLOAD_SAVE_IN_PROGRESS"));
       this.actionsControl.buttons["save"].hide();
 
-      if(!result.exist || confirm("Le fichier existe déja, voulez vous l'écraser"))
+      if(!result.exist || confirm(Dictionary.get("MAP_SAVEANDLOAD_FILE_ALREADY_EXIST")))
       {
-        let contentSave = {name : name, fileName : fileName, content : JSON.stringify(content), exist : result.exist, user : localStorage.getItem('session-id-histoatlas')};
+        let mapLang = "";
+        $('input[name="map-lang"]').each(function() {
+          if(this.checked)
+          {
+            mapLang = this.value;
+          }
+        });
+
+        let contentSave = {name : name, fileName : fileName, content : JSON.stringify(content), exist : result.exist, user : localStorage.getItem('session-id-histoatlas'), lang : mapLang};
         
         this.callServer("map/save", "POST", contentSave).then((result) => {
 
           $("#loading").html("");
           this.actionsControl.buttons["save"].show();
-          alert("Sauvegarde Terminé");
+          alert(Dictionary.get("MAP_SAVEANDLOAD_SAVE_END"));
 
-        }).catch((err) => { alert("Sauvegarde Impossible : " + err.responseJSON.error); });
+        }).catch((err) => { alert(Dictionary.get("MAP_SAVEANDLOAD_SAVE_IMPOSSIBLE") + Dictionary.get(err.responseJSON.error)); });
       }
         
-    }).catch((err) => { alert("Sauvegarde Impossible : " + err.responseJSON.error); });
+    }).catch((err) => { alert(Dictionary.get("MAP_SAVEANDLOAD_SAVE_IMPOSSIBLE") + Dictionary.get(err.responseJSON.error)); });
   }
 
   /*
@@ -282,7 +290,9 @@ class LoadSaveManager
 
       me.initMapFromData(contentObj);
 
-      $("#nb-views").html(`Nombres de vues : ${result.views}`);
+      $("#nb-views").html(`${result.views} ${Dictionary.get("MAP_DESC_VIEWS_NUMBER")}`);
+
+      $('#map-lang-' + result.lang).prop("checked", true);
 
       callback();
 
@@ -290,7 +300,7 @@ class LoadSaveManager
 
       if(err.responseJSON)
       {
-        alert("Chargement de la carte impossible : " + err.responseJSON.error);
+        alert(Dictionary.get("MAP_SAVEANDLOAD_EDIT_IMPOSSIBLE") + Dictionary.get(err.responseJSON.error));
       }
 
       me.layersManager.init();
@@ -311,11 +321,11 @@ class LoadSaveManager
     {
       this.callServer("user/checkValidUser", "GET").then((result) => {
 
-        if(!me.logged)
-        {
+        //if(!me.logged)
+        //{
           me.actionsControl.updateLoggedState(true);
           me.logged = true;
-        }
+        //}
 
       }).catch((err) => {
         localStorage.removeItem('session-id-histoatlas');

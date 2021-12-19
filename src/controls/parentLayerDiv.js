@@ -71,7 +71,7 @@ class ParentLayerDiv
       {
         imageDelete = L.DomUtil.create('img', 'layers-list-icon', this.parentLineDiv);
         imageDelete.src = "img/menu/trash-solid.svg";
-        imageDelete.title = "Supprimer la couche";
+        imageDelete.title = Dictionary.get("MAP_LAYERS_PARENTLAYER_DELETE");
         L.DomEvent.on(imageDelete, 'click', function(e) { this.delete(); } , this);
       }
 
@@ -79,20 +79,20 @@ class ParentLayerDiv
       {
         imageReOrder = L.DomUtil.create('img', 'layers-list-icon', this.parentLineDiv);
         imageReOrder.src = "img/menu/sync-solid.svg";
-        imageReOrder.title = "Ré-ordonné";
+        imageReOrder.title = Dictionary.get("MAP_LAYERS_PARENTLAYER_REORDER");
       }
       else
       {
         // Change PopUp text
         imagePopUp = L.DomUtil.create('img', 'layers-list-icon', this.parentLineDiv);
         imagePopUp.src = "img/menu/comment-alt-solid.svg";
-        imagePopUp.title = "Ajout d'un popUp";
+        imagePopUp.title = Dictionary.get("MAP_LAYERS_PARENTLAYER_POPUP");
         L.DomEvent.on(imagePopUp, 'click', function(e) { this.modifyPopUp(); } , this);
       }
 
       imageEdit = L.DomUtil.create('img', 'layers-list-icon', this.parentLineDiv);
       imageEdit.src = "img/menu/edit-solid.svg";
-      imageEdit.title = "Editer le nom";
+      imageEdit.title = Dictionary.get("MAP_LAYERS_PARENTLAYER_EDIT");
     }
 
     // Add sub lines
@@ -159,6 +159,7 @@ class ParentLayerDiv
       height: 400,
       width: 500,
       modal: true,
+      title: Dictionary.get("MAP_LAYERS_POPUP_WINDOW_TITLE"),
       buttons: {
         Cancel: function() {
           dialogUpdatePopUp.dialog( "close" );
@@ -174,6 +175,8 @@ class ParentLayerDiv
     });
 
     dialogUpdatePopUp.dialog( "open" );
+
+    $("#dialog-modify-popUp").prop('title', Dictionary.get("MAP_LAYERS_POPUP_WINDOW_TITLE")); 
   }
 
   /*
@@ -196,7 +199,7 @@ class ParentLayerDiv
     L.DomUtil.remove(imageAddPaintZoneDiv);
 
     let label = L.DomUtil.create('label', '', this.divAddPaintZone);
-    label.innerHTML = "Couche à copier : ";
+    label.innerHTML = Dictionary.get("MAP_LAYERS_PARENTLAYER_CHOISE_ZONE_COPY");
 
     let selectZone = L.DomUtil.create('select', '', this.divAddPaintZone);
 
@@ -212,7 +215,7 @@ class ParentLayerDiv
     }
 
     let btnOk = L.DomUtil.create('button', 'layers-list-input', this.divAddPaintZone);
-    btnOk.innerHTML = "OK";
+    btnOk.innerHTML = Dictionary.get("MAP_LAYERS_OK");
 
     L.DomEvent.on(btnOk, 'click', function(e) { this.addPaintZone(selectZone.options[selectZone.selectedIndex].number) } , this);
   }
@@ -245,7 +248,7 @@ class ParentLayerDiv
    */
   delete()
   {
-    if(confirm(`Etes-vous sur de vouloir supprimer la couche "${this.parentLayer.label.value}" `))
+    if(confirm(`${Dictionary.get("MAP_LAYERS_PARENTLAYER_DELETE_VALIDATION")} "${this.parentLayer.label.value}" `))
     {
       this.layersControl.actionsList.addActionDeleteLayer(this.parentLayer, this.layersControl, this.layersManager);
 
@@ -305,7 +308,7 @@ class ParentLayerDiv
     inputName.value = this.parentLayer.label.value;
 
     let btnOk = L.DomUtil.create('button', 'layers-list-input', lineDiv);
-    btnOk.innerHTML = "OK";
+    btnOk.innerHTML = Dictionary.get("MAP_LAYERS_OK");;
 
     L.DomEvent.on(btnOk, 'click', function(e) { this.savValue(lineDiv, selectDiv, inputName, btnOk, paintZoneDiv, divAddPaintZone); } , this);
   }

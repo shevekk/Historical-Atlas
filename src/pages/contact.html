@@ -8,77 +8,121 @@
 
   <script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
 
-  <link rel="stylesheet" href="../index.css" />
+  <link rel="stylesheet" href="../index.css?v=7.5" />
 
-  <p><a href="../index.html">Retour au menu</a></p>
+  <div id="index-page-content">
 
-  <h3>Contact</h3>
-  <p>Envoyé un mail pour remonter un bug, une suggestion ou un avis. Vous pouvez également demander de l'assistance pour créer vos cartes ou demander une nouvelle fonctionnalité sur le logiciel.</p>
-  <label for="mail">Votre Mail : </label><br/><input id="mail" type="text" style="width: 250px;"></input><br/>
-  <label for="name">Nom ou pseudo : </label><br/><input id="name" type="text" style="width: 250px;"></input><br/>
-  <label for="title">Titre : </label><br/><input id="title" type="text" style="width: 500px;"></input><br/>
-  <label for="message">Message : </label><br/><textarea id="message" name="message" rows="22" cols="80"></textarea><br/><br/>
-  <button id="sendButton" style="width : 200px; height: 30px">Envoyer</button>
+    <div id="menu"></div>
 
-  <script type="text/javascript" src="../config/config.js"></script>
+    <p><a href="../index.html" id="link-back-menu">Retour au menu</a></p>
+
+    <h3 id="contact-title">Contact</h3>
+    <p id="contact-description">Envoyé un mail pour remonter un bug, une suggestion ou un avis. Vous pouvez également demander de l'assistance pour créer vos cartes ou demander une nouvelle fonctionnalité sur le logiciel.</p>
+    <label for="mail" id="mail-label" >Votre Mail : </label><br/><input id="mail" type="text" style="width: 250px;"></input><br/>
+    <label for="name" id="name-label">Nom ou pseudo : </label><br/><input id="name" type="text" style="width: 250px;"></input><br/>
+    <label for="title" id="title-label">Titre : </label><br/><input id="title" type="text" style="width: 500px;"></input><br/>
+    <label for="message" id="message-label">Message : </label><br/><textarea id="message" name="message" rows="22" cols="80"></textarea><br/><br/>
+    <button id="send-button" style="width : 200px; height: 30px">Envoyer</button>
+  </div>
+  
+  <script type="text/javascript" src="../config/config.js?v=7.5"></script>
+  <script type="text/javascript" src="../dictionary/dictionary.js?v=7.5"></script>
+  <script type="text/javascript" src="menu.js?v=7.5"></script>
 
   <script>
 
+    // If HTTPS -> reload to http
+    if(window.location.protocol == "https:")
+    {
+        location.href = "http://" + window.location.host + window.location.pathname + window.location.search
+    }
+
+    /* Load maps file and display all */
+    let lang = "en";
+
+    if(Config.getCookie("lang"))
+    {
+      lang = Config.getCookie("lang");
+    }
+
+    let params = Config.getUrlParams();
+    if(params["lang"])
+    {
+      lang = params["lang"];
+    }
+
     Config.load(true).then((config) =>
     {
-      function validateEmail(email) 
+      Dictionary.load(lang, "../", function()
       {
-        const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(email);
-      }
+        Menu.init(lang);
 
-      $("#sendButton").click(function() 
-      {
-        let mail = $("#mail").val();
-        let message = $("#message").val();
-        let title = $("#title").val();
-        let name = $("#name").val();
+        function validateEmail(email) 
+        {
+          const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+          return re.test(email);
+        }
 
-        if(mail.length == 0)
+        $("#send-button").click(function() 
         {
-          alert("Mail vide");
-        }
-        else if(!validateEmail(mail))
-        {
-          alert("Adresse mail invalide");
-        }
-        else if(message.length == 0)
-        {
-          alert("Message vide")
-        }
-        else if(name.length == 0)
-        {
-          alert("Nom ou pseudo vide")
-        }
-        else if(title.length == 0)
-        {
-          alert("Titre vide")
-        }
-        else
-        {
-          let urlServer = config.serverUrl + "/api/user/mail";
+          let mail = $("#mail").val();
+          let message = $("#message").val();
+          let title = $("#title").val();
+          let name = $("#name").val();
 
-          $.ajax({
-            url: urlServer,
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({name : name, message : message, title : "[Contact] "+title, mail : mail}),
-            success: (response) => {
+          if(mail.length == 0)
+          {
+            alert(Dictionary.get("CONTACT_EMPTY_MAIL"));
+          }
+          else if(!validateEmail(mail))
+          {
+            alert("Adresse mail invalide");
+          }
+          else if(message.length == 0)
+          {
+            alert("Message vide")
+          }
+          else if(name.length == 0)
+          {
+            alert("Nom ou pseudo vide")
+          }
+          else if(title.length == 0)
+          {
+            alert("Titre vide")
+          }
+          else
+          {
+            let urlServer = config.serverUrl + "/api/user/mail";
 
-              alert("Message Envoyé");
-              window.location.href = "../index.html";
-            },
-            error: (err) => {
-              alert("Echec de l'envoit du mail");
+            $.ajax({
+              url: urlServer,
+              method: "POST",
+              contentType: "application/json",
+              data: JSON.stringify({name : name, message : message, title : "[Contact] "+title, mail : mail}),
+              success: (response) => {
 
-            }
-          });
-        }
+                alert("Message Envoyé");
+                window.location.href = "../index.html";
+              },
+              error: (err) => {
+                alert("Echec de l'envoit du mail");
+
+              }
+            });
+          }
+        });
+
+        // Init text from Dictionnary
+        $("#contact-title").html(Dictionary.get('CONTACT_TITLE'));
+        $("#contact-description").html(Dictionary.get('CONTACT_DESCRIPTION'));
+        $("#mail-label").html(Dictionary.get('CONTACT_MAIL_LABEL'));
+        $("#name-label").html(Dictionary.get('CONTACT_NAME_LABEL'));
+        $("#title-label").html(Dictionary.get('CONTACT_TITLE_LABEL'));
+        $("#message-label").html(Dictionary.get('CONTACT_MESSAGE_LABEL'));
+        $("#send-button").html(Dictionary.get('CONTACT_SEND_BUTTON'));
+
+        $("#link-back-menu").html(Dictionary.get('BACK_MENU'));
+
       });
     });
 

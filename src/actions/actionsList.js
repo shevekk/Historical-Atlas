@@ -39,7 +39,8 @@ class ActionList
    */
   checkActionPaint(layersManager)
   {
-    if(!(this.actions[this.actions.length - 1] instanceof ActionPaint) && this.actions[this.actions.length - 1].targetZone != layersManager.selectedLayer.selectedZone || layersManager.selectedLayer.selectedZone.geom == this.actions[this.actions.length - 1].geom)
+    //if(!(this.actions[this.actions.length - 1] instanceof ActionPaint) && this.actions[this.actions.length - 1].targetZone != layersManager.selectedLayer.selectedZone || layersManager.selectedLayer.selectedZone.geom == this.actions[this.actions.length - 1].geom)
+    if(!(this.actions[this.actions.length - 1] instanceof ActionPaint) && (this.actions[this.actions.length - 1].targetZone != layersManager.selectedLayer.selectedZone || layersManager.selectedLayer.selectedZone.geom == this.actions[this.actions.length - 1].geom))
     {
       this.actions.pop();
     }

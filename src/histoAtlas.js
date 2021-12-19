@@ -22,7 +22,10 @@ class Main
     this.params = new Params();
     this.paintParams = new PaintParams();
     this.loadSaveManager = null;
-    $("#loading").html("<h3>Chargement de la carte en cours</h3>");
+    $("#loading").html(`<h3>${Dictionary.get("MAP_LOADING_MAP")}</h3>`);
+
+    $("#language-choise-text").html(Dictionary.get("MAP_DESC_LANG_CHOISE"));
+    $('#map-lang-' + lang).prop("checked", true);
   }
   
   /*
@@ -58,7 +61,7 @@ class Main
 
       me.actionsList = new ActionList();
 
-      me.backMenuControl = new BackMenuControl({params : me.params}).addTo(me.map);
+      me.backMenuControl = new BackMenuControl({params : me.params, paintParams : me.paintParams}).addTo(me.map);
       me.backgroundControl = new BackgroundControl({paintParams : me.paintParams, jsonBackgrounds : jsonBackgrounds}).addTo(me.map);
       me.backgroundControl.updateList(me.params.backgrounds, jsonBackgrounds);
       me.backgroundControl.manageEvents()
@@ -166,7 +169,6 @@ class Main
       me.paintParams.mouseDown = false;
 
       me.actionsList.checkActionPaint(me.layersManager);
-
       
       if(me.paintParams.moveLabel)
       {
@@ -202,6 +204,7 @@ class Main
           if(me.paintParams.scrollDisable)
           {
             me.layersManager.addOrRemoveContent(e);
+
           }
         }
       }
@@ -240,6 +243,28 @@ class Main
 
       me.layersManager.updateLabelSize();
     });
+    
+    // 
+    document.addEventListener('changeLang', function (e) 
+    {
+      let lang = e.detail.lang;
+
+      Dictionary.load(lang, "", function()
+      {
+        me.actionsControl.removeButtons();
+        me.actionsControl.createMenu();
+        me.loadSaveManager.checkValidUser();
+
+        me.layersControl.redraw();
+        me.backgroundControl.redraw();
+        me.timeControl.redraw();
+        me.settingsControl.redraw();
+        me.backMenuControl.redraw()
+
+        $("#language-choise-text").html(Dictionary.get("MAP_DESC_LANG_CHOISE"));
+      });
+
+    }, false);
   }
 
   /**

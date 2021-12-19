@@ -53,6 +53,14 @@ var SettingsControl = L.Control.extend({
     return this._container;
   },
 
+  /*
+   * Redraw for lang change
+   */
+  redraw()
+  {
+    this.buttonOpen.title = Dictionary.get("MAP_PARAMS_OPEN");
+  },
+
   /* 
    * Open the menu, create content
    */
@@ -64,7 +72,7 @@ var SettingsControl = L.Control.extend({
     // Create title
     let titleDiv = L.DomUtil.create('div', 'layers-list-title', this._container);
     let title = L.DomUtil.create('b', '', titleDiv);
-    title.innerHTML = "Paramètres :";
+    title.innerHTML = Dictionary.get("MAP_PARAMS_TITLE");
 
     let imageClose = L.DomUtil.create('img', 'settings-icon-close', titleDiv);
     imageClose.src = "img/actions/times-solid.svg";
@@ -75,7 +83,7 @@ var SettingsControl = L.Control.extend({
     let zoomDefaultDiv = L.DomUtil.create('div', '', contentDiv);
     let labelZoomDefault = L.DomUtil.create('label', '', zoomDefaultDiv);
     labelZoomDefault.for = "zoomDefault";
-    labelZoomDefault.innerHTML = "Zoom par défaut : ";
+    labelZoomDefault.innerHTML = Dictionary.get("MAP_PARAMS_ZOOM_DEFAULT");
     let inputZoomDefault = L.DomUtil.create('input', 'settings-zoom-input', zoomDefaultDiv);
     inputZoomDefault.type = "number";
     inputZoomDefault.name = "zoomDefault";
@@ -84,12 +92,12 @@ var SettingsControl = L.Control.extend({
     inputZoomDefault.min = 0;
     let buttonZoomDefault = L.DomUtil.create('button', 'settings-button-target', zoomDefaultDiv);
     buttonZoomDefault.innerHTML = `<img src="img/actions/dot-circle-solid.svg" style="width:12px;height:10px;" />`;
-    buttonZoomDefault.title = "Récupération du zoom actuel";
+    buttonZoomDefault.title = Dictionary.get("MAP_PARAMS_GET_CURRENT_ZOOM");
 
     let zoomMinDiv = L.DomUtil.create('div', '', contentDiv);
     let labelZoomMin = L.DomUtil.create('label', '', zoomMinDiv);
     labelZoomMin.for = "zoomMin";
-    labelZoomMin.innerHTML = "Zoom minimal : ";
+    labelZoomMin.innerHTML = Dictionary.get("MAP_PARAMS_ZOOM_MIN");
     let inputZoomMin = L.DomUtil.create('input', 'settings-zoom-input', zoomMinDiv);
     inputZoomMin.type = "number";
     inputZoomMin.name = "zoomMin";
@@ -98,12 +106,12 @@ var SettingsControl = L.Control.extend({
     inputZoomMin.min = 0;
     let buttonZoomMin = L.DomUtil.create('button', 'settings-button-target', zoomMinDiv);
     buttonZoomMin.innerHTML = `<img src="img/actions/dot-circle-solid.svg" style="width:12px;height:10px;" />`;
-    buttonZoomMin.title = "Récupération du zoom actuel";
+    buttonZoomMin.title = Dictionary.get("MAP_PARAMS_GET_CURRENT_ZOOM");
 
     let zoomMaxDiv = L.DomUtil.create('div', '', contentDiv);
     let labelZoomMax = L.DomUtil.create('label', '', zoomMaxDiv);
     labelZoomMax.for = "zoomMax";
-    labelZoomMax.innerHTML = "Zoom maximal : ";
+    labelZoomMax.innerHTML = Dictionary.get("MAP_PARAMS_ZOOM_MAX");
     let inputZoomMax = L.DomUtil.create('input', 'settings-zoom-input', zoomMaxDiv);
     inputZoomMax.type = "number";
     inputZoomMax.name = "zoomMax";
@@ -112,11 +120,11 @@ var SettingsControl = L.Control.extend({
     inputZoomMax.min = 0;
     let buttonZoomMax = L.DomUtil.create('button', 'settings-button-target', zoomMaxDiv);
     buttonZoomMax.innerHTML = `<img src="img/actions/dot-circle-solid.svg" style="width:12px;height:10px;" />`;
-    buttonZoomMax.title = "Récupération du zoom actuel";
+    buttonZoomMax.title = Dictionary.get("MAP_PARAMS_GET_CURRENT_ZOOM");
 
     let positionDiv = L.DomUtil.create('div', '', contentDiv);
     let labelPosition = L.DomUtil.create('label', '', positionDiv);
-    labelPosition.innerHTML = "Position par défaut : ";
+    labelPosition.innerHTML = Dictionary.get("MAP_PARAMS_POSITION");
     let inputPositionLat = L.DomUtil.create('input', 'settings-zoom-input', positionDiv);
     inputPositionLat.type = "number";
     inputPositionLat.name = "positionLat";
@@ -127,11 +135,11 @@ var SettingsControl = L.Control.extend({
     inputPositionLong.value = this.params.defaultPosition[1];
     let buttonPosition = L.DomUtil.create('button', 'settings-button-target', positionDiv);
     buttonPosition.innerHTML = `<img src="img/actions/dot-circle-solid.svg" style="width:12px;height:10px;" />`;
-    buttonPosition.title = "Récupération de la position actuel";
+    buttonPosition.title = Dictionary.get("MAP_PARAMS_GET_CURRENT_POSITION");
 
     let backgroundDefaultDiv = L.DomUtil.create('div', '', contentDiv);
     let labelbackgroundDefault = L.DomUtil.create('label', '', backgroundDefaultDiv);
-    labelbackgroundDefault.innerHTML = "Fond de plan par défaut : ";
+    labelbackgroundDefault.innerHTML = Dictionary.get("MAP_PARAMS_BACKGROUND_DEFAULT");
     let selectBackgroundDefault = L.DomUtil.create('select', '', backgroundDefaultDiv);
     for(let prop in this.jsonBackgrounds)
     {
@@ -147,7 +155,7 @@ var SettingsControl = L.Control.extend({
 
     let backgroundsDisplayDiv = L.DomUtil.create('div', '', contentDiv);
     let labelbackgroundDisplay = L.DomUtil.create('label', '', backgroundsDisplayDiv);
-    labelbackgroundDisplay.innerHTML = "Fond de plan possible : ";
+    labelbackgroundDisplay.innerHTML = Dictionary.get("MAP_PARAMS_BACKGROUNDS");
     let selectBackgroundDisplay = L.DomUtil.create('select', '', backgroundsDisplayDiv);
     selectBackgroundDisplay.multiple = true;
     for(let prop in this.jsonBackgrounds)
@@ -170,19 +178,19 @@ var SettingsControl = L.Control.extend({
     inputTimeCheckBox.checked = this.params.timeEnable;
     let labelTimeCheckBox = L.DomUtil.create('label', '', timeCheckBoxDiv);
     labelTimeCheckBox.for = "timeCheckbox";
-    labelTimeCheckBox.innerHTML = "Barre de temps actif";
+    labelTimeCheckBox.innerHTML = Dictionary.get("MAP_PARAMS_ACTIVE_TIME_BAR");
 
     let timeMaxMinDiv = L.DomUtil.create('div', '', contentDiv);
     let labelTimeMin = L.DomUtil.create('label', '', timeMaxMinDiv);
     labelTimeMin.for = "timeMin";
-    labelTimeMin.innerHTML = "Min : ";
+    labelTimeMin.innerHTML = Dictionary.get("MAP_PARAMS_DATE_MIN");
     let inputTimeMin = L.DomUtil.create('input', 'settings-time-input', timeMaxMinDiv);
     //inputTimeMin.type = "number";
     inputTimeMin.name = "timeMin";
     inputTimeMin.value = this.params.timeMin;
     let labelTimeMax = L.DomUtil.create('label', '', timeMaxMinDiv);
     labelTimeMax.for = "timeMax";
-    labelTimeMax.innerHTML = " Max : ";
+    labelTimeMax.innerHTML = Dictionary.get("MAP_PARAMS_DATE_MAX");
     let inputTimeMax = L.DomUtil.create('input', 'settings-time-input', timeMaxMinDiv);
     //inputTimeMax.type = "number";
     inputTimeMax.name = "timeMax";
@@ -190,17 +198,17 @@ var SettingsControl = L.Control.extend({
 
     let typeDateDiv = L.DomUtil.create('div', '', contentDiv);
     let labelTypeDate = L.DomUtil.create('label', '', typeDateDiv);
-    labelTypeDate.innerHTML = "Type de dates : ";
+    labelTypeDate.innerHTML = Dictionary.get("MAP_PARAMS_DATE_TYPE");
     let selectTypeDate = L.DomUtil.create('select', '', typeDateDiv);
-    selectTypeDate.innerHTML += `<option id="years" value="years">Années</option>`;
-    selectTypeDate.innerHTML += `<option id="months" value="months">Mois</option>`;
-    selectTypeDate.innerHTML += `<option id="days" value="days">Jours</option>`;
+    selectTypeDate.innerHTML += `<option id="years" value="years">${Dictionary.get("MAP_PARAMS_TIME_TYPE_YEARS")}</option>`;
+    selectTypeDate.innerHTML += `<option id="months" value="months">${Dictionary.get("MAP_PARAMS_TIME_TYPE_MONTHS")}</option>`;
+    selectTypeDate.innerHTML += `<option id="days" value="days">${Dictionary.get("MAP_PARAMS_TIME_TYPE_DAYS")}</option>`;
 
     selectTypeDate.value = this.params.typeTime;
 
     // Add sav button
     let buttonSav = L.DomUtil.create('button', 'settings-button-sav', contentDiv);
-    buttonSav.innerHTML = "Mise à jour";
+    buttonSav.innerHTML = Dictionary.get("MAP_PARAMS_UPDATE_BUTTON");
 
     // Manage actions
     L.DomEvent.on(imageClose, 'click', function(e) { this.closeMenu(titleDiv, contentDiv) }, this);
@@ -236,7 +244,7 @@ var SettingsControl = L.Control.extend({
   initOpenButton()
   {
     this.buttonOpen = L.DomUtil.create('a', 'ui_button', this._container);
-    this.buttonOpen.title = "Ouvrir le menu de paramétrage";
+    this.buttonOpen.title = Dictionary.get("MAP_PARAMS_OPEN");
 
     let imageOpen = L.DomUtil.create('img', '', this.buttonOpen);
     imageOpen.src = "img/actions/cogs-solid.svg";
