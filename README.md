@@ -1,14 +1,12 @@
-# Historical-Atlas
+# HistoAtlas
 
-Histo Atlas est un logiciel libre et gratuit permettant de dessiner et de visualiser des cartes historiques avec la visualisation d’évolution dans le temps de frontières, zones culturelles ou autres.
+Histo Atlas is a free software that allows you to draw and visualize historical maps with the visualization of evolution in time of borders, cultural areas or others.
 
-Le logiciel permet de dessiner des zones, d'ajouter des labels, de choisir un fond de plan, de définir des zones de temps.
+The software allows you to draw areas, add marker, add labels, choose a background map, define time zones..
 
+The software is based on [Turf.js](https://turfjs.org/) et [Leaflet.js](https://leafletjs.com/)
 
-Vous pouvez vous inscrire pour pouvoir sauvegarder vos propres carte et les partager en ligne.
+[Test the software](https://www.histoatlas.org)
 
-Le logiciel est basé sur [Turf.js](https://turfjs.org/) et [Leaflet.js](https://leafletjs.com/)
-
-[Tester le logiciel](https://www.histoatlas.org/index.html)
-
-[Voir un exemple de carte de Rome de -272 à 115](https://www.histoatlas.org/histoAtlas.html?file=Rome&edit=false)
+[See an example of a map of Rome from -272 to 115](http://www.histoatlas.org/histoAtlas.html?mapId=38&edit=false)
+[See an example of Spanish Civil War](http://www.histoatlas.org/histoAtlas.html?mapId=37&edit=false)
