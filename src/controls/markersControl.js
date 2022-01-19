@@ -68,13 +68,13 @@ class MarkersControl
       }
     }
 
-    content += `<br/><br/><label for="dialog-marker-label">${Dictionary.get("MAP_MARKERS_LABEL")}</label><input id="dialog-marker-label" type="text" style="width: 250px;"><br/><br/>
+    content += `<br/><br/><label for="dialog-marker-label">${Dictionary.get("MAP_MARKERS_LABEL")}</label><input id="dialog-marker-label" type="text" style="width: 320px;"><br/><br/>
                     <div id="dialog-marker-start-div"><label for="dialog-marker-start">${Dictionary.get("MAP_MARKERS_START_DATE")}</label><input id="dialog-marker-start" type="text" style="width: 200px;"><br/><br/></div>
                     <div id="dialog-marker-end-div"><label for="dialog-marker-end">${Dictionary.get("MAP_MARKERS_END_DATE")}</label><input id="dialog-marker-end" type="text" style="width: 200px;"><br/><br/></div>
-                    <label for="dialog-marker-position-lng">${Dictionary.get("MAP_MARKERS_POSITION")}</label><input id="dialog-marker-position-lng" type="text" style="width: 90px;"><input id="dialog-marker-position-lat" type="text" style="width: 90px;margin-left: 3px;"><img id="dialog-marker-position-select" src="img/menu/bullseye-solid.svg"><br/><br/>
+                    <label for="dialog-marker-position-lng">${Dictionary.get("MAP_MARKERS_POSITION")}</label><input id="dialog-marker-position-lng" type="text" style="width: 120px;"><input id="dialog-marker-position-lat" type="text" style="width: 120px;margin-left: 3px;"><img id="dialog-marker-position-select" src="img/menu/bullseye-solid.svg"><br/><br/>
                     <label for="dialog-marker-color">${Dictionary.get("MAP_MARKERS_COLOR")}</label><input id="dialog-marker-color" type="color"><br/><br/>
                     <label for="dialog-marker-size">${Dictionary.get("MAP_MARKERS_SIZE")}</label><input id="dialog-marker-size" type="number" value="30" style="width: 90px;"><br/><br/>
-                    <label for="dialog-marker-popup">${Dictionary.get("MAP_MARKERS_POPUP")}</label><br/><textarea id="dialog-marker-popup" name="dialog-marker-popup" style="width: 450px;height : 80px;"></textarea>`;
+                    <label for="dialog-marker-popup">${Dictionary.get("MAP_MARKERS_POPUP")}</label><br/><textarea id="dialog-marker-popup" name="dialog-marker-popup" style="width: 620px;height: 120px;"></textarea>`;
 
     $("#dialog-marker").html(content);
 
@@ -88,7 +88,7 @@ class MarkersControl
     this.dialogEdition = $("#dialog-marker").dialog({
       autoOpen: false,
       height: 550,
-      width: 500,
+      width: 660,
       modal: true,
       buttons: {
         Cancel: function() {
@@ -170,6 +170,18 @@ class MarkersControl
     for(let i = 0; i < this.lineContentDiv.length; i++)
     {
       L.DomUtil.remove(this.lineContentDiv[i]);
+    }
+
+    this.contentDiv.innerHTML = "";
+
+    // Add buton for add markers
+    if(this.layersManager.markers.length >= 2 && this.params.timeEnable)
+    {
+      this.reorderButton = L.DomUtil.create('button', '', this.contentDiv);
+      this.reorderButton.innerHTML = Dictionary.get("MAP_MARKERS_REORDER_BY_DATE");
+      this.reorderButton.style = "display: block; position: relative; margin-left: auto; margin-right: auto;";
+
+      L.DomEvent.on(this.reorderButton, 'click', function(e) { this.layersManager.markers.sort((a, b) => a.startDate - b.startDate); this.updateContent() } , this);
     }
 
     // Update content
@@ -269,7 +281,7 @@ class MarkersControl
     this.dialogEdition = $("#dialog-marker").dialog({
       autoOpen: false,
       height: 550,
-      width: 500,
+      width: 670,
       modal: true,
       buttons: {
         Cancel: function() {
@@ -300,7 +312,7 @@ class MarkersControl
     {
       let startDateStr = $("#dialog-marker-start").val();
       let endDateStr = $("#dialog-marker-end").val();
-      let popUpContent = $("#dialog-marker-popup").val();
+      let popUpContent = $("#dialog-marker-popup").val().replaceAll("\n", "<br/>\n");
       let position = [$("#dialog-marker-position-lat").val(), $("#dialog-marker-position-lng").val()];
       let color = $("#dialog-marker-color").val();
       let size = $("#dialog-marker-size").val();
@@ -398,9 +410,20 @@ class MarkersControl
     $("#dialog-marker-label").val(marker.label);
     $("#dialog-marker-start").val(DateConverter.numberToDate(marker.startDate, this.params));
     $("#dialog-marker-end").val(DateConverter.numberToDate(marker.endDate, this.params));
-    $("#dialog-marker-popup").val(marker.popUpContent);
+    $("#dialog-marker-popup").val(marker.popUpContent.replaceAll("<br/>\n", "\n"));
     $("#dialog-marker-color").val(marker.color);
     $("#dialog-marker-size").val(marker.size);
+
+    if(this.params.timeEnable)
+    {
+      $("#dialog-marker-start-div").css("display", "inline");
+      $("#dialog-marker-end-div").css("display", "inline");
+    }
+    else
+    {
+      $("#dialog-marker-start-div").css("display", "none");
+      $("#dialog-marker-end-div").css("display", "none");
+    }
 
     $('#dialog-marker-icon-' + marker.imgKey).prop("checked", true);
 
@@ -410,7 +433,7 @@ class MarkersControl
     this.dialogEdition = $("#dialog-marker").dialog({
       autoOpen: false,
       height: 550,
-      width: 500,
+      width: 670,
       modal: true,
       buttons: {
         Cancel: function() {
@@ -443,7 +466,7 @@ class MarkersControl
 
       let startDateStr = $("#dialog-marker-start").val();
       let endDateStr = $("#dialog-marker-end").val();
-      let popUpContent = $("#dialog-marker-popup").val();
+      let popUpContent = $("#dialog-marker-popup").val().replaceAll("\n", "<br/>\n");
       let position = [$("#dialog-marker-position-lat").val(), $("#dialog-marker-position-lng").val()];
       let color = $("#dialog-marker-color").val();
       let size = $("#dialog-marker-size").val();

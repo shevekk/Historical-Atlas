@@ -8,7 +8,7 @@ class ActionAddLayer extends Action
    * @param {LayersManager}             layersManager                 The layer manager
    * @param {TimeControl}               timeControl                   The time control
    */
-  constructor(parentLayer, LayersControl, layersManager, timeControl)
+  constructor(parentLayer, layersControl, layersManager, timeControl)
   {
     super();
 

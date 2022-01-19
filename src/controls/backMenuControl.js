@@ -142,8 +142,11 @@ var BackMenuControl = L.Control.extend({
 
     Config.setCookie("lang", lang, 30);
 
-    this.buttonHelp.href = `files/HistoAtlas_Help_${lang}.pdf`;
-
+    if(this.params.editMode)
+    {
+      this.buttonHelp.href = `files/HistoAtlas_Help_${lang}.pdf`;
+    }
+    
     var evt = new CustomEvent("changeLang", { detail: {lang : lang} });
     document.dispatchEvent(evt);
   },

@@ -33,6 +33,8 @@ var ActionsControl = L.Control.extend({
     this.loadSaveManager = options.loadSaveManager;
     this.layersControl = options.layersControl;
     this.actionsList = options.actionsList;
+    this.copyManager = options.copyManager;
+    this.geoJsonManager = options.geoJsonManager;
 
     this.params = options.params;
 
@@ -85,6 +87,10 @@ var ActionsControl = L.Control.extend({
     L.DomUtil.remove(this.buttons["save"].buttonDom);
     L.DomUtil.remove(this.buttons["filling"].buttonDom);
     L.DomUtil.remove(this.buttons["simplify"].buttonDom);
+    L.DomUtil.remove(this.buttons["import_geojson"].buttonDom);
+    L.DomUtil.remove(this.buttons["copy_menu"].buttonDom);
+    L.DomUtil.remove(this.buttons["copy_zone"].buttonDom);
+    L.DomUtil.remove(this.buttons["paste_zone"].buttonDom);
   },
   
   /*
@@ -120,6 +126,18 @@ var ActionsControl = L.Control.extend({
 
     this.buttons["opacity"] = new ActionButtonSlider(this._container, "img/actions/opacity.png", Dictionary.get("MAP_ACTIONS_OPACITY"), function(e) { me._cursorOpacityMove(e) }, 0, 100, this.paintParams.opacity * 100, this.paintParams);
 
+    this.buttons["filling"] = new ActionButtonSimple(this._container, "img/actions/fill-drip-solid.svg", Dictionary.get("MAP_ACTIONS_FILL"), function(e) { me.paintParams.uiClick = true; me.fillInActiveLayer(); });
+
+    this.buttons["auto_border"] = new ActionButtonSimple(this._container, "img/actions/border-none-solid.svg", Dictionary.get("MAP_ACTIONS_AUTO_BORDER"), function(e) { me.paintParams.uiClick = true; me._autoBorder(); });
+
+    this.buttons["simplify"] = new ActionButtonSliderWithButton(this._container, "img/actions/simplify.jpg", Dictionary.get("MAP_ACTIONS_SYMPLIFY"), function(cursorValue) { me.simplifyActiveLayer(cursorValue);}, 5, 100, 5, this.paintParams);
+    
+    this.buttons["copy_menu"] = new ActionButtonSimple(this._container, "img/actions/copy-solid.svg", Dictionary.get("MAP_ACTIONS_MENU_COPY_PASTE"),  function(e) { me.paintParams.uiClick = true; me.openCopyMenu();  });
+
+    this.buttons["copy_zone"] = new ActionButtonSimple(this._container, "img/actions/copy-solid.svg", Dictionary.get("MAP_ACTIONS_MENU_COPY_ZONE"),  function(e) { me.paintParams.uiClick = true; me.copyZone();  });
+
+    this.buttons["paste_zone"] = new ActionButtonSimple(this._container, "img/actions/paste-solid.svg", Dictionary.get("MAP_ACTIONS_MENU_PASTE_ZONE"),  function(e) { me.paintParams.uiClick = true; me.pasteZone();  });
+
     this.buttons["label"] = new ActionButtonSimple(this._container, "img/actions/tag-solid.svg", Dictionary.get("MAP_ACTIONS_LABEL"),  function(e) { me.paintParams.uiClick = true; me.openLabelMenu()  });
 
     this.buttons["label_size"] = new ActionButtonSlider(this._container, "img/actions/text-width-solid.svg", Dictionary.get("MAP_ACTIONS_LABEL_SIZE"), function(e) { me._cursorLabelSizeMove(e) }, 0, 50, this.layersManager.selectedLayer.label.textSize, this.paintParams);
@@ -130,13 +148,13 @@ var ActionsControl = L.Control.extend({
 
     this.buttons["export"] = new ActionButtonSimple(this._container, "img/actions/file-download-solid.svg", Dictionary.get("MAP_ACTIONS_EXPORT"),  function(e) { me.paintParams.uiClick = true; me.loadSaveManager.export(); });
 
-    this.buttons["import"] = new ActionButtonFile(this._container, "img/actions/file-import-solid.svg", Dictionary.get("MAP_ACTIONS_IMPORT"), this.paintParams, me.loadSaveManager);
+    this.buttons["import"] = new ActionButtonFile(this._container, "img/actions/file-import-solid.svg", Dictionary.get("MAP_ACTIONS_IMPORT"), this.paintParams, "inputImportFile", ".json", this.loadSaveManager, this.loadSaveManager.importManagement);
+
+    this.buttons["export_geojson"] = new ActionButtonSimple(this._container, "img/actions/geojson_export.svg", Dictionary.get("MAP_ACTIONS_EXPORT_GEOJSON"),  function(e) { me.paintParams.uiClick = true; me.geoJsonManager.export(); });
+
+    this.buttons["import_geojson"] = new ActionButtonFile(this._container, "img/actions/geojson_import.svg", Dictionary.get("MAP_ACTIONS_IMPORT_GEOJSON"), this.paintParams, "inputImportFileGeoJson", ".geojson", me.geoJsonManager, me.geoJsonManager.importManagement);
 
     this.buttons["save"] = new ActionButtonSave(this._container, "img/actions/save-regular.svg", Dictionary.get("MAP_ACTIONS_SAVE"), me.paintParams, me.loadSaveManager);
-
-    this.buttons["filling"] = new ActionButtonSimple(this._container, "img/actions/fill-drip-solid.svg", Dictionary.get("MAP_ACTIONS_FILL"), function(e) { me.paintParams.uiClick = true; me.fillInActiveLayer(); });
-
-    this.buttons["simplify"] = new ActionButtonSliderWithButton(this._container, "img/actions/simplify.jpg", Dictionary.get("MAP_ACTIONS_SYMPLIFY"), function(cursorValue) { me.simplifyActiveLayer(cursorValue);}, 5, 100, 5, this.paintParams);
 
     this.backToMain();
   },
@@ -224,6 +242,7 @@ var ActionsControl = L.Control.extend({
     this.buttons["paint"].show();
     this.buttons["label"].show();
     this.buttons["undo"].show();
+    this.buttons["copy_menu"].show();
 
     this.buttons["cursor_size"].hide();
     this.buttons["border_size"].hide();
@@ -237,11 +256,17 @@ var ActionsControl = L.Control.extend({
     this.buttons["move_label"].hide();
     this.buttons["filling"].hide();
     this.buttons["simplify"].hide();
+    this.buttons["copy_zone"].hide();
+    this.buttons["paste_zone"].hide();
+    this.buttons["auto_border"].hide();
+    this.buttons["import_geojson"].hide();
+    this.buttons["export_geojson"].hide();
 
     this.enableScroll();
     this.map.dragging.enable();
     this.paintParams.removalContent = false;
     this.paintParams.moveLabel = false;
+    this.copyManager.setEnableState(false);
 
     if(this.paintParams.selectionState)
     {
@@ -274,6 +299,7 @@ var ActionsControl = L.Control.extend({
     this.buttons["paint"].hide();
     this.buttons["label"].hide();
     this.buttons["connexion_state"].hide();
+    this.buttons["copy_menu"].hide();
 
     this.buttons["cursor_size"].show();
     this.buttons["border_size"].show();
@@ -282,6 +308,7 @@ var ActionsControl = L.Control.extend({
     this.buttons["back"].show();
     this.buttons["filling"].show();
     this.buttons["simplify"].show();
+    this.buttons["auto_border"].show();
 
     // Hide label
     this.layersManager.selectedLayer.label.hide(this.layersManager.selectedLayer.layer);
@@ -303,6 +330,8 @@ var ActionsControl = L.Control.extend({
 
     this.buttons["export"].show();
     this.buttons["import"].show();
+    this.buttons["import_geojson"].show();
+    this.buttons["export_geojson"].show();
     this.buttons["back"].show();
 
     this.buttons["erase"].hide();
@@ -312,6 +341,7 @@ var ActionsControl = L.Control.extend({
     this.buttons["paint"].hide();
     this.buttons["label"].hide();
     this.buttons["connexion_state"].hide();
+    this.buttons["copy_menu"].hide();
   },
 
   /*
@@ -336,6 +366,7 @@ var ActionsControl = L.Control.extend({
     this.buttons["paint"].hide();
     this.buttons["label"].hide();
     this.buttons["connexion_state"].hide();
+    this.buttons["copy_menu"].hide();
 
     this.disableScroll();
     this.map.dragging.disable();
@@ -360,10 +391,48 @@ var ActionsControl = L.Control.extend({
     this.buttons["paint"].hide();
     this.buttons["label"].hide();
     this.buttons["connexion_state"].hide();
+    this.buttons["copy_menu"].hide();
 
     this.buttons["back"].show();
     this.buttons["label_size"].show();
     this.buttons["move_label"].show();
+  },
+
+  /*
+   * Open copy menu
+   */
+  openCopyMenu()
+  {
+    this.buttons["erase"].hide();
+    this.buttons["import_export"].hide();
+    this.buttons["save"].hide();
+    this.buttons["selection"].hide();
+    this.buttons["paint"].hide();
+    this.buttons["label"].hide();
+    this.buttons["connexion_state"].hide();
+    this.buttons["copy_menu"].hide();
+
+    this.buttons["back"].show();
+    this.buttons["copy_zone"].show();
+    this.buttons["paste_zone"].show();
+
+    this.copyManager.setEnableState(true);
+  },
+
+  /*
+   * Copy the selected zone
+   */
+  copyZone()
+  {
+    this.copyManager.copy(this.layersManager);
+  },
+
+  /*
+   * Paste the selected zone
+   */
+  pasteZone()
+  {
+    this.copyManager.paste(this.layersManager);
   },
 
   /*
@@ -516,6 +585,20 @@ var ActionsControl = L.Control.extend({
   disableScroll : function()
   {
     this.paintParams.scrollDisable = true;
+  },
+
+  /*
+   * Create Auto Border for active layers
+   */
+  _autoBorder : function()
+  {
+    if(this.layersManager.selectedLayer && this.layersManager.selectedLayer.selectedZone)
+    {
+      this.actionsList.addActionAutoBorder(this.layersManager);
+
+      this.layersManager.selectedLayer.selectedZone.autoBorder(this.layersManager);
+      this.layersManager.selectedLayer.redraw();
+    }
   },
 
   /*

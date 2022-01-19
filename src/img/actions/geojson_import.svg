@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="100"
+   height="100"
+   version="1.1"
+   id="svg64"
+   sodipodi:docname="geojson_import.svg"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
+  <metadata
+     id="metadata70">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs68">
+    <rect
+       x="-6.6551226"
+       y="-1.9965368"
+       width="113.80259"
+       height="46.585862"
+       id="rect1760" />
+    <rect
+       x="0.9982684"
+       y="3.6603175"
+       width="118.12844"
+       height="112.80433"
+       id="rect1742" />
+  </defs>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview66"
+     showgrid="false"
+     inkscape:zoom="3.0052038"
+     inkscape:cx="-0.041717133"
+     inkscape:cy="38.293781"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg64" />
+  <path
+     fill="currentColor"
+     d="m 12.405897,72.169512 c -1.394131,0 -2.5347845,0.883679 -2.5347845,1.963733 V 78.0607 c 0,1.080054 1.1406535,1.963733 2.5347845,1.963733 H 30.149398 V 72.169512 Z M 89.875277,49.709361 74.365566,37.681523 C 73.652654,37.129222 72.686269,36.822389 71.67236,36.822389 h -0.966392 v 15.709833 h 20.278285 v -0.748671 c 0,-0.773216 -0.396065,-1.521889 -1.108976,-2.07419 z m -24.23888,3.804728 v -16.6917 h -31.68482 c -2.10704,0 -3.802179,1.313247 -3.802179,2.945594 v 32.401529 h 20.278284 v -8.002194 c 0,-1.755082 2.740739,-2.626486 4.340826,-1.386883 l 15.145338,11.843741 c 1.045603,0.822311 1.045603,2.135556 0,2.945594 L 54.752667,89.401235 c -1.600088,1.239602 -4.340819,0.368202 -4.340819,-1.386883 v -7.989919 h -20.26245 v 16.691699 c 0,1.632345 1.695139,2.945588 3.802179,2.945588 h 53.230504 c 2.107028,0 3.802172,-1.313243 3.802172,-2.945588 V 56.459684 H 69.438571 c -2.091194,0 -3.802174,-1.325519 -3.802174,-2.945595 z"
+     id="path2"
+     style="fill:#000000;fill-opacity:1;stroke-width:0.139441" />
+  <text
+     xml:space="preserve"
+     id="text1740"
+     style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.45;font-family:sans-serif;letter-spacing:1.49px;word-spacing:-4.43px;white-space:pre;shape-inside:url(#rect1742);fill:#000090;fill-opacity:1;stroke:none;"
+     transform="translate(0,-18.9671)"><tspan
+       x="0.99804688"
+       y="52.582677"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:48px;font-family:'Bauhaus 93';-inkscape-font-specification:'Bauhaus 93 Bold';fill:#000090;fill-opacity:1">GEO</tspan></tspan></text>
+</svg>

@@ -139,17 +139,13 @@ var BackgroundControl = L.Control.extend({
 
     if(this.jsonBackgrounds[id].type == "tile")
     {
-      this.selectedTile = L.tileLayer(this.jsonBackgrounds[id].url, {
-        attribution: this.jsonBackgrounds[id].attribution,
-        noWrap: true
-      }).addTo(this.map);
+      this.selectedTile = L.tileLayer(this.jsonBackgrounds[id].url, this.jsonBackgrounds[id].params).addTo(this.map);
     }
     else if(this.jsonBackgrounds[id].type == "wms")
     {
       this.selectedTile = L.tileLayer.wms(this.jsonBackgrounds[id].url, {
         layers: this.jsonBackgrounds[id].layers,
         attribution: this.jsonBackgrounds[id].attribution,
-        noWrap: true
       }).addTo(this.map);
     }
     else if(this.jsonBackgrounds[id].type == "empty")

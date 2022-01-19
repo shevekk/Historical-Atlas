@@ -80,7 +80,7 @@ class PaintZoneDiv
    */
   modifyPopUp()
   {
-    $("#textAreaModifyPopUp").val(this.paintZone.popupContent);
+    $("#textAreaModifyPopUp").val(this.paintZone.popupContent.replaceAll("<br/>\n", "\n"));
 
     let me = this;
 
@@ -114,7 +114,7 @@ class PaintZoneDiv
   {
     me.layersControl.actionsList.addActionPopUpContent(me.paintZone, me.parentLayer);
 
-    me.paintZone.popupContent = $("#textAreaModifyPopUp").val();
+    me.paintZone.popupContent = $("#textAreaModifyPopUp").val().replaceAll("\n", "<br/>\n");
     me.parentLayer.redraw();
   }
 

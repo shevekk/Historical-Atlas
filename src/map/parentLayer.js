@@ -129,8 +129,10 @@ class ParentLayer
 
   /*
    * Add a new paintZone, get date and number
+   * @param {Number}               numberZoneToCopy            The number of zone to get geom
+   * @param {Boolean}              autoSelected                True for auto select layer
    */
-  addPaintZone(numberZoneToCopy)
+  addPaintZone(numberZoneToCopy, autoSelected)
   {
     let number = 1;
     let startDate = DateConverter.dateToNumber(this.params.timeMin, false, this.params);
@@ -163,10 +165,15 @@ class ParentLayer
     }
 
     this.paintZones.push(new PaintZone(number, this.params));
-    this.selectedZone = this.paintZones[this.paintZones.length - 1];
-    this.selectedZone.startDate = startDate;
-    this.selectedZone.geom = geom;
-    this.selectedZone.popupContent = popupContent;
+
+    this.paintZones[this.paintZones.length - 1].startDate = startDate;
+    this.paintZones[this.paintZones.length - 1].geom = geom;
+    this.paintZones[this.paintZones.length - 1].popupContent = popupContent;
+
+    if(autoSelected)
+    {
+      this.selectedZone = this.paintZones[this.paintZones.length - 1];
+    }
   }
 
   /*

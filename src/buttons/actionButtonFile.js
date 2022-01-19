@@ -10,7 +10,7 @@ class ActionButtonFile extends ActionButton
    * @param {PaintLayer}           paintParams           The paint parameters
    * @param {LoadSaveManager}      loadSaveManager       Load and Save Manager
    */
-  constructor(container, imgSrc, title, paintParams, loadSaveManager)
+  constructor(container, imgSrc, title, paintParams, id, fileType, classLoad, functionLoad)
   {
     super(container, imgSrc, title, null, 'a', 'action-button');
 
@@ -22,10 +22,10 @@ class ActionButtonFile extends ActionButton
     var menuContent = L.DomUtil.create('div', 'leaflet-control-div-slider-content', this._menu);
     var importInput = L.DomUtil.create('input', '', menuContent);
     importInput.type = "file";
-    importInput.accept = ".json";
-    importInput.id = "inputImportFile";
+    importInput.accept = fileType;
+    importInput.id = id;
     
-    L.DomEvent.on(this.buttonDom, 'click', function(e) { paintParams.uiClick = true; this._clickRangeButton(e); if(!this.importInit) { this.importInit = true; loadSaveManager.importManagement() } }, this);
+    L.DomEvent.on(this.buttonDom, 'click', function(e) { paintParams.uiClick = true; this._clickRangeButton(e); if(!this.importInit) { this.importInit = true; functionLoad(classLoad) } }, this);
   }
 
   /* 

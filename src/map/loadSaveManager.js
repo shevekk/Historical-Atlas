@@ -14,7 +14,7 @@ class LoadSaveManager
    * @property {LayersControl}              layersControl            The layers control
    * @property {Object}                     jsonBackgrounds          The json background
    * @property {Boolean}                    logged                   The logged state 
-   actionsList
+   * @property {ActionsList}                actionsList              Manager of action list and undo/redo
    * @property {ActionsControl}             actionsControl           The action control
    */
   constructor(map, layersManager, params, backgroundControl, timeControl, layersControl, actionsList, jsonBackgrounds)
@@ -35,7 +35,8 @@ class LoadSaveManager
     }
     else
     {
-      this.logged = true;
+      //this.logged = true;
+      this.logged = false;
     }
   }
 
@@ -66,14 +67,14 @@ class LoadSaveManager
  /*
   * Load a json file
   */
-  importManagement()
+  importManagement(me)
   {
-    let me = this;
+    //let me = this;
 
     var fileInput = document.getElementById("inputImportFile"),
     readFile = function () {
       var reader = new FileReader();
-      reader.fileName = document.querySelector('input[type=file]').files[0];
+      reader.fileName = document.getElementById("inputImportFile").files[0];
       reader.onload = function (readerEvt) 
       {
         me.actionsList.addActionLoadJson(me);
@@ -97,7 +98,7 @@ class LoadSaveManager
         }
         else
         {
-          alert(Dictionary.get("MAP_SAVEANDLOAD_IMPORTFILE_FORMAT"));
+          alert(Dictionary.get("MAP_SAVEANDLOAD_IMPORTFILE_FORMAT_JSON"));
         }
       };
       // start reading the file. When it is done, calls the onload event defined above.
@@ -185,7 +186,6 @@ class LoadSaveManager
 
     this.actionsControl.updateParamsFromLayerOptions(this.layersManager.selectedLayer.polygonOptions);
 
-
     if(this.params.timeEnable)
     {
       this.timeControl.setValue(this.timeControl.value);
@@ -235,11 +235,12 @@ class LoadSaveManager
 
     this.callServer("map/checkIfFileExist", "POST", {name : name, user : localStorage.getItem('session-id-histoatlas')}).then((result) => {
 
-      $("#loading").html(Dictionary.get("MAP_SAVEANDLOAD_SAVE_IN_PROGRESS"));
-      this.actionsControl.buttons["save"].hide();
-
       if(!result.exist || confirm(Dictionary.get("MAP_SAVEANDLOAD_FILE_ALREADY_EXIST")))
       {
+        $("#loading").html(Dictionary.get("MAP_SAVEANDLOAD_SAVE_IN_PROGRESS"));
+        this.actionsControl.buttons["save"].hide();
+
+        // get lang
         let mapLang = "";
         $('input[name="map-lang"]').each(function() {
           if(this.checked)
@@ -248,7 +249,16 @@ class LoadSaveManager
           }
         });
 
-        let contentSave = {name : name, fileName : fileName, content : JSON.stringify(content), exist : result.exist, user : localStorage.getItem('session-id-histoatlas'), lang : mapLang};
+        // get map type
+        let mapType = "";
+        $('input[name="type-map-choise"]').each(function() {
+          if(this.checked)
+          {
+            mapType = this.value;
+          }
+        });
+
+        let contentSave = {name : name, fileName : fileName, content : JSON.stringify(content), exist : result.exist, user : localStorage.getItem('session-id-histoatlas'), lang : mapLang, type : mapType};
         
         this.callServer("map/save", "POST", contentSave).then((result) => {
 
@@ -294,6 +304,8 @@ class LoadSaveManager
 
       $('#map-lang-' + result.lang).prop("checked", true);
 
+      $('#type-map-choise-' + result.type).prop("checked", true);
+
       callback();
 
     }).catch((err) => { 
@@ -321,11 +333,11 @@ class LoadSaveManager
     {
       this.callServer("user/checkValidUser", "GET").then((result) => {
 
-        //if(!me.logged)
-        //{
+        if(!me.logged)
+        {
           me.actionsControl.updateLoggedState(true);
           me.logged = true;
-        //}
+        }
 
       }).catch((err) => {
         localStorage.removeItem('session-id-histoatlas');
@@ -338,11 +350,11 @@ class LoadSaveManager
     }
     else
     {
-      if(me.logged)
-      {
+      //if(me.logged)
+      //{
         me.actionsControl.updateLoggedState(false);
         me.logged = false;
-      }
+      //}
     }
   }
 

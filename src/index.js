@@ -116,11 +116,20 @@ Config.load().then((config) =>
     {
       let content = "";
 
+      function initMapDivContent(userMap, num)
+      {
+        let content = `<div class="map-div" id="map-div_${num}">${userMap.name}
+        <a href="histoAtlas.html?mapId=${userMap.id}&edit=false"><img class="icon-action" src="img/menu/eye-solid.svg" title="${Dictionary.get('INDEX_MAP_VIEW')}" /></a>
+        <a href="histoAtlas.html?mapId=${userMap.id}"><img class="icon-action" src="img/menu/edit-solid.svg" title="${Dictionary.get('INDEX_MAP_EDIT')}" /></a></div>`;
+
+        return content;
+      }
+
       for(let i = 0; i < userMaps.length; i++)
       {
-        content += `<p><div id="map-div">${userMaps[i].name}
-        <a href="histoAtlas.html?mapId=${userMaps[i].id}&edit=false"><img class="icon-action" src="img/menu/eye-solid.svg" title="${Dictionary.get('INDEX_MAP_VIEW')}" /></a>
-        <a href="histoAtlas.html?mapId=${userMaps[i].id}"><img class="icon-action" src="img/menu/edit-solid.svg" title="${Dictionary.get('INDEX_MAP_EDIT')}" /></a></div>`;
+        content += "<p>";
+
+        content += initMapDivContent(userMaps[i], i);
 
         content += `<div id="edit-visibility-div">`;
         if(userMaps[i].public)
@@ -143,6 +152,8 @@ Config.load().then((config) =>
 
         content += `</div>`;
 
+        content += `<img class="icon-action-rename" id="rename_${i}" src="img/menu/rename.png" title="${Dictionary.get('INDEX_MAP_RENAME')}" />`;
+
         content += `<img class="icon-action-delete" id="delete_${i}" src="img/menu/trash-solid.svg" title="${Dictionary.get('INDEX_MAP_DELETE')}" />`;
 
         if(userMaps[i].public)
@@ -155,6 +166,53 @@ Config.load().then((config) =>
       }
 
       $("#user-maps").html(content);
+
+      // Manage rename action
+      $(".icon-action-rename").click(function() 
+      {
+        let mapNumber = parseInt($(this).prop("id").split("_")[1]);
+
+        let content = `<input id="map-rename-input_${userMaps[mapNumber].id}" style="width:200px; margin-left: 5px" value="${userMaps[mapNumber].name}"></input>
+                       <button id="map-rename-save_${userMaps[mapNumber].id}">${Dictionary.get("INDEX_MAP_RENAME_SAVE")}</button>
+                       <button id="map-rename-cancel_${userMaps[mapNumber].id}">${Dictionary.get("INDEX_MAP_RENAME_CANCEL")}</button>`;
+
+        $(`#map-div_${mapNumber}`).html(content);
+
+        // Cancel rename
+        $(`#map-rename-cancel_${userMaps[mapNumber].id}`).click(function()
+        {
+          $(`#map-div_${mapNumber}`).html(initMapDivContent(userMaps[mapNumber], mapNumber));
+        });
+
+        // Save new name ofr the file
+        $(`#map-rename-save_${userMaps[mapNumber].id}`).click(function()
+        {
+          let mapNewName = $(`#map-rename-input_${userMaps[mapNumber].id}`).val();
+
+          var nameRegex = /^[a-zA-Z0-9\s]+$/;
+          if(!nameRegex.test(mapNewName))
+          {
+            alert(Dictionary.get("MAP_SAVEANDLOAD_SAVE_FILENAME_INVALID"));
+            return;
+          }
+          let fileName = mapNewName.replaceAll(" ", "_");
+
+          let urlServer = config.serverUrl + "/api/map/rename";
+          $.ajax({
+            url: urlServer,
+            method: "POST",
+            contentType: "application/json",
+            headers:{ 'Authorization': localStorage.getItem('session-token-histoatlas') }, // 
+            data: JSON.stringify({user : localStorage.getItem('session-id-histoatlas'), id : userMaps[mapNumber].id, newName : mapNewName, fileName : fileName}),
+            success: (response) => {
+              document.location.href="index.html";
+            },
+            error: (err) => {
+              alert(`${Dictionary.get(err.responseJSON.error)}`);
+            }
+          });
+        });
+      });
 
       // Change public state
       $(".icon-action-public").click(function() 
@@ -247,25 +305,38 @@ Config.load().then((config) =>
      */
     function displayPublicMap(publicMaps)
     {
-      let content = "";
+      let contentPublic = "";
+      let contentFeatured = "";
 
       for(let i = 0; i < publicMaps.length; i++)
       {
-        content += `<p>[${publicMaps[i].lang.toUpperCase()}] ${publicMaps[i].name} - <i>créateur <b>${publicMaps[i].userName}</b></i>
+        let contentLine = "";
+        let categoryText = Dictionary.get('MAP_TYPE_' + publicMaps[i].category.toUpperCase());
+        contentLine += `<p>[${publicMaps[i].lang.toUpperCase()}][${categoryText}] ${publicMaps[i].name} - <i>${Dictionary.get('INDEX_MAP_CREATOR')} <b>${publicMaps[i].userName}</b></i>
         <a href="histoAtlas.html?mapId=${publicMaps[i].id}&edit=false"><img class="icon-action" src="img/menu/eye-solid.svg" title="${Dictionary.get('INDEX_MAP_VIEW')}" /></a>`;
 
         if(publicMaps[i].publicEditable)
         {
-          content += `<a href="histoAtlas.html?mapId=${publicMaps[i].id}"><img class="icon-action" src="img/menu/edit-solid.svg" title="${Dictionary.get('INDEX_MAP_EDIT_COPY')}" /></a>`;
+          contentLine += `<a href="histoAtlas.html?mapId=${publicMaps[i].id}"><img class="icon-action" src="img/menu/edit-solid.svg" title="${Dictionary.get('INDEX_MAP_EDIT_COPY')}" /></a>`;
         }
 
-        content += `<a><img class="iframe-publicmap" id="iframeContent_${publicMaps[i].id}" src="img/menu/iframe.png" title="${Dictionary.get('INDEX_MAP_EXPORT_MAP')}" /></a>
+        contentLine += `<a><img class="iframe-publicmap" id="iframeContent_${publicMaps[i].id}" src="img/menu/iframe.png" title="${Dictionary.get('INDEX_MAP_EXPORT_MAP')}" /></a>
         <input id="iframeContent-${publicMaps[i].id}" style="display:none; width:1150px; margin-left: 5px"></input>`;
         
-        content += `</p>`;
+        contentLine += `</p>`;
+
+        if(publicMaps[i].topVisibility)
+        {
+          contentFeatured += contentLine;
+        }
+        else
+        {
+          contentPublic += contentLine;
+        }
       }
 
-      $("#public-maps").html(content);
+      $("#public-maps").html(contentPublic);
+      $("#featured-maps").html(contentFeatured);
 
       // Manage iframe
       $(".iframe-publicmap").click(function() 
@@ -291,6 +362,7 @@ Config.load().then((config) =>
     function displayUser(user)
     {
       $("#connexion-div").html(`<h3 id="user-name-logged-in">${user}</h3><button id="logout" class="button-loggin">${Dictionary.get('INDEX_LOGOUT')}</button><br/><br/><a href="pages/profile.html"><button id="profile" class="button-loggin">${Dictionary.get('INDEX_PROFIL')}</button></a>`);
+      $("#registration-button").css("display", "none");
 
       $("#logout").click(function() 
       {
@@ -299,8 +371,6 @@ Config.load().then((config) =>
 
         document.location.href="index.html";
       });
-
-
     }
 
     /*
@@ -375,13 +445,14 @@ Config.load().then((config) =>
     $("#description").html(Dictionary.get('INDEX_DESCRIPTION'));
     $("#help-menu-link-text").html(Dictionary.get('INDEX_HELP_MENU'));
     $("#video-link-text").html(Dictionary.get('INDEX_VIDEO_LINK_TEXT'));
-    $("#version-link-text").html(Dictionary.get('INDEX_VERSION_LINK_TEXT') + "7");
+    $("#version-link-text").html(Dictionary.get('INDEX_VERSION_LINK_TEXT') + "8");
     $("#contact-link-text").html(Dictionary.get('INDEX_CONTACT_LINK_TEXT'));
     $("#support-link-text").html(Dictionary.get('INDEX_SUPPORT_LINK_TEXT'));
     $("#source-code-link-text").html(Dictionary.get('INDEX_SOURCE_CODE_LINK_TEXT'));
     $("#twitter-link-text").html(Dictionary.get('INDEX_TWITTER_LINK_TEXT'));
     $("#creator-link-text").html(Dictionary.get('INDEX_CREATOR_LINK_TEXT'));
     $("#create_empty_map").html(Dictionary.get('INDEX_BOUTON_CREATE_NEW_MAP'));
+    $("#featured-maps-title").html(Dictionary.get('INDEX_FEACTURED_MAPS_TITLE'));
 
     $("#connexion-button").html(Dictionary.get('INDEX_CONNEXION'));
     $("#registration-button").html(Dictionary.get('INDEX_REGISTRATION'));
@@ -391,11 +462,11 @@ Config.load().then((config) =>
 
     if(Dictionary.lang == "fr")
     {
-      $("#version-link").prop("href", "pages/version7.html");
+      $("#version-link").prop("href", "pages/version8.html");
     }
     else if(Dictionary.lang == "en")
     {
-      $("#version-link").prop("href", "pages/version7_en.html");
+      $("#version-link").prop("href", "pages/version8_en.html");
       $("#creator-link").prop("href", "http://dataexplorer.hd.free.fr/Presentation/index_en.html");
     }
   });

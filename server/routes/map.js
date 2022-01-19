@@ -15,6 +15,10 @@ router.get('/getGuest/:id', mapCtrl.getMapGuest);
 router.post('/changePublicState', auth, mapCtrl.changePublicState);
 router.post('/changeEditableState', auth, mapCtrl.changeEditableState);
 
+router.post('/createNewMap', mapCtrl.createNewMap);
+
+router.post('/rename', mapCtrl.rename);
+
 router.delete('', auth, mapCtrl.delete);
 
 module.exports = router;

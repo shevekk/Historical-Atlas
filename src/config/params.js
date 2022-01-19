@@ -29,7 +29,7 @@ class Params
     this.defaultPosition = [46.7213889, 2.4011111];
 
     this.backgroundDefault = "openstreetmap";
-    this.backgrounds = ["openstreetmap", "arcgis", "mundialis", "empty"];
+    this.backgrounds = ["openstreetmap", "esri_WorldPhysical", "arcgis", "cartoDB_PositronNoLabels"];
 
     this.timeEnable = false;
     this.timeMin = 1900;
@@ -98,6 +98,8 @@ class Params
       {
         this.description = "";
       }
+
+      $("#description-text").html(this.description);
     }
   }
 

@@ -640,3 +640,44 @@
 {
   background-color: #31406e;
 }
+
+/* */
+.geojson-import-button-action
+{
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+.geojson-import-polygon-right
+{
+  /* float: right; */
+  display: inline-block;
+}
+
+.geojson-import-polygon
+{
+  /*display: inline-block;*/
+  margin-top : 4px;
+  margin-bottom : 4px;
+}
+
+.geojson-import-polygon-zone
+{
+  display : inline-block;
+  margin-left: 5px;
+}
+
+.geojson-import-point-add
+{
+  margin-left: 15px;
+  
+}
+
+.geojson-import-point-add-label
+{
+  margin-right: 11px;
+}
+
+.geojson-import-point-label
+{
+}

@@ -3,13 +3,108 @@
     "name" : "OpenStreetMap",
     "type" : "tile",
     "url" : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    "attribution" : "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
+    "params" : {
+      "noWrap": true,
+      "attribution" : "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
+    }
+  },
+  "openTopoMap" : {
+    "name" : "OpenTopoMap",
+    "type" : "tile",
+    "url" : "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+    "params" : {
+      "noWrap": true,
+      "attribution" : "Map data: &copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors, <a href='http://viewfinderpanoramas.org'>SRTM</a> | Map style: &copy; <a href='https://opentopomap.org'>OpenTopoMap</a> (<a href='https://creativecommons.org/licenses/by-sa/3.0/'>CC-BY-SA</a>)"
+    }
+  },
+  "stamen_TerrainBackground" : {
+    "name" : "TerrainBackground",
+    "type" : "tile",
+    "url" : "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain-background/{z}/{x}/{y}{r}.{ext}",
+    "params" : {
+      "noWrap": true,
+      "attribution" : "Map tiles by <a href='http://stamen.com'>Stamen Design</a>, <a href='http://creativecommons.org/licenses/by/3.0'>CC BY 3.0</a> &mdash; Map data &copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
+      "subdomains": "abcd",
+      "ext": "png"
+    }
+  },
+  "esri_WorldTerrain" : {
+    "name" : "Esri WorldTerrain",
+    "type" : "tile",
+    "url" : "https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}",
+    "params" : {
+      "noWrap": true,
+      "attribution" : "Tiles &copy; Esri &mdash; Source: USGS, Esri, TANA, DeLorme, and NPS"
+    }
+  },
+  "esri_WorldPhysical" : {
+    "name" : "Esri WorldPhysical",
+    "type" : "tile",
+    "url" : "https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}",
+    "params" : {
+      "noWrap": true,
+      "attribution" : "Tiles &copy; Esri &mdash; Source: US National Park Service"
+    }
+  },
+  "esri_WorldGrayCanvas" : {
+    "name" : "Esri WorldGrayCanvas",
+    "type" : "tile",
+    "url" : "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+    "params" : {
+      "noWrap": true,
+      "attribution" : "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ"
+    }
+  },
+  "cartoDB_Positron" : {
+    "name" : "CartoDB Positron",
+    "type" : "tile",
+    "url" : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+    "params" : {
+      "noWrap": true,
+      "attribution" : "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>",
+      "subdomains": "abcd"
+    }
+  },
+  "cartoDB_PositronNoLabels" : {
+    "name" : "CartoDB PositronNoLabels",
+    "type" : "tile",
+    "url" : "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png",
+    "params" : {
+      "noWrap": true,
+      "attribution" : "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>",
+      "subdomains": "abcd"
+    }
+  },
+  "cartoDB_DarkMatterNoLabels" : {
+    "name" : "CartoDB DarkMatterNoLabels",
+    "type" : "tile",
+    "url" : "https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png",
+    "params" : {
+      "noWrap": true,
+      "attribution" : "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>",
+      "subdomains": "abcd"
+    }
+  },
+  "geoportailFrance_orthos" : {
+    "name" : "Geoportail Ortho",
+    "type" : "tile",
+    "url" : "https://wxs.ign.fr/{apikey}/geoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE={style}&TILEMATRIXSET=PM&FORMAT={format}&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+    "params" : {
+      "noWrap": true,
+      "attribution" : "<a target='_blank' href='https://www.geoportail.gouv.fr/'>Geoportail France</a>",
+      "apikey": "choisirgeoportail",
+      "format": "image/jpeg",
+      "style": "normal"
+    }
   },
   "arcgis" : {
     "name" : "ArcGIS",
     "type" : "tile",
     "url" : "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    "attribution" : ""
+    "params" : {
+      "noWrap": true,
+      "attribution" : ""
+    }
   },
   "mundialis" : {
     "name" : "Mundialis",
@@ -19,7 +114,7 @@
     "attribution" : ""
   },
   "empty" : {
-    "name" : "Vide",
+    "name" : "Empty",
     "type" : "empty",
     "attribution" : ""
   }

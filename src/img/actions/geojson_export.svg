@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="100"
+   height="100"
+   version="1.1"
+   id="svg64"
+   sodipodi:docname="geojson_export.svg"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
+  <metadata
+     id="metadata70">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs68">
+    <rect
+       x="-6.6551226"
+       y="-1.9965368"
+       width="113.80259"
+       height="46.585862"
+       id="rect1760" />
+    <rect
+       x="0.9982684"
+       y="3.6603175"
+       width="118.12844"
+       height="112.80433"
+       id="rect1742" />
+  </defs>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview66"
+     showgrid="false"
+     inkscape:zoom="1.0625"
+     inkscape:cx="-218.22878"
+     inkscape:cy="107.43722"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg64" />
+  <text
+     xml:space="preserve"
+     id="text1740"
+     style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.45;font-family:sans-serif;letter-spacing:1.49px;word-spacing:-4.43px;white-space:pre;shape-inside:url(#rect1742);fill:#000090;fill-opacity:1;stroke:none;"
+     transform="translate(0,-18.9671)"><tspan
+       x="0.99804688"
+       y="52.582677"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:48px;font-family:'Bauhaus 93';-inkscape-font-specification:'Bauhaus 93 Bold';fill:#000090;fill-opacity:1">GEO</tspan></tspan></text>
+  <path
+     fill="currentColor"
+     d="M 56.95487,52.406627 V 34.879992 H 26.038558 c -2.055935,0 -3.709957,1.378933 -3.709957,3.092935 v 59.796737 c 0,1.714 1.654022,3.092946 3.709957,3.092946 H 77.97796 c 2.055935,0 3.709957,-1.378946 3.709957,-3.092946 V 55.499561 H 60.664826 c -2.040476,0 -3.709956,-1.391822 -3.709956,-3.092934 z M 68.772628,79.645073 53.867876,91.978151 c -1.027967,0.851847 -2.688173,0.851847 -3.716141,0 L 35.246982,79.645073 c -1.569003,-1.297744 -0.468383,-3.525945 1.739042,-3.525945 H 47.06165 V 65.809345 c 0,-1.139231 1.106804,-2.061958 2.473305,-2.061958 h 4.946609 c 1.366501,0 2.473306,0.922727 2.473306,2.061958 v 10.309783 h 10.075624 c 2.207425,0 3.308045,2.228201 1.742134,3.525945 z M 80.605846,48.411583 65.472312,35.782098 c -0.695616,-0.579924 -1.638564,-0.902106 -2.627887,-0.902106 h -0.942947 v 16.495653 h 19.786439 v -0.78612 c 0,-0.811893 -0.386454,-1.598018 -1.082071,-2.177942 z"
+     id="path2"
+     style="stroke-width:0.141143" />
+</svg>

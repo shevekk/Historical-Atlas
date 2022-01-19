@@ -61,6 +61,8 @@ class Main
 
       me.actionsList = new ActionList();
 
+      me.copyManager = new CopyManager(me.map, me.actionsList);
+
       me.backMenuControl = new BackMenuControl({params : me.params, paintParams : me.paintParams}).addTo(me.map);
       me.backgroundControl = new BackgroundControl({paintParams : me.paintParams, jsonBackgrounds : jsonBackgrounds}).addTo(me.map);
       me.backgroundControl.updateList(me.params.backgrounds, jsonBackgrounds);
@@ -75,8 +77,9 @@ class Main
       me.layersManager = new LayersManager({params : me.params, paintParams : me.paintParams, cursorManager : me.cursorManager, map: me.map, layersControl :me.layersControl});
 
       me.loadSaveManager = new LoadSaveManager(me.map, me.layersManager, me.params, me.backgroundControl, me.timeControl, me.layersControl, me.actionsList, jsonBackgrounds);
+      me.geoJsonManager = new GeoJsonManager(me.map, me.layersManager, me.layersControl, me.timeControl, me.actionsList, me.loadSaveManager, me.params);
 
-      me.actionsControl = new ActionsControl({cursorManager : me.cursorManager, paintParams : me.paintParams, layersManager: me.layersManager, params : me.params, loadSaveManager : me.loadSaveManager, layersControl : me.layersControl, actionsList : me.actionsList}).addTo(me.map);
+      me.actionsControl = new ActionsControl({cursorManager : me.cursorManager, paintParams : me.paintParams, layersManager: me.layersManager, params : me.params, loadSaveManager : me.loadSaveManager, layersControl : me.layersControl, actionsList : me.actionsList, copyManager : me.copyManager, geoJsonManager : me.geoJsonManager}).addTo(me.map);
 
       me.loadSaveManager.actionsControl = me.actionsControl;
       me.layersManager.actionsControl = me.actionsControl;
@@ -120,12 +123,19 @@ class Main
         $("#loading").html("");
 
         me.manageControlFromWindowSize();
+
+        me.loadSaveManager.callServer("map/createNewMap", "post", {});
       }
 
       me.manageDescription();
       me.manageMapEvents();
 
-      // you can also toggle fullscreen from map object
+      // If mobile -> Fullcreen
+      if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+      {
+        defaultFullScreen = true;
+      }
+
       if(defaultFullScreen)
       {
         me.toggleFullScreen();
@@ -186,6 +196,11 @@ class Main
         me.map.dragging.enable();
       }
 
+      else if(me.copyManager.enable)
+      {
+        me.copyManager.endDraw();
+      }
+
       else if(me.paintParams.selectionState)
       {
         me.actionsControl.manageSelection(e);
@@ -198,13 +213,11 @@ class Main
       {
         me.layersManager.layerGroups[0].layer.closePopup();
 
-        
         if(!me.paintParams.selectionState)
         {
           if(me.paintParams.scrollDisable)
           {
             me.layersManager.addOrRemoveContent(e);
-
           }
         }
       }
@@ -225,7 +238,11 @@ class Main
           me.cursorManager.updateCursorPosition(e, me.layersManager.selectedLayer);
         }
         
-        if(me.paintParams.mouseDown && me.paintParams.scrollDisable)
+        if(me.paintParams.mouseDown && me.copyManager.enable)
+        {
+          me.copyManager.addPoint(e);
+        }
+        else if(me.paintParams.mouseDown && me.paintParams.scrollDisable)
         {
           me.layersManager.addOrRemoveContent(e, me.actionsList);
         }
@@ -259,7 +276,9 @@ class Main
         me.backgroundControl.redraw();
         me.timeControl.redraw();
         me.settingsControl.redraw();
-        me.backMenuControl.redraw()
+        me.backMenuControl.redraw();
+
+        me.manageDescription();
 
         $("#language-choise-text").html(Dictionary.get("MAP_DESC_LANG_CHOISE"));
       });
@@ -318,6 +337,12 @@ class Main
         }
       });
     });
+
+    // Manage choise type
+    $("#type-map-choise-history-label").html(Dictionary.get("MAP_TYPE_HISTORY"));
+    $("#type-map-choise-uchrony-label").html(Dictionary.get("MAP_TYPE_UCHRONY"));
+    $("#type-map-choise-present-label").html(Dictionary.get("MAP_TYPE_PRESENT"));
+    $("#type-map-choise-text").html(Dictionary.get("MAP_TYPE_TEXT"));
   }
 
   /**

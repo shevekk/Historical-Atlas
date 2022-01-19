@@ -92,15 +92,40 @@ class PaintZone
   }
 
   /**
-   * Fill In (transform geom to polygon)
+   * Fill In (transform geom to polygons and recreate a multipolygon)
    */
   fillIn()
   {
-    var rewind = turf.rewind(this.geom);
+    let polygonsList = [];
+    
+    if(this.geom.geometry.type == "Polygon")
+    {
+      var rewind = turf.rewind(this.geom);
+      polygonsList.push(rewind.geometry);
+    }
+    else
+    {
+      this.geom.geometry.coordinates.forEach(function(coords){
+        var feat={'type':'Polygon','coordinates':coords};
+        polygonsList.push(feat);
+      });
+    }
 
-    rewind.geometry.coordinates.splice(1, rewind.geometry.coordinates[0].length - 1);
+    this.geom  = {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": []
+      },
+    };
 
-    this.geom = rewind;
+    for(let i = 0; i < polygonsList.length; i++)
+    {
+      polygonsList[i].coordinates.splice(1, polygonsList[i].coordinates[0].length - 1);
+      this.geom.geometry.coordinates.push(polygonsList[i].coordinates);
+    }
+
+    this.geom = turf.union(this.geom, this.geom);
   }
 
   /**
@@ -140,5 +165,20 @@ class PaintZone
   {
     this.startDate = DateConverter.updateTypeDate(this.startDate, oldTypeDate, newTypeDate, false);
     this.endDate = DateConverter.updateTypeDate(this.endDate, oldTypeDate, newTypeDate, true);
+  }
+
+  /**
+   * Create auto border with all other layers
+   * @param {LayersManager}               layersManager                   The layerManager
+   */
+  autoBorder(layersManager)
+  {
+    for(let i = 0; i < layersManager.layerGroups.length; i++)
+    {
+      if(layersManager.layerGroups[i].selectedZone && layersManager.layerGroups[i].selectedZone != this)
+      {
+        this.geom = turf.difference(this.geom, layersManager.layerGroups[i].selectedZone.geom);
+      }
+    }
   }
 }

@@ -5,10 +5,11 @@ const config = require('../params/config');
 const nodemailer = require('nodemailer');
 const url = require('url');
 const { v4: uuidv4 } = require('uuid');
+const log = require("./log");
 
 /*
  * Log an user, check if password and user are correct
- * @param {String}                      req.body.name                       The user name
+ * @param {String}                      req.body.name                       The user name or mail
  * @param {String}                      req.body.password                   The password
  * @return                                                                  User token
  */
@@ -16,7 +17,7 @@ exports.login = (req, res, next) =>
 {
   config.connectBDD().then((db) => {
 
-    let sql = `SELECT * FROM users WHERE name = "${req.body.name}"`;
+    let sql = `SELECT * FROM users WHERE (name = "${req.body.name}" OR mail="${req.body.name}")`;
 
     db.query(sql).then((result) => {
       //if (err) { console.log(err); res.status(500).send({ error: err }) };
@@ -33,13 +34,14 @@ exports.login = (req, res, next) =>
             }
 
             // Update connexion date
-            let sqlDateUpdate = `UPDATE users SET login_date = '${new Date().toISOString().slice(0, 19).replace("T", " ")}' WHERE name = "${req.body.name}"`;
+            let sqlDateUpdate = `UPDATE users SET login_date = '${new Date().toISOString().slice(0, 19).replace("T", " ")}' WHERE (name = "${req.body.name}" OR mail="${req.body.name}")`;
 
             //console.log(sqlDateUpdate);
 
             db.query(sqlDateUpdate).then((result) => {
 
               db.end();
+              log.log("login", {name : req.body.name, succes : true});
 
               config.getTokenKey().then((tokenKey) => {
                 res.status(201).json({
@@ -57,6 +59,7 @@ exports.login = (req, res, next) =>
       }
       else
       {
+        log.log("login", {name : req.body.name, succes : false});
         return res.status(401).json({ error: 'SERVER_USER_OR_PASS_INVALID' });
       }
     }).catch(error => { res.status(500).json({ error }) });
@@ -92,6 +95,7 @@ exports.registration = (req, res, next) =>
           db.query(sql).then(result => {
 
             db.end();
+            log.log("registration", {name : req.body.name, mail : req.body.mail, lang : req.body.lang, newsletter : req.body.newsletter, succes : false});
 
             config.getTokenKey().then((tokenKey) => {
               res.status(200).json({
@@ -103,9 +107,12 @@ exports.registration = (req, res, next) =>
                 )
               });
             }).catch(error => res.status(500).json({ error : "SERVER_READ_CONFIG_FAIL" }));
-          }).catch(error => { db.end(); res.status(500).json({ error: 'SERVER_QUERY_CREATION_FAIL' }) });
+          }).catch(error => { db.end(); log.log("registration", {name : req.body.name, mail : req.body.mail, lang : req.body.lang, newsletter : req.body.newsletter, succes : false}); res.status(500).json({ error: 'SERVER_QUERY_CREATION_FAIL' }) });
         }
-      }).catch(error => { db.end(); res.status(500).send({ error: 'SERVER_QUERY_FAIL' }) });
+      }).catch(error => { 
+        log.log("registration", {name : req.body.name, mail : req.body.mail, lang : req.body.lang, newsletter : req.body.newsletter, succes : false});
+        db.end(); res.status(500).send({ error: 'SERVER_QUERY_FAIL' }) 
+      });
     }).catch(error => { res.status(500).json({ error }) });
   });
 }
@@ -263,7 +270,7 @@ exports.changePassword = (req, res, next) =>
 
 /*
  * Forgot password : generate key and send mail
- * @param {String}                      req.body.userName                    The target user name
+ * @param {String}                      req.body.userName                    The target user name or mail
  * @return                                                                   Empty
  */
 exports.forgotPassword = (req, res, next) => 
@@ -272,7 +279,7 @@ exports.forgotPassword = (req, res, next) =>
 
     let generated_key = uuidv4();
 
-    let sqlGetMail = `SELECT * FROM users WHERE name = "${req.body.userName}"`;
+    let sqlGetMail = `SELECT * FROM users WHERE (name = "${req.body.userName}" OR mail = "${req.body.userName}")`;
 
     db.query(sqlGetMail).then(resultGetMail => {
 
@@ -373,6 +380,8 @@ exports.resetPassword = (req, res, next) =>
 
       db.query(sql).then(result => {
 
+        log.log("forgotPassword", {name : userName});
+
         db.end();
 
         res.status(200).send({});
@@ -398,6 +407,8 @@ exports.resetPasswordCheckVality = (db, token) =>
     let sql = `SELECT * FROM password_reset WHERE generated_key = "${token}"`;
 
     db.query(sql).then(result => {
+
+      console.log(result);
 
       if(result.length > 0)
       {
@@ -475,14 +486,14 @@ exports.getNewsletterState  = (req, res, next) =>
 /*
  * Set newsletter state
  * @param {String}                      req.body.newsletter              The new newsletter state
- * @param {String}                      req.body.name                    The user name
+ * @param {String}                      req.body.name                    The user name or mail
  * @return                                                               empty
  */
 exports.changeNewsletterState = (req, res, next) => 
 {
   config.connectBDD().then((db) => {
 
-    let sql = `UPDATE users SET newsletter = ${req.body.newsletter} WHERE name = "${req.body.user}"`;
+    let sql = `UPDATE users SET newsletter = ${req.body.newsletter} WHERE (name = "${req.body.user}" OR mail = "${req.body.user}")`;
 
     db.query(sql).then(result => {
       db.end();

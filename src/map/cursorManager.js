@@ -8,7 +8,7 @@ var CursorManager = L.Class.extend({
 
   /* 
    * Initialize the layersControl
-   * @property {Obeject}                position            Position with lat, long of the cursor
+   * @property {Object}                 position            Position with lat, long of the cursor
    * @property {L.LayerGroup}           layer               The layer group of the cursor
    * @property {Param}                  params              Application params
    * @property {paintParams}            paintParams         Paint params

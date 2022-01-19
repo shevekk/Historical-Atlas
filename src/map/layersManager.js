@@ -60,7 +60,7 @@ var LayersManager = L.Class.extend({
       {
         if(this.selectedLayer.selectedZone)
         {
-          this.selectedLayer.addContent(geom)
+          this.selectedLayer.addContent(geom);
         }
         else
         {
@@ -274,8 +274,8 @@ var LayersManager = L.Class.extend({
   {
     this.layersControl.actionsList.addActionMoveLabel(this.selectedLayer);
 
-    this.selectedLayer.label.setCustomPosition(this.selectedLayer.selectedZone.number, [e.latlng.lng, e.latlng.lat])
-    this.selectedLayer.label.redraw(this.selectedLayer.layer, this.selectedLayer.selectedZone.geom, this.selectedLayer.selectedZone.number)
+    this.selectedLayer.label.setCustomPosition(this.selectedLayer.selectedZone.number, [e.latlng.lng, e.latlng.lat]);
+    this.selectedLayer.label.redraw(this.selectedLayer.layer, this.selectedLayer.selectedZone.geom, this.selectedLayer.selectedZone.number);
   },
 
   /*

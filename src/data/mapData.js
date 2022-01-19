@@ -19,6 +19,7 @@ class MapData
     this.publicEditable = null;
     this.userName = null;
     this.lang = null;
+    this.category = null;
   }
 
   fromJson(jsonData)
@@ -31,6 +32,7 @@ class MapData
     this.topVisibility = jsonData["top_visibility"];
     this.publicEditable = jsonData["public_editable"];
     this.lang = jsonData["lang"];
+    this.category = jsonData["category"];
 
     if(jsonData["user_name"])
     {

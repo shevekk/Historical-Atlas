@@ -150,7 +150,7 @@ class ParentLayerDiv
    */
   modifyPopUp()
   {
-    $("#textAreaModifyPopUp").val(this.parentLayer.paintZones[0].popupContent);
+    $("#textAreaModifyPopUp").val(this.parentLayer.paintZones[0].popupContent.replaceAll("<br/>\n", "\n"));
 
     let me = this;
 
@@ -186,7 +186,7 @@ class ParentLayerDiv
   {
     me.layersControl.actionsList.addActionPopUpContent(me.parentLayer.paintZones[0], me.parentLayer);
 
-    me.parentLayer.paintZones[0].popupContent = $("#textAreaModifyPopUp").val();
+    me.parentLayer.paintZones[0].popupContent = $("#textAreaModifyPopUp").val().replaceAll("\n", "<br/>\n");
     me.parentLayer.redraw();
   }
 
@@ -226,7 +226,7 @@ class ParentLayerDiv
    */
   addPaintZone(numberZoneToCopy)
   {
-    this.parentLayer.addPaintZone(numberZoneToCopy);
+    this.parentLayer.addPaintZone(numberZoneToCopy, true);
     this.redraw();
 
     this.paintZoneDiv[this.paintZoneDiv.length -1].select();

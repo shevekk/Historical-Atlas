@@ -3,6 +3,7 @@ const config = require('../params/config');
 const user = require('./user');
 const fs = require('fs');
 const url = require('url');
+const log = require("./log");
 
 /*
  * Save a map
@@ -31,9 +32,11 @@ exports.save = (req, res, next) =>
 
       config.connectBDD().then((db) => {
 
+        log.log("saveMap", {name : req.body.user, fileUrl : fileUrl});
+
         if(req.body.exist)
         {
-          let sql = `UPDATE maps SET lang = '${req.body.lang}' WHERE name = '${req.body.name}' AND user_id = '${userId}'`;
+          let sql = `UPDATE maps SET lang = '${req.body.lang}', category = '${req.body.type}' WHERE name = '${req.body.name}' AND user_id = '${userId}'`;
 
           db.query(sql).then((result) => {
 
@@ -44,7 +47,7 @@ exports.save = (req, res, next) =>
         }
         else
         {
-          let sql = `INSERT INTO maps (user_id, name, url, lang) VALUES ('${userId}', '${req.body.name}', '${fileUrl}', '${req.body.lang}')`;
+          let sql = `INSERT INTO maps (user_id, name, url, lang, category) VALUES ('${userId}', '${req.body.name}', '${fileUrl}', '${req.body.lang}', '${req.body.type}')`;
 
           db.query(sql).then((result) => {
 
@@ -148,13 +151,13 @@ exports.getMap = (req, res, next) =>
 
   if(editMode == true || editMode == "true")
   {
-    sql = `SELECT maps.url, maps.name, maps.views, users.name as user_name, maps.lang FROM maps 
+    sql = `SELECT maps.url, maps.name, maps.views, users.name as user_name, maps.lang, maps.category FROM maps 
             LEFT JOIN users ON users.id = maps.user_id 
             WHERE maps.id = ${req.params.id} AND (users.name = "${user}" OR (maps.public AND maps.public_editable))`;
   }
   else
   {
-    sql = `SELECT maps.url, maps.name, maps.views, users.name as user_name, maps.lang FROM maps 
+    sql = `SELECT maps.url, maps.name, maps.views, users.name as user_name, maps.lang, maps.category FROM maps 
             LEFT JOIN users ON users.id = maps.user_id 
             WHERE maps.id = ${req.params.id} AND (users.name = "${user}" OR maps.public)`;
   }
@@ -176,13 +179,13 @@ exports.getMapGuest = (req, res, next) =>
 
   if(editMode == true || editMode == "true")
   {
-    sql = `SELECT maps.url, maps.name, maps.views, users.name as user_name, maps.lang FROM maps 
+    sql = `SELECT maps.url, maps.name, maps.views, users.name as user_name, maps.lang, maps.category FROM maps 
             LEFT JOIN users ON users.id = maps.user_id 
             WHERE maps.id = ${req.params.id} AND (maps.public AND maps.public_editable)`;
   }
   else
   {
-    sql = `SELECT maps.url, maps.name, maps.views, users.name as user_name, maps.lang FROM maps 
+    sql = `SELECT maps.url, maps.name, maps.views, users.name as user_name, maps.lang, maps.category FROM maps 
             LEFT JOIN users ON users.id = maps.user_id 
             WHERE maps.id = ${req.params.id} AND maps.public`;
   }
@@ -202,7 +205,6 @@ exports.getMapGuest = (req, res, next) =>
 exports.getMapManage = (sql, id, editMode, userName, res) =>
 {
   config.connectBDD().then((db) => {
-
 
     db.query(sql).then((result) => {
 
@@ -227,7 +229,8 @@ exports.getMapManage = (sql, id, editMode, userName, res) =>
           }
           
           db.end();
-          res.status(200).json({data : data, views : views, name : result[0]['name'], lang : result[0]['lang']});
+          log.log("getMap", {name : result[0]['name'], url : result[0]['url']});
+          res.status(200).json({data : data, views : views, name : result[0]['name'], lang : result[0]['lang'], type : result[0]['category']});
         });
 
      }).catch(error => { db.end(); res.status(500).json({ error: 'SERVER_QUERY_FAIL' })});
@@ -287,7 +290,8 @@ exports.changeEditableState = (req, res, next) =>
   }).catch((e) => { db.end(); res.status(500).json({ error: 'SERVER_CONNEXION_DATABASE_FAIL' }) });
 }
 
- /* Delete a file and update database
+/* 
+ * Delete a file and update database
  * @param {Number}                      req.params.id                       The id of the map
  * @param {String}                      req.query.user                      The user name
  * @return {Object}                                                         Object empty
@@ -312,6 +316,7 @@ exports.delete = (req, res, next) =>
 
         fs.unlink(fileUrl, (err) => {
 
+          log.log("delete", {name : req.body.user, mapId : req.body.id, fileUrl : fileUrl});
           db.end();
           
           if (err) 
@@ -323,6 +328,61 @@ exports.delete = (req, res, next) =>
         });
 
       }).catch(error => { db.end(); res.status(500).json({ error: 'SERVER_QUERY_FAIL' }) });
+    }).catch(error => { db.end(); res.status(500).json({ error: 'SERVER_QUERY_FAIL' })});
+
+  }).catch((e) => { db.end(); res.status(500).json({ error: 'SERVER_CONNEXION_DATABASE_FAIL' }) });
+}
+
+/*
+ * Create a new map action
+ */
+exports.createNewMap = (req, res, next) => 
+{
+  log.log("createNewFile", {});
+}
+
+/*
+ * Rename a map
+ * @param {String}                      req.body.user                       The user name
+ * @param {String}                      req.body.newName                    The new name in database
+ * @param {String}                      req.body.fileName                   The file name 
+ * @param {String}                      req.body.id                         Id of the map
+ */
+exports.rename = (req, res, next) => 
+{
+  let folderUrl = `files/${req.body.user}`;
+  let fileUrl = `${folderUrl}/${req.body.fileName}.json`;
+
+  config.connectBDD().then((db) => {
+
+    let sqlSelect = `SELECT maps.url as url FROM maps LEFT JOIN users ON users.id = maps.user_id WHERE maps.id = ${req.body.id}`;
+
+    db.query(sqlSelect).then((resultSelect) => {
+
+      if(resultSelect.length > 0)
+      {
+        let oldUrl = resultSelect[0]['url'];
+
+        let sql = `UPDATE maps SET name = '${req.body.newName}', url = '${fileUrl}' WHERE maps.id = ${req.body.id}`
+
+        db.query(sql).then((result) => {
+
+          fs.rename(oldUrl, fileUrl, function()
+          {
+              db.end();
+
+              log.log("renameMap", {name : req.body.user, oldFileUrl : oldUrl, newFileUrl : fileUrl, new_name : req.body.newName, id : req.body.id});
+
+              res.status(200).json({});
+          });
+
+        }).catch(error => { db.end(); res.status(500).json({ error: 'SERVER_QUERY_FAIL' }) });
+      }
+      else
+      {
+        db.end(); 
+        res.status(500).json({ error: 'SERVER_QUERY_FAIL' });
+      }
     }).catch(error => { db.end(); res.status(500).json({ error: 'SERVER_QUERY_FAIL' })});
 
   }).catch((e) => { db.end(); res.status(500).json({ error: 'SERVER_CONNEXION_DATABASE_FAIL' }) });

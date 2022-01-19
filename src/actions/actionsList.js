@@ -155,22 +155,6 @@ class ActionList
   }
 
   /**
-   * Add an action, update actions for limit to 10 and update redo actions
-   */
-  addAction()
-  {
-    if(this.actions.length > 10)
-    {
-      this.actions.shift();
-    }
-    
-    this.actionsControl.buttons["undo"].setActiveState(true);
-
-    this.actionsToRedo = [];
-    this.actionsControl.buttons["redo"].setActiveState(false);
-  }
-
-  /**
    * add an action of add, delete and remove a marker
    * @param {String}                    type                          The action type (add, delete, edit)
    * @param {Marker}                    marker                        The marker object
@@ -196,6 +180,72 @@ class ActionList
     this.actions.push(new ActionLoadJson(loadSaveManager));
 
     this.addAction();
+  }
+
+  /**
+   * Add a copy action
+   * @param {CopyManager}               copyManager                   The copy manager
+   */
+  addActionCopy(copyManager)
+  {
+    this.actions.push(new ActionCopy(copyManager));
+
+    this.addAction();
+  }
+
+  /**
+   * Add a new action of paste
+   * @param {LayersManager}          layersManager             The layer manager
+   */
+  addActionPaste(layersManager)
+  {
+    if(layersManager.selectedLayer.selectedZone)
+    {
+      this.actions.push(new ActionPaste(layersManager.selectedLayer.selectedZone, layersManager.selectedLayer, this.timeControl));
+
+      this.addAction();
+    }
+  }
+
+  /**
+   * Add a new action of paste
+   * @param {LayersManager}          layersManager             The layer manager
+   */
+  addActionAutoBorder(layersManager)
+  {
+    if(layersManager.selectedLayer.selectedZone)
+    {
+      this.actions.push(new ActionAutoBorder(layersManager.selectedLayer.selectedZone, layersManager.selectedLayer, this.timeControl));
+
+      this.addAction();
+    }
+  }
+
+  /**
+   * Add a new action of load geojson
+   * @param {LayersManager}          layersManager             The layer manager
+   */
+  addActionLoadGeojson(loadSaveManager)
+  {
+    this.actions.push(new ActionLoadGeojson(loadSaveManager));
+
+    this.addAction();
+  }
+
+  /**
+   * Add an action, update actions for limit to 10 and update redo actions
+   */
+  addAction()
+  {
+    if(this.actions.length > 10)
+    {
+      this.actions.shift();
+    }
+    
+    this.actionsControl.buttons["undo"].setActiveState(true);
+
+    this.actionsToRedo = [];
+    this.actionsControl.buttons["redo"].setActiveState(false);
   }
 
   /*
