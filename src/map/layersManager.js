@@ -98,7 +98,7 @@ var LayersManager = L.Class.extend({
     }
   },
 
-   /*
+  /*
    * Add a new layer with random color and update UI
    */
   addNewLayer : function()
@@ -230,6 +230,7 @@ var LayersManager = L.Class.extend({
       {
         this.markers.push(new Marker(this.paintParams, i));
         this.markers[i].fromJson(contentObj["markers"][i]);
+        this.markers[i].number = i;
       }
     }
 
@@ -292,6 +293,19 @@ var LayersManager = L.Class.extend({
     for(let i = 0; i < this.markers.length; i++)
     {
       this.markers[i].updateVisibilityFromTime(timeValue, this.map, this.params); 
+    }
+  },
+
+  /*
+   * Change the visible markers for a time area
+   * @param {Number}               startTime                 The start time value
+   * @param {Number}               endTime                   The end time value
+   */
+  displayTimeArea(startTime, endTime)
+  {
+    for(let i = 0; i < this.markers.length; i++)
+    {
+      this.markers[i].updateVisibilityFromTimeArea(startTime, endTime, this.map, this.params); 
     }
   },
 

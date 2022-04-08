@@ -21,6 +21,7 @@ var TimeControl = L.Control.extend({
     this.layersManager = options.layersManager;
     this.paintParams = options.paintParams;
     this.value = this.params.timeMin;
+    this.labelDate = options.labelDate;
   },
   
   /*
@@ -50,12 +51,21 @@ var TimeControl = L.Control.extend({
     L.DomEvent.addListener(this.rightButton, 'mousedown', L.DomEvent.stop);
     L.DomEvent.addListener(this.rightButton, 'mouseup', L.DomEvent.stop);
 
+    this.timeAreaButton = L.DomUtil.create('img', 'timeControl-change-img', this._container);
+    this.timeAreaButton.src = "img/menu/calendar-days-solid.svg";
+    this.timeAreaButton.title = Dictionary.get("MAP_TIMEAREA_DESCRIPTION");
+
+    L.DomEvent.addListener(this.timeAreaButton, 'dblclick', L.DomEvent.stop);
+    L.DomEvent.addListener(this.timeAreaButton, 'mousedown', L.DomEvent.stop);
+    L.DomEvent.addListener(this.timeAreaButton, 'mouseup', L.DomEvent.stop);
+
     this.title = L.DomUtil.create('p', 'time-slider-title', this._container);
     this.title.innerHTML = this.value;
 
     //var menuContent = L.DomUtil.create('div', 'leaflet-control-div-slider-content', this._container);
     this.cursor = L.DomUtil.create('input', 'time-slider', this._container);
     this.cursor.type = "range";
+    this.cursor.id = "time-slider";
     this.cursor.value = this.value;
     this.cursor.min = this.params.timeMin;
     this.cursor.max = this.params.timeMax;
@@ -68,6 +78,7 @@ var TimeControl = L.Control.extend({
 
     L.DomEvent.on(this.rightButton, 'click', function(e) { this.moveWithButton(true); this.paintParams.uiClick = true; }, this);
     L.DomEvent.on(this.leftButton, 'click', function(e) { this.moveWithButton(false); this.paintParams.uiClick = true; }, this);
+    L.DomEvent.on(this.timeAreaButton, 'click', function(e) { this.moveWithButton(false); this.initTimeAreaForm(); }, this);
 
     L.DomEvent.on(this.cursor, 'input change', this.changeValue, this);
 
@@ -81,6 +92,88 @@ var TimeControl = L.Control.extend({
   {
     this.leftButton.title = Dictionary.get("MAP_TIME_LAST");
     this.rightButton.title = Dictionary.get("MAP_TIME_NEXT");
+    this.timeAreaButton.title = Dictionary.get("MAP_TIMEAREA_DESCRIPTION");
+  },
+
+  /*
+   * Init the form for launch timeArea - display a dialog
+   */
+  initTimeAreaForm()
+  {
+    let me = this;
+
+    $("#dialog-time-area").prop("title", Dictionary.get("MAP_TIMEAREA_TITLE"));
+
+    let content = `<p>${Dictionary.get("MAP_TIMEAREA_DESCRIPTION")}</p>
+                  <div id="dialog-timeArea-start-div"><label for="dialog-timeArea-start">${Dictionary.get("MAP_TIMEAREA_START_DATE")}</label><input id="dialog-timeArea-start" type="text" style="width: 200px;"><br/><br/></div>
+                  <div id="dialog-timeArea-end-div"><label for="dialog-timeArea-end">${Dictionary.get("MAP_TIMEAREA_END_DATE")}</label><input id="dialog-timeArea-end" type="text" style="width: 200px;"><br/><br/></div>`;
+
+    $("#dialog-time-area").html(content);
+
+    me.dialogTimeArea = $("#dialog-time-area").dialog({
+      autoOpen: false,
+      height: 300,
+      width: 400,
+      modal: true,
+      buttons: {
+        Cancel: function() {
+          me.dialogTimeArea.dialog( "close" );
+        },
+        OK: function() {
+          me.launchTimeArea();
+        }
+      },
+      close: function() {
+        me.dialogTimeArea.dialog( "close" );
+      }
+    });
+
+    me.dialogTimeArea.dialog( "open" );
+  },
+
+  /*
+   * launch time area update visibility
+   */
+  launchTimeArea()
+  {
+    let startDateStr = $("#dialog-timeArea-start").val();
+    let endDateStr = $("#dialog-timeArea-end").val();
+    let startDate = null;
+    let endDate = null;
+
+    if(DateConverter.checkDateValid(startDateStr) && startDateStr != "")
+    {
+      startDate = DateConverter.dateToNumber(startDateStr, false, this.params);
+    }
+    else
+    {
+      alert(Dictionary.get("MAP_MARKER_START_DATE_INVALID"))
+    }
+
+    if(DateConverter.checkDateValid(endDateStr) && endDateStr != "")
+    {
+      endDate = DateConverter.dateToNumber(endDateStr, true, this.params);
+    }
+    else
+    {
+      alert(Dictionary.get("MAP_MARKER_END_DATE_INVALID"));
+    }
+
+    if(startDate != null && endDate != null)
+    {
+      if(endDate >= startDate)
+      {
+        this.dialogTimeArea.dialog( "close" );
+
+        // markers
+        this.setValue(startDate);
+        this.layersManager.displayTimeArea(startDate, endDate);
+      }
+      else
+      {
+        alert(Dictionary.get("MAP_TIMEAREA_END_DATE_GREATER_START_DATE"));
+      }
+    }
   },
 
   /*
@@ -231,7 +324,6 @@ var TimeControl = L.Control.extend({
     if(targetValue == this.value)
     {
       L.DomUtil.addClass(this.rightButton, 'timeControl-change-img-disable');
-      
     }
     else
     {
@@ -254,8 +346,12 @@ var TimeControl = L.Control.extend({
     this.layersManager.changeTime(value);
     this.layersManager.layersControl.changeSelectedZone();
 
+    this.labelDate.display(this.value);
+
     this.checkDisableLeftButton();
     this.checkDisableRightButton();
+
+
   },
 
   /*
@@ -282,6 +378,16 @@ var TimeControl = L.Control.extend({
       this.setValue(value);
 
       this.layersManager.changeTime(value);
+
+      // Get size of time bar
+      if(this.params.timeBarBigSize)
+      {
+        $(".time-slider").css("width", "600px");
+      }
+      else
+      {
+        $(".time-slider").css("width", "300px");
+      }
     }
     else
     {

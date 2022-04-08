@@ -19,7 +19,7 @@ class PaintZone
     this.number = number;
     this.params = params;
     this.startDate = DateConverter.dateToNumber(this.params.timeMin, false, this.params);
-    this.endDate = DateConverter.dateToNumber(this.params.timeMax, false, this.params);
+    this.endDate = DateConverter.dateToNumber(this.params.timeMax, true, this.params);
     this.popupContent = "";
   }
 
@@ -177,7 +177,7 @@ class PaintZone
     {
       if(layersManager.layerGroups[i].selectedZone && layersManager.layerGroups[i].selectedZone != this)
       {
-        this.geom = turf.difference(this.geom, layersManager.layerGroups[i].selectedZone.geom);
+        this.geom = turf.difference(turf.truncate(this.geom), turf.truncate(layersManager.layerGroups[i].selectedZone.geom));
       }
     }
   }

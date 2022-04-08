@@ -49,6 +49,7 @@ class LoadSaveManager
 
     content = this.params.toJson(content);
     content = this.layersManager.toJson(content);
+    content = PropertiesForm.toJson(content);
 
     let fileName = "export.json";
 
@@ -103,6 +104,7 @@ class LoadSaveManager
       };
       // start reading the file. When it is done, calls the onload event defined above.
       reader.readAsText(fileInput.files[0]);
+      $("#inputImportFile")[0].value = "";
     };
 
     fileInput.addEventListener('change', readFile);
@@ -194,6 +196,8 @@ class LoadSaveManager
     {
       this.layersManager.changeSelectZoneWithoutTime();
     }
+
+    PropertiesForm.fromJson(contentObj["properties"]);
   }
 
   /*
@@ -232,22 +236,24 @@ class LoadSaveManager
     let content = {};
     content = this.params.toJson(content);
     content = this.layersManager.toJson(content);
+    content = this.layersManager.toJson(content);
+    content = PropertiesForm.toJson(content);
 
-    this.callServer("map/checkIfFileExist", "POST", {name : name, user : localStorage.getItem('session-id-histoatlas')}).then((result) => {
+    // get lang
+    let mapLang = "";
+    $('input[name="map-lang"]').each(function() {
+      if(this.checked)
+      {
+        mapLang = this.value;
+      }
+    });
+
+    Utils.callServer("map/checkIfFileExist", "POST", {name : name, lang : mapLang, user : localStorage.getItem('session-id-histoatlas')}).then((result) => {
 
       if(!result.exist || confirm(Dictionary.get("MAP_SAVEANDLOAD_FILE_ALREADY_EXIST")))
       {
         $("#loading").html(Dictionary.get("MAP_SAVEANDLOAD_SAVE_IN_PROGRESS"));
         this.actionsControl.buttons["save"].hide();
-
-        // get lang
-        let mapLang = "";
-        $('input[name="map-lang"]').each(function() {
-          if(this.checked)
-          {
-            mapLang = this.value;
-          }
-        });
 
         // get map type
         let mapType = "";
@@ -258,13 +264,17 @@ class LoadSaveManager
           }
         });
 
-        let contentSave = {name : name, fileName : fileName, content : JSON.stringify(content), exist : result.exist, user : localStorage.getItem('session-id-histoatlas'), lang : mapLang, type : mapType};
+        let contentSave = {name : name, fileName : fileName, id : result.id, content : JSON.stringify(content), exist : result.exist, user : localStorage.getItem('session-id-histoatlas'), lang : mapLang, type : mapType};
         
-        this.callServer("map/save", "POST", contentSave).then((result) => {
+        Utils.callServer("map/save", "POST", contentSave).then((result) => {
 
           $("#loading").html("");
           this.actionsControl.buttons["save"].show();
+
+          //toastr.success(Dictionary.get("MAP_SAVEANDLOAD_SAVE_END"), 'Sauvegarde');
           alert(Dictionary.get("MAP_SAVEANDLOAD_SAVE_END"));
+
+          window.history.pushState("", "Title", window.location.href.split('histoAtlas.html')[0] + "histoAtlas.html?mapId=" + result.insertId);
 
         }).catch((err) => { alert(Dictionary.get("MAP_SAVEANDLOAD_SAVE_IMPOSSIBLE") + Dictionary.get(err.responseJSON.error)); });
       }
@@ -287,7 +297,7 @@ class LoadSaveManager
       apiName = `map/getGuest/${mapId}?editMode=${me.params.editMode}`
     }
 
-    me.callServer(apiName, "GET", {}).then((result) => {
+    Utils.callServer(apiName, "GET", {}).then((result) => {
 
       if(result.name)
       {
@@ -305,6 +315,8 @@ class LoadSaveManager
       $('#map-lang-' + result.lang).prop("checked", true);
 
       $('#type-map-choise-' + result.type).prop("checked", true);
+
+      document.title = `HistoAtlas : [${result.lang}][${result.type}]${result.name} (${result.userName})`;
 
       callback();
 
@@ -324,16 +336,17 @@ class LoadSaveManager
 
   /*
    * Check if the user is valid
+   * @param {Boolean}               reinitButton                     Reinit button if is True
    */
-  checkValidUser()
+  checkValidUser(reinitButton)
   {
     let me = this;
 
     if(localStorage.getItem('session-id-histoatlas'))
     {
-      this.callServer("user/checkValidUser", "GET").then((result) => {
+      Utils.callServer("user/checkValidUser", "GET").then((result) => {
 
-        if(!me.logged)
+        if(!me.logged || reinitButton)
         {
           me.actionsControl.updateLoggedState(true);
           me.logged = true;
@@ -356,36 +369,5 @@ class LoadSaveManager
         me.logged = false;
       //}
     }
-  }
-
-  /*
-   * Call an API in the server
-   * @param {String}               apiName                   The api name
-   * @param {String}               method                    The method (GET, POST, ...)
-   * @param {Object}               data                      Data of the API
-   */
-  callServer(apiName, method, data)
-  {
-    return new Promise(function(resolve, reject) 
-    {
-      Config.load().then((config) =>
-      {
-        let urlServer = config.serverUrl + "/api/" + apiName;
-
-        $.ajax({
-          url: urlServer,
-          method: method,
-          contentType: "application/json",
-          headers:{ 'Authorization': localStorage.getItem('session-token-histoatlas') }, // 
-          data: JSON.stringify(data),
-          success: (response) => {
-            resolve(response);
-          },
-          error: (err) => {
-            reject(err);
-          }
-        });
-      });
-    });
   }
 }

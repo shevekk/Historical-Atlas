@@ -73,6 +73,7 @@ class PaintZoneDiv
     }
 
     L.DomEvent.on(selectDiv, 'click', function(e) { this.select(); } , this);
+    L.DomEvent.on(selectDiv, 'dblclick', function(e) { this.zoomInLayer(); } , this);
   }
 
   /*
@@ -246,5 +247,14 @@ class PaintZoneDiv
   {
     this.div.style = "background-color : #ffffff";
     this.selected = false;
+  }
+
+  /*
+   * Map zoom in a paintlayer bounds (db-click)
+   * @param {PaintLayer}         paintLayer          The paint layer of the line
+   */
+  zoomInLayer()
+  {
+    this.parentLayer.map.fitBounds([[this.parentLayer.layer.getBounds().getNorth(), this.parentLayer.layer.getBounds().getEast()], [this.parentLayer.layer.getBounds().getSouth(), this.parentLayer.layer.getBounds().getWest()]])
   }
 }

@@ -7,13 +7,14 @@ class ActionButtonConnexionState
    * @property {L.Dom}        buttonDom             The button dom
    * @property {L.Dom}        image                 The image of the button
    */
-  constructor(container)
+  constructor(container, loadSaveManager)
   {
     this.buttonDom = L.DomUtil.create("a", "button-logged", container);
 
     this.image = L.DomUtil.create('img', '', this.buttonDom);
     this.image.style = "margin-top : 5px;margin-left:0px;width:20px;height:20px";
 
+    L.DomEvent.addListener(this.buttonDom, 'click', function(e) { loadSaveManager.checkValidUser(false); }, this);
     L.DomEvent.addListener(this.buttonDom, 'dblclick', L.DomEvent.stop);
     L.DomEvent.addListener(this.buttonDom, 'mousedown', L.DomEvent.stop);
     L.DomEvent.addListener(this.buttonDom, 'mouseup', L.DomEvent.stop);

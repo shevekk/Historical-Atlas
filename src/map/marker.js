@@ -77,7 +77,12 @@ class Marker
       if(this.popUpContent)
       {
         //this.marker = L.marker([this.position[0], this.position[1]], {icon: this.icon}).addTo(map).bindPopup(this.popUpContent).on('click', onClick);
-        this.marker.bindPopup(this.popUpContent).on('click', function(e) { me.closePopUpOnClick(e); });
+        this.marker.bindPopup(this.popUpContent).on('click', function(e) { 
+          me.closePopUpOnClick(e); 
+
+          let evt = new CustomEvent("selectMakerInMap", { detail: {markerNumber : me.number} }); 
+          document.dispatchEvent(evt); 
+        });
       }
 
       this.visible = true;
@@ -157,6 +162,45 @@ class Marker
         {
           this.clear();
         }
+      }
+      else
+      {
+        this.draw(map);
+      }
+    }
+    else
+    {
+      this.draw(map);
+    }
+  }
+
+  /**
+   * Update visibility of the marker if is in time area
+   * @param {Number}               startTime                 The start time value
+   * @param {Number}               endTime                   The end time value
+   * @param {L.Map}                  map                   The map
+   * @param {Params}                 params                The params
+   */
+  updateVisibilityFromTimeArea(startTime, endTime, map, params)
+  {
+    if(this.startDate || this.endDate)
+    {
+      if(!this.startDate)
+      {
+        this.startDate = params.timeMin;
+      }
+      if(!this.endDate)
+      {
+        this.endDate = params.timeMax;
+      }
+
+      if(this.startDate <= endTime && this.endDate >= startTime)
+      {
+        this.draw(map);
+      }
+      else
+      {
+        this.clear();
       }
     }
     else

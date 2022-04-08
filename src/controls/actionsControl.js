@@ -15,7 +15,7 @@ var ActionsControl = L.Control.extend({
   * @property {ActionButton[]}       buttons                 Button list
   * @property {L.Map}                map                     The map
   * @property {CursorManager}        cursorManager           The cursor manager
-  * @property {LayersManager}        layersManager           The layerd manager
+  * @property {LayersManager}        layersManager           The layers manager
   * @property {PaintParams}          paintParams             The paint params
   * @property {LoadSaveManager}      loadSaveManager         The load and save manager
   * @property {LayersControl}        layersControl           The layer control
@@ -100,7 +100,7 @@ var ActionsControl = L.Control.extend({
   {
     let me = this;
 
-    this.buttons["connexion_state"] = new ActionButtonConnexionState(this._container);
+    this.buttons["connexion_state"] = new ActionButtonConnexionState(this._container, this.loadSaveManager);
 
     this.buttons["undo"] = new ActionButtonSimple(this._container, "img/actions/undo-solid.svg", Dictionary.get("MAP_ACTIONS_CANCEL_ACTION"), function(e) { me.paintParams.uiClick = true; me.undo() });
     this.buttons["undo"].setActiveState(false);

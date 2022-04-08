@@ -8,6 +8,7 @@ class MarkersControl
    * @property {TimeControl}             timeControl             The time control 
    * @property {LayersControl}           layersControl           The layer control
    * @property {ActionsList}             actionsList             The actions list
+   * @property {Number}                  selectedNumber          The number of the selected marker
    */
   constructor(params, paintParams, timeControl, layersControl, actionsList)
   {
@@ -18,6 +19,7 @@ class MarkersControl
     this.timeControl = timeControl;
     this.actionsList = actionsList;
     this.layersControl = layersControl;
+    this.selectedNumber = -1;
 
     this.lineContentDiv = [];
 
@@ -68,13 +70,40 @@ class MarkersControl
       }
     }
 
+    /*
+    content += `<div id="dialog-marker-perso-icons-div"></div>`;
+
+    if(localStorage.getItem('session-id-histoatlas'))
+    {
+      Utils.callServer("iconMarker/get/" + localStorage.getItem('session-id-histoatlas'), "GET", {}).then((result) => 
+      {
+        console.log(result);
+
+        let iconsMarkersPerso = result.iconsMarkers;
+
+        let content = "";
+        for(let i = 0; i < iconsMarkersPerso.length; i++)
+        {
+          $("#dialog-marker-perso-icons-div").append(`<input type="radio" id="dialog-marker-perso-icon-${iconsMarkersPerso[i]['id']}" name="dialog-marker-icon" value="${iconsMarkersPerso[i]['id']}"/><img src="${iconsMarkersPerso[i]['url']}" id="dialog-marker-perso-icon-${iconsMarkersPerso[i]['id']}-img" width="25px" height="25px" style="margin-right:10px" />`);
+
+          Utils.callServer("iconMarker/getImage/" + iconsMarkersPerso[i]['id'], "GET", {}).then((resultImg) => 
+          {
+            $(`#dialog-marker-perso-icon-${iconsMarkersPerso[i]['id']}-img`).prop("src", resultImg);
+          });
+        }
+      });
+    }
+    
+    content += `<br/><button id='dialog-marker-add-icon'>${Dictionary.get("MAP_MARKERS_ADD_ICON")}</button><div id="dialog-marker-load-icon-div"></div>`;
+    */
+
     content += `<br/><br/><label for="dialog-marker-label">${Dictionary.get("MAP_MARKERS_LABEL")}</label><input id="dialog-marker-label" type="text" style="width: 320px;"><br/><br/>
                     <div id="dialog-marker-start-div"><label for="dialog-marker-start">${Dictionary.get("MAP_MARKERS_START_DATE")}</label><input id="dialog-marker-start" type="text" style="width: 200px;"><br/><br/></div>
                     <div id="dialog-marker-end-div"><label for="dialog-marker-end">${Dictionary.get("MAP_MARKERS_END_DATE")}</label><input id="dialog-marker-end" type="text" style="width: 200px;"><br/><br/></div>
                     <label for="dialog-marker-position-lng">${Dictionary.get("MAP_MARKERS_POSITION")}</label><input id="dialog-marker-position-lng" type="text" style="width: 120px;"><input id="dialog-marker-position-lat" type="text" style="width: 120px;margin-left: 3px;"><img id="dialog-marker-position-select" src="img/menu/bullseye-solid.svg"><br/><br/>
                     <label for="dialog-marker-color">${Dictionary.get("MAP_MARKERS_COLOR")}</label><input id="dialog-marker-color" type="color"><br/><br/>
                     <label for="dialog-marker-size">${Dictionary.get("MAP_MARKERS_SIZE")}</label><input id="dialog-marker-size" type="number" value="30" style="width: 90px;"><br/><br/>
-                    <label for="dialog-marker-popup">${Dictionary.get("MAP_MARKERS_POPUP")}</label><br/><textarea id="dialog-marker-popup" name="dialog-marker-popup" style="width: 620px;height: 120px;"></textarea>`;
+                    <label for="dialog-marker-popup">${Dictionary.get("MAP_MARKERS_POPUP")}</label><br/><textarea id="dialog-marker-popup" name="dialog-marker-popup" style="width: 700px;height: 160px;"></textarea>`;
 
     $("#dialog-marker").html(content);
 
@@ -103,6 +132,32 @@ class MarkersControl
         me.dialogEdition.dialog( "close" );
       }
     });
+
+    /*
+    $("#dialog-marker-add-icon").click(function()
+    {
+      $("#dialog-marker-add-icon").css("display", "none");
+      $("#dialog-marker-load-icon-div").html(`<input id="dialog-marker-load-icon-input" type="file" accept="image/*" />`);
+
+      var fileInput = document.getElementById("dialog-marker-load-icon-input"),
+      readFile = function () {
+        var reader = new FileReader();
+        reader.fileName = document.getElementById("dialog-marker-load-icon-input").files[0];
+        reader.onload = function (readerEvt) 
+        {
+          let content = {fileName : reader.fileName.name, fileContent : reader.result, user : localStorage.getItem('session-id-histoatlas')};
+        
+          Utils.callServer("iconMarker/add", "POST", content).then((result) => {
+
+          });
+        }
+
+        reader.readAsText(fileInput.files[0]);
+        $("#dialog-marker-load-icon-input")[0].value = "";
+      }
+      fileInput.addEventListener('change', readFile);
+    });
+    */
   }
 
   /**
@@ -141,6 +196,20 @@ class MarkersControl
 
       L.DomEvent.on(this.divAddMarker, 'click', function(e) { this.addMarker() } , this);
     }
+
+    // Event of select a marker in a map
+    let me = this;
+    document.addEventListener('selectMakerInMap', function (e) 
+    {
+      let number = e.detail.markerNumber;
+
+      if(me.selectedNumber >= 0)
+      {
+        $(`#layers-marker-select-${me.selectedNumber}`).css("background-color", "#ffffff");
+      }
+      me.selectedNumber = number;
+      $(`#layers-marker-select-${number}`).css("background-color", "#c7e0f0");
+    });
 
     this.updateContent();
   }
@@ -191,6 +260,7 @@ class MarkersControl
       //lineDiv.innerHTML = this.layersManager.markers[i].label;
 
       let selectDiv = L.DomUtil.create('div', 'layers-marker-select', lineDiv);
+      selectDiv.id = 'layers-marker-select-' + this.layersManager.markers[i].number;
       //selectDiv.innerHTML = this.layersManager.markers[i].label;
 
       let imageIcon = L.DomUtil.create('img', '', selectDiv);
@@ -280,8 +350,8 @@ class MarkersControl
 
     this.dialogEdition = $("#dialog-marker").dialog({
       autoOpen: false,
-      height: 550,
-      width: 670,
+      height: 640,
+      width: 740,
       modal: true,
       buttons: {
         Cancel: function() {
@@ -385,12 +455,10 @@ class MarkersControl
       if(isEndDate)
       {
         alert(Dictionary.get("MAP_MARKER_END_DATE_INVALID"));
-        date = DateConverter.dateToNumber(this.params.timeMax, isEndDate, this.params);
       }
       else
       {
         alert(Dictionary.get("MAP_MARKER_START_DATE_INVALID"))
-        date = DateConverter.dateToNumber(this.params.timeMin, isEndDate, this.params);
       }
     }
 
@@ -432,8 +500,8 @@ class MarkersControl
 
     this.dialogEdition = $("#dialog-marker").dialog({
       autoOpen: false,
-      height: 550,
-      width: 670,
+      height: 640,
+      width: 740,
       modal: true,
       buttons: {
         Cancel: function() {
@@ -523,5 +591,13 @@ class MarkersControl
     {
       this.layersControl.timeControl.setValue(marker.startDate);
     }
+
+    marker.marker.openPopup(); 
+    if(this.selectedNumber >= 0)
+    {
+      $(`#layers-marker-select-${this.selectedNumber}`).css("background-color", "#ffffff");
+    }
+    this.selectedNumber = marker.number;
+    $(`#layers-marker-select-${marker.number}`).css("background-color", "#c7e0f0");
   }
 }

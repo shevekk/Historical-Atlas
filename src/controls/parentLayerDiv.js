@@ -31,6 +31,8 @@ class ParentLayerDiv
     this.layersManager = layersControl.layersManager;
     this.layersControl = layersControl;
 
+    this.propertyMenu = new PropertyLayerForm();
+
     this.paintZoneDiv = [];
     this.selected = false;
   }
@@ -65,6 +67,7 @@ class ParentLayerDiv
     let imageReOrder = null;
     let imageDelete = null;
     let imagePopUp = null;
+    let imagePropMenu = null;
     if(this.params.editMode)
     {
       if(this.layersManager.layerGroups.length > 1)
@@ -74,6 +77,10 @@ class ParentLayerDiv
         imageDelete.title = Dictionary.get("MAP_LAYERS_PARENTLAYER_DELETE");
         L.DomEvent.on(imageDelete, 'click', function(e) { this.delete(); } , this);
       }
+
+      imagePropMenu = L.DomUtil.create('img', 'layers-list-icon', this.parentLineDiv);
+      imagePropMenu.src = "img/menu/source_icons_google-docs.svg";
+      imagePropMenu.title = Dictionary.get("MAP_LAYERS_PARENTLAYER_PROP_MENU");
 
       if(this.params.timeEnable)
       {
@@ -133,6 +140,8 @@ class ParentLayerDiv
       {
         L.DomEvent.on(imageReOrder, 'click', function(e) { this.reOrder(); } , this);
       }
+
+      L.DomEvent.on(imagePropMenu, 'click', function(e) { this.propertyMenu.display(this.parentLayer, this.params) } , this);
     }
 
     L.DomEvent.on(selectDiv, 'click', function(e) { this.select(); } , this);
@@ -262,9 +271,6 @@ class ParentLayerDiv
         this.layersControl.updateLayersContent(this.layersManager);
       }
 
-      // Change selection
-      this.layersControl.selectLine(this.layersManager.selectedLayer);
-
       // remove
       for(let i = 0; i < this.layersControl.parentsLayersDiv.length; i++)
       {
@@ -273,6 +279,9 @@ class ParentLayerDiv
           this.layersControl.parentsLayersDiv.splice(i, 1);
         }
       }
+
+      // Change selection
+      this.layersControl.selectLine(this.layersManager.selectedLayer);
     }
   }
 

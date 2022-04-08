@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors')
 const userRoutes = require('./routes/user');
 const mapRoutes = require('./routes/map');
+const iconMarkerRoutes = require('./routes/iconMarker');
 
 const path = require('path');
 
@@ -34,6 +35,7 @@ app.options('*', cors())
 
 app.use('/api/user', userRoutes);
 app.use('/api/map', mapRoutes);
+app.use('/api/iconMarker', iconMarkerRoutes);
 
 
 module.exports = app;

@@ -1,5 +1,7 @@
 node_modules/
 server/file
+server/logs
+server/icons
 src/files/Rome.json
 src/config/configProd.json
 server/files/

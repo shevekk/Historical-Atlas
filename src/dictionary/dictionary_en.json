@@ -1,4 +1,4 @@
-﻿ {
+ {
   "MENU_CHOISE_LANGUE_LABEL": "Choice of language : ",
 
   "INDEX_MAP_VIEW": "View",
@@ -6,10 +6,10 @@
   "INDEX_MAP_EDIT" : "Edit",
   "INDEX_MAP_EXPORT_MAP" : "Export as an iframe",
   "INDEX_MAP_RECOVER_FAIL" : "Unable to retrieve map : ",
-  "INDEX_MAP_VIEW_AVAILABLE_ALL_USER" : "Map available to other users",
-  "INDEX_MAP_EDIT_AVAILABLE_ALL_USER" : "Edition of a copy available to other users",
-  "INDEX_MAP_EDIT_UNAVAILABLE_ALL_USER" : "Editing a copy unavailable to other users",
-  "INDEX_MAP_VIEW_AVAILABLE_ALL_USER" : "Map unavailable to other users",
+  "INDEX_MAP_VIEW_AVAILABLE" : "Map available to other users",
+  "INDEX_MAP_EDIT_AVAILABLE" : "Edition of a copy available to other users",
+  "INDEX_MAP_EDIT_UNAVAILABLE" : "Editing a copy unavailable to other users",
+  "INDEX_MAP_VIEW_UNAVAILABLE" : "Map unavailable to other users",
   "INDEX_MAP_DELETE" : "Delete map",
   "INDEX_USER_NAME" : "User name or mail : ",
   "INDEX_USER_PASSWORD" : "Password : ",
@@ -31,7 +31,7 @@
   "INDEX_USER_MAPS_TITLE" : "Your Maps :",
   "INDEX_PUBLIC_MAPS_TITLE" : "Public Maps :",
   "INDEX_HELP_MENU" : "Help Menu",
-  "INDEX_VIDEO_LINK_TEXT" : "Tutorial videos (in French)",
+  "INDEX_VIDEO_LINK_TEXT" : "Tutorial videos",
   "INDEX_VERSION_LINK_TEXT" : "Current version : V",
   "INDEX_CONTACT_LINK_TEXT" : "Contact me to report a bug, a suggestion, an idea or if you need help.",
   "INDEX_SUPPORT_LINK_TEXT" : "Support the project.",
@@ -42,6 +42,12 @@
   "INDEX_CONNEXION" : "Login", 
   "INDEX_REGISTRATION" : "Registration",
   "INDEX_CANCEL" : "Cancel",
+  "INDEX_FOLLOW_PROJET" : "Follow the project",
+  "INDEX_FOLLOW_GET_NEWSLETTER" : "Receive a newsletter (once a month maximum) :",
+  "INDEX_FOLLOW_YOUR_MAIL" : "Your email : ",
+  "INDEX_FOLLOW_SEND" : "Send",
+  "INDEX_FOLLOW_FAIL" : "Newsletter subscription failure",
+  "INDEX_FOLLOW_SUCCESS" : "Successful newsletter registration",
 
   "SERVER_QUERY_FAIL" : "Failure of the query",
   "SERVER_USER_NOT_EXIST" : "The target user does not exist",
@@ -59,6 +65,8 @@
   "SERVER_READ_FILE_FAIL" : "Failed to read the file",
   "SERVER_DELETE_MAP_FILE" : "Unable to delete the file",
   "SERVER_USER_NAME_NOT_AVAILABLE" : "The chosen user name is already in use",
+  "SERVER_MAIL_NOT_AVAILABLE" : "You are already registered with this email",
+  "SERVER_NEWSLETTER_ALREADY_SUBSCRIBER" : "You are already registered to the newsletter with this email",
 
   "CONTACT_EMPTY_MAIL" : "Empty mail",
   "CONTACT_EMPTY_INVALID" : "Invalid email address",
@@ -118,7 +126,7 @@
   "REGISTRATION_PASSWORD_LABEL" : "Password  : ",
   "REGISTRATION_COMFIRM_PASSWORD_LABEL" : "Confirm password : ",
   "REGISTRATION_MAIL_LABEL" : "Email : ",
-  "REGISTRATION_NEWSLETTER_LABEL" : "Subscribe to the newsletter",
+  "REGISTRATION_NEWSLETTER_LABEL" : "Subscribe to the newsletter (about one email per month)",
   "REGISTRATION_SAVE_BUTTON" : "Register",
   "REGISTRATION_UNABLE_EMPTY_USERNAME" : "Unable to register : empty user name",
   "REGISTRATION_UNABLE_USERNAME_INVALID" : "Unable to register: invalid username must contain only letters and numbers",
@@ -166,7 +174,7 @@
   "MAP_ACTIONS_LABEL_MOVE" : "Move label",
   "MAP_ACTIONS_MENU_IMPORT_EXPORT" : "Import/export menu",
   "MAP_ACTIONS_EXPORT" : "Export the visualization in HistoAtlas format",
-  "MAP_ACTIONS_IMPORT" : "mport a visualization (HistoAtlas json export file)",
+  "MAP_ACTIONS_IMPORT" : "Import a visualization (HistoAtlas json export file)",
   "MAP_ACTIONS_SAVE" : "Save the map on the server",
   "MAP_ACTIONS_FILL" : "Filling the area",
   "MAP_ACTIONS_SYMPLIFY" : "Simplify the geometry (improves performance)",
@@ -189,6 +197,7 @@
   "MAP_LAYERS_PARENTLAYER_CHOISE_ZONE_COPY" : "Layer to copy :",
   "MAP_LAYERS_PARENTLAYER_EMPTY" : "Empty",
   "MAP_LAYERS_PARENTLAYER_DELETE_VALIDATION" : "Are you sure you want to remove the layer ",
+  "MAP_LAYERS_PARENTLAYER_PROP_MENU" : "Open the properties menu",
 
   "MAP_LAYERS_ZONE_DELETE" : "Remove the underlayer",
   "MAP_LAYERS_ZONE_POPUP" : "Adding a pop-up",
@@ -216,6 +225,13 @@
   "MAP_MARKERS_SIZE" : "Size : ",
   "MAP_MARKERS_POPUP" : "Pop-up : ",
   "MAP_MARKERS_REORDER_BY_DATE" : "Re-ordered by start date",
+  "MAP_MARKERS_ADD_ICON" : "Add a new icon",
+
+  "MAP_TIMEAREA_TITLE" : "Time Area :",
+  "MAP_TIMEAREA_START_DATE" : "Start date : ",
+  "MAP_TIMEAREA_END_DATE" : "End date : ",
+  "MAP_TIMEAREA_DESCRIPTION" : "Choice of a time zone on which to collect all the markers.",
+  "MAP_TIMEAREA_END_DATE_GREATER_START_DATE" : "The end date must be greater than or equal to the end date",
 
   "MAP_PARAMS_TITLE" : "Parameters :",
   "MAP_PARAMS_ZOOM_DEFAULT" : "Default Zoom : ",
@@ -235,6 +251,9 @@
   "MAP_PARAMS_TIME_TYPE_DAYS" : "Days",
   "MAP_PARAMS_UPDATE_BUTTON" : "Update",
   "MAP_PARAMS_OPEN" : "Open the settings menu",
+  "MAP_PARAMS_DATE_BAR_SIZE" : "Large time bar",
+  "MAP_PARAMS_OPEN_PROP_FORM" : "Properties",
+  "MAP_PARAMS_OPEN_PROP_FORM_TITLE" : "Open the properties menu",
 
   "MAP_DESC_LANG_CHOISE": "Language : ",
   "MAP_DESC_VIEWS_NUMBER" : "views",
@@ -284,5 +303,24 @@
   "MAP_TYPE_TEXT" : "Map type : ",
   "MAP_TYPE_HISTORY" : "History",
   "MAP_TYPE_UCHRONY" : "Uchrony",
-  "MAP_TYPE_PRESENT" : "Present"
+  "MAP_TYPE_PRESENT" : "Present",
+
+  "MAP_PROP_FORM_TITLES_NAME" : "name",
+  "MAP_PROP_FORM_TITLES_VALUES" : "values",
+  "MAP_PROP_FORM_TITLES_COLOR" : "color",
+  "MAP_PROP_FORM_TITLES_OPACITY" : "opacity",
+  "MAP_PROP_FORM_ADD_PROP" : "Added a property",
+  "MAP_PROP_FORM_ADD_VALUES" : "Add a value",
+  "MAP_PROP_FORM_DELETE_LINE_TITLE" : "Delete the line",
+  "MAP_PROP_FORM_DELETE_VALUE_TITLE" : "Delete the value",
+  "MAP_PROP_FORM_VALUE_DEFAULT" : "Valeur par défaut",
+  "MAP_PROP_FORM_TITLE" : "Properties menu",
+  "MAP_PROP_FORM_SAVE_INVALID" : "Unable to save, some fields are empty",
+
+  "MAP_PROP_LAYER_FORM_TITLE" : "Layer properties",
+  "MAP_PROP_LAYER_FORM_TITLES_NAME" : "Name",
+  "MAP_PROP_LAYER_FORM_TITLES_VALUE" : "Value",
+  "MAP_PROP_LAYER_FORM_TITLES_START" : "Start date (optional)",
+  "MAP_PROP_LAYER_FORM_TITLES_END" : "End date (optional)",
+  "MAP_PROP_LAYER_FORM_SAVE_INVALID" : "Unable to save, some date fields are not valid"
 }

@@ -32,8 +32,8 @@ class DateConverter
         return new Date(date.setDate(day)); // add the number of days
       }
 
-      let year = Math.floor(value / 366);
-      let dayOfYear = (value % 366) + 1;
+      let year = DateConverter.daysNumberToYears(value);
+      let dayOfYear = DateConverter.daysNumberToDayOfYears(value);
 
       let date = dateFromDay(year, dayOfYear);
 
@@ -107,20 +107,40 @@ class DateConverter
       {
         if(isEndDate)
         {
-          return 366 * parseInt(dateStr) + 364;
+          let result = 0;
+
+          if(DateConverter.leapYear(parseInt(dateStr)))
+          {
+            return DateConverter.yearsToDaysNumber(parseInt(dateStr)) + 365;
+          }
+          else
+          {
+            return DateConverter.yearsToDaysNumber(parseInt(dateStr)) + 364;
+          }
         }
         else
         {
-          return 366 * parseInt(dateStr);
+          return DateConverter.yearsToDaysNumber(parseInt(dateStr));
         }
       }
       else if(dateStr.split("/").length == 2)
       {
         let date = new Date();
         date.setFullYear(parseInt(dateStr.split("/")[1]));
-        date.setMonth(parseInt(dateStr.split("/")[0]) - 1)
 
-        return parseInt(dateStr.split("/")[1]) * 366 + (date.getDOY() - 1);
+        if(isEndDate)
+        {
+          date.setMonth(parseInt(dateStr.split("/")[0]));
+          date.setDate(0);
+        }
+        else
+        {
+          date.setMonth(parseInt(dateStr.split("/")[0]) - 1);
+          date.setDate(1);
+        }
+        
+
+        return DateConverter.yearsToDaysNumber(parseInt(dateStr.split("/")[1])) + (date.getDOY() - 1);
       }
       else if(dateStr.split("/").length == 3)
       {
@@ -129,12 +149,126 @@ class DateConverter
         date.setMonth(parseInt(dateStr.split("/")[1]) - 1);
         date.setDate(parseInt(dateStr.split("/")[0]));
 
-        return parseInt(dateStr.split("/")[2]) * 366 + (date.getDOY() - 1);
+        return DateConverter.yearsToDaysNumber(parseInt(dateStr.split("/")[2])) + (date.getDOY() - 1);
       }
     }
   }
 
-   /*
+  /*
+   * Check if is this year is a leap year
+   * @param {Number}          year          The target year
+   * @return {Boolean}                      True is a leap year 
+   */
+  static leapYear(year)
+  {
+    if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0))
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  /*
+   * Convert a year to days numbers
+   * @param {Number}          year          The target year
+   * @return {Number}                       The day numbers
+   */
+  static yearsToDaysNumber(year)
+  {
+    let dayNumber = 0;
+    if(year > 0)
+    {
+      for(let i = 0; i < year; i++)
+      {
+        if(DateConverter.leapYear(i))
+        {
+          dayNumber += 366;
+        }
+        else
+        {
+          dayNumber += 365;
+        }
+      }
+    }
+    else
+    {
+      for(let i = 0; i >= year; i--)
+      {
+        if(DateConverter.leapYear(i))
+        {
+          dayNumber += 366;
+        }
+        else
+        {
+          dayNumber += 365;
+        }
+      }
+    }
+    return dayNumber;
+  }
+
+  /*
+   * Convert days numbers to a year number 
+   * @param {Number}          value         Number of days
+   * @return {Number}                       The years numbers
+   */
+  static daysNumberToYears(value)
+  {
+    let year = 0;
+    while(value > 0)
+    {
+      if(DateConverter.leapYear(year) && value >= 366)
+      {
+        year ++;
+        value -= 366;
+      }
+      else if(!DateConverter.leapYear(year) && value >= 365)
+      {
+        year ++;
+        value -= 365;
+      }
+      else
+      {
+        value = -1;
+      }
+    }
+    return year;
+  }
+
+  /*
+   * From days numbers get the day of the year
+   * @param {Number}          value         Number of days
+   * @return {Number}                       The day of the year
+   */
+  static daysNumberToDayOfYears(value)
+  {
+    let year = 0;
+    let dayOfYear = 1;
+    while(value > 0)
+    {
+      if(DateConverter.leapYear(year) && value >= 366)
+      {
+        year ++;
+        value -= 366;
+      }
+      else if(!DateConverter.leapYear(year) && value >= 365)
+      {
+        year ++;
+        value -= 365;
+      }
+      else
+      {
+        dayOfYear = value+1;
+        value = -1;
+      }
+    }
+    return dayOfYear;
+  }
+
+  /*
    * Check if the value is in correct date format 
    * @param {String}          date          The date value
    */
@@ -186,14 +320,14 @@ class DateConverter
 
     if(oldTypeDate == "days" && newTypeDate == "months")
     {
-      let year = Math.floor(oldDate / 366);
+      let year = DateConverter.daysNumberToYears(oldDate);
       let dateObject = new Date(year, 0, 1);
-      dateObject.setDate(1 + oldDate % 366);
-      newDate = startYear * 12 + dateObject.getMonth();
+      dateObject.setDate(DateConverter.daysNumberToDayOfYears(oldDate));
+      newDate = year * 12 + dateObject.getMonth();
     }
     else if(oldTypeDate == "days" && newTypeDate == "years")
     {
-      newDate = Math.floor(oldDate/ 366);
+      newDate = DateConverter.daysNumberToYears(oldDate);
     }
     else if(oldTypeDate == "months" && newTypeDate == "days")
     {
@@ -201,13 +335,13 @@ class DateConverter
       {
         let startYear = Math.floor(oldDate / 12);
         let startDateObject = new Date(startYear, oldDate % 12, 1);
-        newDate = startYear * 366 + (startDateObject.getDOY() - 1);
+        newDate = DateConverter.yearsToDaysNumber(startYear) + (startDateObject.getDOY() - 1);
       }
       else
       {
         let endYear = Math.floor(oldDate / 12);
         let endDateObject = new Date(endYear, (oldDate % 12) + 1, 0);
-        newDate = endYear * 366 + (endDateObject.getDOY() - 1);
+        newDate = DateConverter.yearsToDaysNumber(endYear) + (endDateObject.getDOY() - 1);
       }
     }
     else if(oldTypeDate == "months" && newTypeDate == "years")
@@ -218,19 +352,17 @@ class DateConverter
     {
       if(!endDate)
       {
-        newDate = oldDate * 366;
+        newDate = DateConverter.yearsToDaysNumber(oldDate);
       }
       else
       {
-        let endDateObject = new Date();
-        endDateObject.setFullYear(oldDate);
-        if(endDateObject.isLeapYear())
+        if(DateConverter.leapYear(oldDate))
         {
-          newDate = oldDate * 366 + 365;
+          newDate = DateConverter.yearsToDaysNumber(oldDate) + 365;
         }
         else
         {
-          newDate = oldDate * 366 + 364;
+          newDate = DateConverter.yearsToDaysNumber(oldDate) + 364;
         }
       }
     }
@@ -249,6 +381,7 @@ class DateConverter
     return newDate;
   }
 }
+
 
 Date.prototype.isLeapYear = function() {
     var year = this.getFullYear();

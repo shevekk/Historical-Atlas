@@ -78,6 +78,8 @@ exports.getMailInfos = () =>
       }
       else
       {
+        console.log("OK config");
+
         let dataObj = JSON.parse(data);
         
         resolve(dataObj["mail"]);

@@ -190,7 +190,7 @@ var SettingsControl = L.Control.extend({
     inputTimeMin.value = this.params.timeMin;
     let labelTimeMax = L.DomUtil.create('label', '', timeMaxMinDiv);
     labelTimeMax.for = "timeMax";
-    labelTimeMax.innerHTML = Dictionary.get("MAP_PARAMS_DATE_MAX");
+    labelTimeMax.innerHTML = " " + Dictionary.get("MAP_PARAMS_DATE_MAX");
     let inputTimeMax = L.DomUtil.create('input', 'settings-time-input', timeMaxMinDiv);
     //inputTimeMax.type = "number";
     inputTimeMax.name = "timeMax";
@@ -206,6 +206,22 @@ var SettingsControl = L.Control.extend({
 
     selectTypeDate.value = this.params.typeTime;
 
+    // Size of the time bar
+    let timeBarBigSizeDiv = L.DomUtil.create('div', '', contentDiv);
+    let inputTimeBarBigSize = L.DomUtil.create('input', '', timeBarBigSizeDiv);
+    inputTimeBarBigSize.type = "checkbox";
+    inputTimeBarBigSize.name = "dateBarSize";
+    inputTimeBarBigSize.checked = this.params.timeBarBigSize;
+    let labelTimeBarBigSize = L.DomUtil.create('label', '', timeBarBigSizeDiv);
+    labelTimeBarBigSize.for = "dateBarSize";
+    labelTimeBarBigSize.innerHTML = Dictionary.get("MAP_PARAMS_DATE_BAR_SIZE");
+
+    // 
+    let divProps = L.DomUtil.create('div', 'settings-prop-div', contentDiv);
+    let propertiesForm = L.DomUtil.create('button', '', divProps);
+    propertiesForm.innerHTML = Dictionary.get("MAP_PARAMS_OPEN_PROP_FORM");
+    propertiesForm.title = Dictionary.get("MAP_PARAMS_OPEN_PROP_FORM_TITLE");
+
     // Add sav button
     let buttonSav = L.DomUtil.create('button', 'settings-button-sav', contentDiv);
     buttonSav.innerHTML = Dictionary.get("MAP_PARAMS_UPDATE_BUTTON");
@@ -217,10 +233,11 @@ var SettingsControl = L.Control.extend({
     L.DomEvent.on(buttonZoomDefault, 'click', function(e) { this.getActualZoom(inputZoomDefault) }, this);
     L.DomEvent.on(buttonZoomMin, 'click', function(e) { this.getActualZoom(inputZoomMin) }, this);
     L.DomEvent.on(buttonZoomMax, 'click', function(e) { this.getActualZoom(inputZoomMax) }, this);
+    L.DomEvent.on(propertiesForm, 'click', function(e) { this.openPropForm() }, this);
 
     //L.DomEvent.on(inputTimeCheckBox, 'click', function(e) { this.changeTimeState(e) }, this);
 
-    L.DomEvent.on(buttonSav, 'click', function(e) { this.sav(inputPositionLat, inputPositionLong, inputZoomDefault, inputZoomMin, inputZoomMax, selectBackgroundDefault, selectBackgroundDisplay, inputTimeCheckBox, inputTimeMin, inputTimeMax, selectTypeDate) }, this);    
+    L.DomEvent.on(buttonSav, 'click', function(e) { this.sav(inputPositionLat, inputPositionLong, inputZoomDefault, inputZoomMin, inputZoomMax, selectBackgroundDefault, selectBackgroundDisplay, inputTimeCheckBox, inputTimeMin, inputTimeMax, selectTypeDate, inputTimeBarBigSize) }, this);    
   },
 
   /*
@@ -286,8 +303,12 @@ var SettingsControl = L.Control.extend({
    * @param {L.Dom}               inputZoomMax                            The max zoom input
    * @param {L.Dom}               selectBackgroundDefault                 The select input default backgroung
    * @param {L.Dom}               selectBackgroundDisplay                 The select input display backgroungs
+   * @param {L.Dom}               inputTimeMin                            The input time min
+   * @param {L.Dom}               inputTimeMax                            The input time max
+   * @param {L.Dom}               selectTypeDate                          The select input of type date
+   * @param {L.Dom}               inputTimeBarBigSize                     The input for big size of bar time
    */
-  sav(inputPositionLat, inputPositionLong, inputZoomDefault, inputZoomMin, inputZoomMax, selectBackgroundDefault, selectBackgroundDisplay, inputTimeCheckBox, inputTimeMin, inputTimeMax, selectTypeDate)
+  sav(inputPositionLat, inputPositionLong, inputZoomDefault, inputZoomMin, inputZoomMax, selectBackgroundDefault, selectBackgroundDisplay, inputTimeCheckBox, inputTimeMin, inputTimeMax, selectTypeDate, inputTimeBarBigSize)
   {
     this.params.defaultPosition = [];
     this.params.defaultPosition.push(parseFloat(inputPositionLat.value));
@@ -341,6 +362,8 @@ var SettingsControl = L.Control.extend({
 
     this.params.typeTime = selectTypeDate.value;
 
+    this.params.timeBarBigSize = inputTimeBarBigSize.checked;
+
     this.timeControl.updateFromParams();
 
     this.layersControl.updateLayersContent(this.layersControl.layersManager)
@@ -364,5 +387,14 @@ var SettingsControl = L.Control.extend({
 
       this.timeControl.disable();
     }
+  },
+
+  /*
+   * Open the properties form
+   */
+  openPropForm()
+  {
+    PropertiesForm.display();
   }
+
 });

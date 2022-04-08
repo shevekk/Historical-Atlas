@@ -7,16 +7,22 @@
   <body>
 
     <link rel="stylesheet" href="node_modules/leaflet/dist/leaflet.css"/>
-    <script type="text/javascript" src="node_modules/leaflet/dist/leaflet.js"></script>
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />-->
+    <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>-->
+
+    <script type="text/javascript" src="node_modules/leaflet/dist/leaflet.js"></script> 
 
     <script type="text/javascript" src="node_modules/@turf/turf/turf.min.js"></script>
 
     <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
 
+    <link href="node_modules/toastr/build/toastr.min.css" rel="stylesheet" />
+    <script src="node_modules/toastr/build/toastr.min.js"></script>
+
     <link rel="stylesheet" href="libs/jquery-ui/jquery-ui.min.css">
     <script src="libs/jquery-ui/jquery-ui.min.js"></script>
 
-    <link rel="stylesheet" href="histoAtlas.css?v=7.5" />
+    <link rel="stylesheet" href="histoAtlas.css?v=9" />
 
     <link rel="stylesheet" href="libs/fullscreen/Control.FullScreen.css" />
     <script src="libs/fullscreen/Control.FullScreen.js"></script>
@@ -41,64 +47,80 @@
 
     <div id="dialog-import-geojson" title=""></div>
 
+    <div id="dialog-time-area" title=""></div>
+
+    <div id="dialog-properties" title=""></div>
+    <div id="dialog-properties-layer" title=""></div>
+
     
     <script type="text/javascript" src="libs/colorIcon/L.colorIcon.js"></script>
 
-    <script type="text/javascript" src="config/config.js?v=8"></script>
-    <script type="text/javascript" src="histoAtlas.js?v=8"></script>
-    <script type="text/javascript" src="config/params.js?v=8"></script>
+    <script type="text/javascript" src="config/config.js?v=9"></script>
+    <script type="text/javascript" src="histoAtlas.js?v=9"></script>
+    <script type="text/javascript" src="config/params.js?v=9"></script>
 
-    <script type="text/javascript" src="dictionary/dictionary.js?v=8"></script>
+    <script type="text/javascript" src="dictionary/dictionary.js?v=9"></script>
 
-    <script type="text/javascript" src="controls/actionsControl.js?v=8"></script>
-    <script type="text/javascript" src="controls/backgroundControl.js?v=8"></script>
-    <script type="text/javascript" src="controls/layersControl.js?v=8"></script>
-    <script type="text/javascript" src="controls/settingsControl.js?v=8"></script>
-    <script type="text/javascript" src="controls/timeControl.js?v=8"></script>
-    <script type="text/javascript" src="controls/paintZoneDiv.js?v=8"></script>
-    <script type="text/javascript" src="controls/parentLayerDiv.js?v=8"></script>
-    <script type="text/javascript" src="controls/backMenuControl.js?v=8"></script>
-    <script type="text/javascript" src="controls/dateConverter.js?v=8"></script>
-    <script type="text/javascript" src="controls/markersControl.js?v=8"></script>
+    <script type="text/javascript" src="controls/actionsControl.js?v=9"></script>
+    <script type="text/javascript" src="controls/backgroundControl.js?v=9"></script>
+    <script type="text/javascript" src="controls/layersControl.js?v=9"></script>
+    <script type="text/javascript" src="controls/settingsControl.js?v=9"></script>
+    <script type="text/javascript" src="controls/timeControl.js?v=9"></script>
+    <script type="text/javascript" src="controls/paintZoneDiv.js?v=9"></script>
+    <script type="text/javascript" src="controls/parentLayerDiv.js?v=9"></script>
+    <script type="text/javascript" src="controls/backMenuControl.js?v=9"></script>
+    <script type="text/javascript" src="controls/dateConverter.js?v=9"></script>
+    <script type="text/javascript" src="controls/markersControl.js?v=9"></script>
+    <script type="text/javascript" src="controls/propertiesControl.js?v=9"></script>
     
-    <script type="text/javascript" src="map/parentLayer.js?v=8"></script>
-    <script type="text/javascript" src="map/paintZone.js?v=8"></script>
-    <script type="text/javascript" src="map/paintParams.js?v=8"></script>
-    <script type="text/javascript" src="map/loadSaveManager.js?v=8"></script>
-    <script type="text/javascript" src="map/layersManager.js?v=8"></script>
-    <script type="text/javascript" src="map/cursorManager.js?v=8"></script>
-    <script type="text/javascript" src="map/label.js?v=8"></script>
-    <script type="text/javascript" src="map/marker.js?v=8"></script>
-    <script type="text/javascript" src="map/copyManager.js?v=8"></script>
-    <script type="text/javascript" src="map/geojsonManager.js?v=8"></script>
+    <script type="text/javascript" src="map/parentLayer.js?v=9"></script>
+    <script type="text/javascript" src="map/paintZone.js?v=9"></script>
+    <script type="text/javascript" src="map/paintParams.js?v=9"></script>
+    <script type="text/javascript" src="map/loadSaveManager.js?v=9"></script>
+    <script type="text/javascript" src="map/layersManager.js?v=9"></script>
+    <script type="text/javascript" src="map/cursorManager.js?v=9"></script>
+    <script type="text/javascript" src="map/label.js?v=9"></script>
+    <script type="text/javascript" src="map/marker.js?v=9"></script>
+    <script type="text/javascript" src="map/copyManager.js?v=9"></script>
+    <script type="text/javascript" src="map/geojsonManager.js?v=9"></script>
+    <script type="text/javascript" src="map/labelDate.js?v=9"></script>
 
-    <script type="text/javascript" src="buttons/actionButton.js?v=8"></script>
-    <script type="text/javascript" src="buttons/actionButtonSlider.js?v=8"></script>
-    <script type="text/javascript" src="buttons/actionButtonSimple.js?v=8"></script>
-    <script type="text/javascript" src="buttons/actionButtonColor.js?v=8"></script>
-    <script type="text/javascript" src="buttons/actionButtonFile.js?v=8"></script>
-    <script type="text/javascript" src="buttons/actionButtonSave.js?v=8"></script>
-    <script type="text/javascript" src="buttons/actionButtonConnexionState.js?v=8"></script>
-    <script type="text/javascript" src="buttons/actionButtonSliderWithButton.js?v=8"></script>
+    <script type="text/javascript" src="buttons/actionButton.js?v=9"></script>
+    <script type="text/javascript" src="buttons/actionButtonSlider.js?v=9"></script>
+    <script type="text/javascript" src="buttons/actionButtonSimple.js?v=9"></script>
+    <script type="text/javascript" src="buttons/actionButtonColor.js?v=9"></script>
+    <script type="text/javascript" src="buttons/actionButtonFile.js?v=9"></script>
+    <script type="text/javascript" src="buttons/actionButtonSave.js?v=9"></script>
+    <script type="text/javascript" src="buttons/actionButtonConnexionState.js?v=9"></script>
+    <script type="text/javascript" src="buttons/actionButtonSliderWithButton.js?v=9"></script>
 
-    <script type="text/javascript" src="actions/action.js?v=8"></script>
-    <script type="text/javascript" src="actions/actionPaint.js?v=8"></script>
-    <script type="text/javascript" src="actions/actionsList.js?v=8"></script>
-    <script type="text/javascript" src="actions/actionDeleteZone.js?v=8"></script>
-    <script type="text/javascript" src="actions/actionAddZone.js?v=8"></script>
-    <script type="text/javascript" src="actions/actionDeleteLayer.js?v=8"></script>
-    <script type="text/javascript" src="actions/actionAddLayer.js?v=8"></script>
-    <script type="text/javascript" src="actions/actionChangeDateZone.js?v=8"></script>
-    <script type="text/javascript" src="actions/actionRenameLayer.js?v=8"></script>
-    <script type="text/javascript" src="actions/actionPopUpContent.js?v=8"></script>
-    <script type="text/javascript" src="actions/actionMoveLabel.js?v=8"></script>
-    <script type="text/javascript" src="actions/actionMaker.js?v=8"></script>
-    <script type="text/javascript" src="actions/actionLoadJson.js?v=8"></script>
-    <script type="text/javascript" src="actions/actionCopy.js?v=8"></script>
-    <script type="text/javascript" src="actions/actionPaste.js?v=8"></script>
-    <script type="text/javascript" src="actions/actionAutoBorder.js?v=8"></script>
-    <script type="text/javascript" src="actions/actionLoadGeojson.js?v=8"></script>
-    
+    <script type="text/javascript" src="actions/action.js?v=9"></script>
+    <script type="text/javascript" src="actions/actionPaint.js?v=9"></script>
+    <script type="text/javascript" src="actions/actionsList.js?v=9"></script>
+    <script type="text/javascript" src="actions/actionDeleteZone.js?v=9"></script>
+    <script type="text/javascript" src="actions/actionAddZone.js?v=9"></script>
+    <script type="text/javascript" src="actions/actionDeleteLayer.js?v=9"></script>
+    <script type="text/javascript" src="actions/actionAddLayer.js?v=9"></script>
+    <script type="text/javascript" src="actions/actionChangeDateZone.js?v=9"></script>
+    <script type="text/javascript" src="actions/actionRenameLayer.js?v=9"></script>
+    <script type="text/javascript" src="actions/actionPopUpContent.js?v=9"></script>
+    <script type="text/javascript" src="actions/actionMoveLabel.js?v=9"></script>
+    <script type="text/javascript" src="actions/actionMaker.js?v=9"></script>
+    <script type="text/javascript" src="actions/actionLoadJson.js?v=9"></script>
+    <script type="text/javascript" src="actions/actionCopy.js?v=9"></script>
+    <script type="text/javascript" src="actions/actionPaste.js?v=9"></script>
+    <script type="text/javascript" src="actions/actionAutoBorder.js?v=9"></script>
+    <script type="text/javascript" src="actions/actionLoadGeojson.js?v=9"></script>
+
+    <script type="text/javascript" src="utils/utils.js?v=9"></script>
+    <script type="text/javascript" src="utils/keyboardEventsManager.js?v=9"></script>
+
+    <script type="text/javascript" src="properties/propertiesForm.js?v=9"></script>
+    <script type="text/javascript" src="properties/propertiesFormLine.js?v=9"></script>
+    <script type="text/javascript" src="properties/property.js?v=9"></script>
+    <script type="text/javascript" src="properties/propertiesLayerForm.js?v=9"></script>
+    <script type="text/javascript" src="properties/propertyLayerFormLine.js?v=9"></script>
+    <script type="text/javascript" src="properties/propertyLayer.js?v=9"></script>
 
 	<script>
 

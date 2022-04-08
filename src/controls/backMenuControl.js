@@ -159,9 +159,12 @@ var BackMenuControl = L.Control.extend({
     this.buttonMenu.title = Dictionary.get("MAP_MENU_MENU_DESC");
     this.buttonMenu.innerHTML = Dictionary.get("MAP_MENU_MENU");
 
-    this.buttonHelp.title = Dictionary.get("MAP_MENU_HELP_DESC");
-    this.buttonHelp.innerHTML = Dictionary.get("MAP_MENU_HELP");
-
+    if(this.buttonHelp)
+    {
+      this.buttonHelp.title = Dictionary.get("MAP_MENU_HELP_DESC");
+      this.buttonHelp.innerHTML = Dictionary.get("MAP_MENU_HELP");
+    }
+    
     if(this.buttonMain)
     {
       this.buttonMain.title = Dictionary.get("MAP_MENU_WEBSITE_DESC");

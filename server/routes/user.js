@@ -16,6 +16,7 @@ router.get('/resetPassword/:token', userCtrl.resetPasswordGet);
 router.post('/resetPassword', userCtrl.resetPassword);
 router.patch('/changeNewsletterState', userCtrl.changeNewsletterState);
 router.get('/getNewsletterState', userCtrl.getNewsletterState);
+router.post('/addNewsletterMail', userCtrl.addNewsletterMail);
 
 router.delete('/deleteUser', userCtrl.delete);
 

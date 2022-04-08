@@ -11,7 +11,7 @@ const log = require("./log");
  * @param {String}                      req.body.name                       The name in database
  * @param {String}                      req.body.fileName                   The file name 
  * @param {String}                      req.body.content                    Content of the file to save (json stringify)
- * @return                                                                  Empty
+ * @return                                                                  Object with insered id
  */
 exports.save = (req, res, next) => 
 {
@@ -32,27 +32,27 @@ exports.save = (req, res, next) =>
 
       config.connectBDD().then((db) => {
 
-        log.log("saveMap", {name : req.body.user, fileUrl : fileUrl});
+        log.log("saveMap", {user : req.body.user, fileUrl : fileUrl});
 
         if(req.body.exist)
         {
-          let sql = `UPDATE maps SET lang = '${req.body.lang}', category = '${req.body.type}' WHERE name = '${req.body.name}' AND user_id = '${userId}'`;
+          let sql = `UPDATE maps SET lang = '${req.body.lang}', category = '${req.body.type}', update_date = '${new Date().toISOString().slice(0, 19).replace("T", " ")}' WHERE name = '${req.body.name}' AND user_id = '${userId}'`;
 
           db.query(sql).then((result) => {
 
             db.end();
-            res.status(200).json({});
+            res.status(200).json({insertId : req.body.id});
 
           }).catch(error => { db.end(); res.status(500).json({ error: 'SERVER_SAVE_QUERY_FAIL' })});
         }
         else
         {
-          let sql = `INSERT INTO maps (user_id, name, url, lang, category) VALUES ('${userId}', '${req.body.name}', '${fileUrl}', '${req.body.lang}', '${req.body.type}')`;
+          let sql = `INSERT INTO maps (user_id, name, url, lang, category, update_date) VALUES ('${userId}', '${req.body.name}', '${fileUrl}', '${req.body.lang}', '${req.body.type}', '${new Date().toISOString().slice(0, 19).replace("T", " ")}')`;
 
           db.query(sql).then((result) => {
 
             db.end();
-            res.status(200).json({});
+            res.status(200).json({insertId : result.insertId});
 
           }).catch(error => { db.end(); res.status(500).json({ error: 'SERVER_SAVE_QUERY_FAIL' })});
         }
@@ -66,7 +66,7 @@ exports.save = (req, res, next) =>
  * Check if a file is exist
  * @param {String}                      req.body.user                       The user name
  * @param {String}                      req.body.name                       The name in database
- * @return {Object}                                                         Object with exist state
+ * @return {Object}                                                         Object with exist state and id of the map
  */
 exports.checkIfFileExist = (req, res, next) => 
 {
@@ -79,11 +79,11 @@ exports.checkIfFileExist = (req, res, next) =>
       db.end();
       if(result.length > 0)
       {
-        res.status(200).json({exist : true});
+        res.status(200).json({exist : true, id: result[0]["id"]});
       }
       else
       {
-        res.status(200).json({exist : false});
+        res.status(200).json({exist : false, id: null});
       }
 
     }).catch(error => {db.end(); res.status(500).json({ error: 'SERVER_QUERY_FAIL' })});
@@ -230,7 +230,7 @@ exports.getMapManage = (sql, id, editMode, userName, res) =>
           
           db.end();
           log.log("getMap", {name : result[0]['name'], url : result[0]['url']});
-          res.status(200).json({data : data, views : views, name : result[0]['name'], lang : result[0]['lang'], type : result[0]['category']});
+          res.status(200).json({data : data, views : views, name : result[0]['name'], lang : result[0]['lang'], type : result[0]['category'], userName : result[0]['user_name']});
         });
 
      }).catch(error => { db.end(); res.status(500).json({ error: 'SERVER_QUERY_FAIL' })});
@@ -338,7 +338,7 @@ exports.delete = (req, res, next) =>
  */
 exports.createNewMap = (req, res, next) => 
 {
-  log.log("createNewFile", {});
+  log.log("createNewMap", {});
 }
 
 /*

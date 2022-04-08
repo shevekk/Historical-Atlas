@@ -1,4 +1,4 @@
-﻿ {
+{
   "MENU_CHOISE_LANGUE_LABEL": "Choix de la langue : ",
 
   "INDEX_MAP_VIEW": "Visualiser",
@@ -42,6 +42,12 @@
   "INDEX_CONNEXION" : "Connexion",
   "INDEX_REGISTRATION" : "Inscription",
   "INDEX_CANCEL" : "Annuler",
+  "INDEX_FOLLOW_PROJET" : "Suivre le projet",
+  "INDEX_FOLLOW_GET_NEWSLETTER" : "Recevoir une newsletter (une fois par mois maximum) :",
+  "INDEX_FOLLOW_YOUR_MAIL" : "Votre mail : ",
+  "INDEX_FOLLOW_SEND" : "Envoyer",
+  "INDEX_FOLLOW_FAIL" : "Echec inscription newsletter",
+  "INDEX_FOLLOW_SUCCESS" : "Inscription newsletter réussie",
 
   "SERVER_QUERY_FAIL" : "Échec de la requête",
   "SERVER_USER_NOT_EXIST" : "L'utilisateur cible n'existe pas",
@@ -59,6 +65,8 @@
   "SERVER_READ_FILE_FAIL" : "Echec de la lecture du fichier",
   "SERVER_DELETE_MAP_FILE" : "Impossible de supprimer le fichier",
   "SERVER_USER_NAME_NOT_AVAILABLE" : "Le nom d'utiliseur choisie est déja utilisé",
+  "SERVER_MAIL_NOT_AVAILABLE" : "Vous êtes déjà inscrit avec cet email",
+  "SERVER_NEWSLETTER_ALREADY_SUBSCRIBER" : "Vous êtes déjà inscrit à la newletter avec cet email",
 
   "CONTACT_EMPTY_MAIL" : "Mail vide",
   "CONTACT_EMPTY_INVALID" : "Adresse mail invalide",
@@ -118,7 +126,7 @@
   "REGISTRATION_PASSWORD_LABEL" : "Mot de passe : ",
   "REGISTRATION_COMFIRM_PASSWORD_LABEL" : "Confirmer le mot de passe : ",
   "REGISTRATION_MAIL_LABEL" : "Mail : ",
-  "REGISTRATION_NEWSLETTER_LABEL" : "Inscription à la newsletter",
+  "REGISTRATION_NEWSLETTER_LABEL" : "Inscription à la newsletter (environ un mail par mois)",
   "REGISTRATION_SAVE_BUTTON" : "Inscription",
   "REGISTRATION_UNABLE_EMPTY_USERNAME" : "Inscription impossible : nom d'utilisateur vide",
   "REGISTRATION_UNABLE_USERNAME_INVALID" : "Inscription impossible : nom d'utilisateur invalide doit contenir uniquement des lettres et des chiffres",
@@ -189,6 +197,7 @@
   "MAP_LAYERS_PARENTLAYER_CHOISE_ZONE_COPY" : "Couche à copier : ",
   "MAP_LAYERS_PARENTLAYER_EMPTY" : "Vide",
   "MAP_LAYERS_PARENTLAYER_DELETE_VALIDATION" : "Etes-vous sur de vouloir supprimer la couche ",
+  "MAP_LAYERS_PARENTLAYER_PROP_MENU" : "Ouvrir le menu des propriétés",
 
   "MAP_LAYERS_ZONE_DELETE" : "Supprimer la sous-couche",
   "MAP_LAYERS_ZONE_POPUP" : "Ajout d'une pop-up",
@@ -216,6 +225,13 @@
   "MAP_MARKERS_SIZE" : "Taille : ",
   "MAP_MARKERS_POPUP" : "Pop-up : ",
   "MAP_MARKERS_REORDER_BY_DATE" : "Re-ordonné selon les dates de début",
+  "MAP_MARKERS_ADD_ICON" : "Ajout d'une nouvelle icône",
+
+  "MAP_TIMEAREA_TITLE" : "Zone de temps :",
+  "MAP_TIMEAREA_START_DATE" : "Date de début : ",
+  "MAP_TIMEAREA_END_DATE" : "Date de fin : ",
+  "MAP_TIMEAREA_DESCRIPTION" : "Choix d'une zone de temps sur laquelle on va récupérer tous les marqueurs.",
+  "MAP_TIMEAREA_END_DATE_GREATER_START_DATE" : "La date de fin doit être supérieur ou égale à la date de fin.",
 
   "MAP_PARAMS_TITLE" : "Paramètres :",
   "MAP_PARAMS_ZOOM_DEFAULT" : "Zoom par défaut : ",
@@ -233,8 +249,11 @@
   "MAP_PARAMS_TIME_TYPE_YEARS" : "Années",
   "MAP_PARAMS_TIME_TYPE_MONTHS" : "Mois",
   "MAP_PARAMS_TIME_TYPE_DAYS" : "Jours",
-  "MAP_PARAMS_UPDATE_BUTTON" : "Update",
+  "MAP_PARAMS_UPDATE_BUTTON" : "Mettre à jour",
   "MAP_PARAMS_OPEN" : "Ouvrir le menu de paramétrage",
+  "MAP_PARAMS_DATE_BAR_SIZE" : "Grande barre de temps",
+  "MAP_PARAMS_OPEN_PROP_FORM" : "Propriétés",
+  "MAP_PARAMS_OPEN_PROP_FORM_TITLE" : "Ouvrir le menu des propriétés",
 
   "MAP_DESC_LANG_CHOISE": "Langue : ",
   "MAP_DESC_VIEWS_NUMBER" : "vues",
@@ -284,5 +303,25 @@
   "MAP_TYPE_TEXT" : "Type de carte : ",
   "MAP_TYPE_HISTORY" : "Historique",
   "MAP_TYPE_UCHRONY" : "Uchronie",
-  "MAP_TYPE_PRESENT" : "Présent"
+  "MAP_TYPE_PRESENT" : "Présent",
+
+  "MAP_PROP_FORM_TITLES_NAME" : "nom",
+  "MAP_PROP_FORM_TITLES_VALUES" : "valeurs",
+  "MAP_PROP_FORM_TITLES_COLOR" : "couleur",
+  "MAP_PROP_FORM_TITLES_OPACITY" : "opacitée",
+  "MAP_PROP_FORM_ADD_PROP" : "Ajouter une propriétés",
+  "MAP_PROP_FORM_ADD_VALUES" : "Ajouter une valeur",
+  "MAP_PROP_FORM_DELETE_LINE_TITLE" : "Supprimer la ligne",
+  "MAP_PROP_FORM_DELETE_VALUE_TITLE" : "Supprimer la valeur",
+  "MAP_PROP_FORM_VALUE_DEFAULT" : "Valeur par défaut",
+  "MAP_PROP_FORM_TITLE" : "Menu des propriétés",
+  "MAP_PROP_FORM_SAVE_INVALID" : "Impossible de sauvegarder, certains champs sont vides",
+
+  "MAP_PROP_LAYER_FORM_TITLE" : "Propriétés du layer",
+  "MAP_PROP_LAYER_FORM_TITLES_NAME" : "Nom",
+  "MAP_PROP_LAYER_FORM_TITLES_VALUE" : "Valeur",
+  "MAP_PROP_LAYER_FORM_TITLES_START" : "Date de début (optionel)",
+  "MAP_PROP_LAYER_FORM_TITLES_END" : "Date de fin (optionel)",
+  "MAP_PROP_LAYER_FORM_SAVE_INVALID" : "Impossible de sauvegarder, certains champs dates ne sont pas valides"
+
 }

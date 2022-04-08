@@ -66,6 +66,7 @@ class GeoJsonManager
       };
       // start reading the file. When it is done, calls the onload event defined above.
       reader.readAsText(fileInput.files[0]);
+      $("#inputImportFileGeoJson")[0].value = "";
     };
 
     fileInput.addEventListener('change', readFile);
@@ -133,7 +134,7 @@ class GeoJsonManager
     }
 
     let content = `<div class="geojson-import-polygon">${Dictionary.get("MAP_GEOJSON_IMPORT_POLYGON")}`
-    content += `<button class="geojson-import-button-action" id="geojson-import-polygon-zoom_${i}">${Dictionary.get("MAP_GEOJSON_IMPORT_POLYGON")}</button>`;
+    content += `<button class="geojson-import-button-action" id="geojson-import-polygon-zoom_${i}">${Dictionary.get("MAP_GEOJSON_IMPORT_GEOM")}</button>`;
 
     if(props != "")
     {
@@ -270,7 +271,7 @@ class GeoJsonManager
     }
 
     let content = `<div class="geojson-import-point">${Dictionary.get("MAP_GEOJSON_IMPORT_POINT")}`
-    content += `<button class="geojson-import-button-action" id="geojson-import-point-zoom_${i}">geom</button>`;
+    content += `<button class="geojson-import-button-action" id="geojson-import-point-zoom_${i}">${Dictionary.get("MAP_GEOJSON_IMPORT_GEOM")}</button>`;
 
     if(props != "")
     {
@@ -339,7 +340,7 @@ class GeoJsonManager
               // Add geom to the selected layer
               if(this.layersManager.layerGroups[numLayer].selectedZone.geom != null && !clearLayer)
               {
-                this.layersManager.layerGroups[numLayer].selectedZone.geom = turf.union(this.layersManager.layerGroups[numLayer].selectedZone.geom, features[i]);
+                this.layersManager.layerGroups[numLayer].selectedZone.geom = turf.union(this.layersManager.layerGroups[numLayer].selectedZone.geom, turf.truncate(features[i]));
               }
               else
               {

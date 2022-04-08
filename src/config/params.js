@@ -38,6 +38,8 @@ class Params
     this.typeTime = "years";
 
     this.description = "";
+
+    this.timeBarBigSize = false;
   }
 
   /*
@@ -63,6 +65,8 @@ class Params
     
     content.params["description"] = this.description;
 
+    content.params["timeBarBigSize"] = this.timeBarBigSize;
+
     return content;
   }
 
@@ -84,6 +88,8 @@ class Params
       this.timeEnable = content.params["timeEnable"];
       this.timeMin = content.params["timeMin"];
       this.timeMax = content.params["timeMax"];
+
+      this.timeBarBigSize = content.params["timeBarBigSize"];
 
       if(content.params["typeTime"])
       {

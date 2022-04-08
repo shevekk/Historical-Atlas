@@ -6,23 +6,29 @@ class ParentLayer
 {
   /*
    * Initialize the Parent layer containing paintLayers
-   * @property {L.map}               map                  The map
-   * @property {Object}              polygonOptions       The option of polygon draw
-   * @property {Number}              number               The number
-   * @property {PaintParams}         paintParams          The paint parameters
-   * @property {L.layerGroup}        layer                The drawing layer
-   * @property {Label}               label                The label of the layer
-   * @property {PaintZone[]}         paintZones           Array of all paint layers
-   * @property {PaintZone}           selectedZone         The selected paintLayer
+   * @property {L.map}               map                         The map
+   * @property {Object}              polygonOptions              The option of polygon draw
+   * @property {Object}              polygonOptionsInitial       The option of polygon defaut (option with no properties filters)
+   * @property {Number}              viewPropertyNumber          The number of property filter apply (-1 if no property filter)
+   * @property {Number}              number                      The number
+   * @property {PaintParams}         paintParams                 The paint parameters
+   * @property {PropertyLayer[]}     properties                  The properties parameters
+   * @property {L.layerGroup}        layer                       The drawing layer
+   * @property {Label}               label                       The label of the layer
+   * @property {PaintZone[]}         paintZones                  Array of all paint layers
+   * @property {PaintZone}           selectedZone                The selected paintLayer
    */
   constructor(map, polygonOptions, number, paintParams, params)
   {
+    this.polygonOptionsInitial = polygonOptions;
     this.polygonOptions = polygonOptions;
     this.layer = L.layerGroup().addTo(map);
     this.map = map;
     this.number = number;
     this.params = params;
     this.paintParams = paintParams;
+    this.properties = [];
+    this.viewPropertyNumber = -1;
 
     this.paintZones = [];
     this.paintZones.push(new PaintZone(0, this.params));
@@ -138,6 +144,7 @@ class ParentLayer
     let startDate = DateConverter.dateToNumber(this.params.timeMin, false, this.params);
     let endDate = DateConverter.dateToNumber(this.params.timeMax, false, this.params);
     let geom = null;
+    let copyNumber = -1;
     let popupContent = "";
     for(let i = 0; i < this.paintZones.length; i++)
     {
@@ -161,6 +168,7 @@ class ParentLayer
       {
         geom = this.paintZones[i].geom;
         popupContent = this.paintZones[i].popupContent;
+        copyNumber = this.paintZones[i].number;
       }
     }
 
@@ -169,6 +177,12 @@ class ParentLayer
     this.paintZones[this.paintZones.length - 1].startDate = startDate;
     this.paintZones[this.paintZones.length - 1].geom = geom;
     this.paintZones[this.paintZones.length - 1].popupContent = popupContent;
+
+    // Copy position of the label
+    if(copyNumber >= 0)
+    {
+      this.label.customPositions[this.paintZones[this.paintZones.length - 1].number] = this.label.customPositions[copyNumber];
+    }
 
     if(autoSelected)
     {
@@ -187,10 +201,25 @@ class ParentLayer
     {
       if(timeValue >= this.paintZones[i].startDate && timeValue <= this.paintZones[i].endDate)
       {
-        //if(this.selectedZone == null || this.selectedZone.geom == null)
-        //{
-          this.selectedZone = this.paintZones[i];
-        //}
+        this.selectedZone = this.paintZones[i];
+
+        // Manage view with property filter
+        if(this.viewPropertyNumber >= 0)
+        {
+          let valueNumber = 1;
+          let propLayer = this.properties.find(p => p.propNumber == this.viewPropertyNumber);
+
+          if(propLayer)
+          {
+            if(!propLayer.startDate || !propLayer.endDate || (propLayer.startDate <= timeValue && propLayer.endDate >= timeValue))
+            {
+              valueNumber = propLayer.valueNumber;
+            }
+
+            let prop = PropertiesForm.properties.find((p) => p.number == this.viewPropertyNumber);
+            prop.modifyPolygonOptions(this.polygonOptions, valueNumber);
+          }
+        }
       }
     }
 
@@ -234,8 +263,9 @@ class ParentLayer
     let obj = {};
     
     obj["label"] = this.label.toJson();
-    obj["options"] = this.polygonOptions;
+    obj["options"] = this.polygonOptionsInitial;
     obj["number"] = this.number;
+    obj["properties"] = this.properties;
     obj["zones"] = [];
     for(let i = 0; i < this.paintZones.length; i++)
     {
@@ -255,7 +285,13 @@ class ParentLayer
 
     this.label.fromJson(contentObj["label"]);
     this.polygonOptions = contentObj["options"];
+    this.polygonOptionsInitial = contentObj["options"];
     this.number = contentObj["number"];
+
+    if(contentObj["properties"])
+    {
+      this.properties = contentObj["properties"];
+    }
 
     for(let i = 0; i < contentObj["zones"].length; i++)
     {
@@ -288,6 +324,12 @@ class ParentLayer
     for(let i = 0; i < this.paintZones.length; i++)
     {
       this.paintZones[i].updateTypeDate(oldTypeDate, newTypeDate);
+    }
+
+    for(let i = 0; i < this.properties.length; i++)
+    {
+      this.properties[i].startDate = DateConverter.updateTypeDate(this.properties[i].startDate, oldTypeDate, newTypeDate, false);
+      this.properties[i].endDate = DateConverter.updateTypeDate(this.properties[i].endDate, oldTypeDate, newTypeDate, true);
     }
   }
 }

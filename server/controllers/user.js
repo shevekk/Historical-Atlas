@@ -6,6 +6,7 @@ const nodemailer = require('nodemailer');
 const url = require('url');
 const { v4: uuidv4 } = require('uuid');
 const log = require("./log");
+var http = require("https");
 
 /*
  * Log an user, check if password and user are correct
@@ -90,24 +91,39 @@ exports.registration = (req, res, next) =>
         }
         else
         {
-          let sql = `INSERT INTO users (name, password, mail, admin, lang, newsletter, registration_date, login_date) VALUES ('${req.body.name}', '${hash}', '${req.body.mail}', 0, '${req.body.lang}', ${req.body.newsletter}, '${new Date().toISOString().slice(0, 19).replace('T', ' ')}', '${new Date().toISOString().slice(0, 19).replace('T', ' ')}')`;
-          // connection.escape(${req.body.name})
+          let sql = `SELECT * FROM users WHERE mail = "${req.body.mail}"`;
+
           db.query(sql).then(result => {
 
-            db.end();
-            log.log("registration", {name : req.body.name, mail : req.body.mail, lang : req.body.lang, newsletter : req.body.newsletter, succes : false});
+            if(result.length > 0)
+            {
+              return res.status(500).json({ error: "SERVER_MAIL_NOT_AVAILABLE" })
+            }
+            else
+            {
+              let sql = `INSERT INTO users (name, password, mail, admin, lang, newsletter, registration_date, login_date) VALUES ('${req.body.name}', '${hash}', '${req.body.mail}', 0, '${req.body.lang}', ${req.body.newsletter}, '${new Date().toISOString().slice(0, 19).replace('T', ' ')}', '${new Date().toISOString().slice(0, 19).replace('T', ' ')}')`;
+              // connection.escape(${req.body.name})
+              db.query(sql).then(result => {
 
-            config.getTokenKey().then((tokenKey) => {
-              res.status(200).json({
-                userId: req.body.name,
-                token: jwt.sign(
-                  { userId: req.body.name },
-                  tokenKey,
-                  { expiresIn: '24h' }
-                )
-              });
-            }).catch(error => res.status(500).json({ error : "SERVER_READ_CONFIG_FAIL" }));
-          }).catch(error => { db.end(); log.log("registration", {name : req.body.name, mail : req.body.mail, lang : req.body.lang, newsletter : req.body.newsletter, succes : false}); res.status(500).json({ error: 'SERVER_QUERY_CREATION_FAIL' }) });
+                db.end();
+                log.log("registration", {name : req.body.name, mail : req.body.mail, lang : req.body.lang, newsletter : req.body.newsletter, succes : true});
+
+                config.getTokenKey().then((tokenKey) => {
+                  res.status(200).json({
+                    userId: req.body.name,
+                    token: jwt.sign(
+                      { userId: req.body.name },
+                      tokenKey,
+                      { expiresIn: '24h' }
+                    )
+                  });
+                }).catch(error => res.status(500).json({ error : "SERVER_READ_CONFIG_FAIL" }));
+              }).catch(error => { db.end(); log.log("registration", {name : req.body.name, mail : req.body.mail, lang : req.body.lang, newsletter : req.body.newsletter, succes : false}); res.status(500).json({ error: 'SERVER_QUERY_CREATION_FAIL' }) });
+            }
+          }).catch(error => { 
+            log.log("registration", {name : req.body.name, mail : req.body.mail, lang : req.body.lang, newsletter : req.body.newsletter, succes : false});
+            db.end(); res.status(500).send({ error: 'SERVER_QUERY_FAIL' }) 
+          });
         }
       }).catch(error => { 
         log.log("registration", {name : req.body.name, mail : req.body.mail, lang : req.body.lang, newsletter : req.body.newsletter, succes : false});
@@ -193,6 +209,7 @@ exports.sendMail = (req, res, next) =>
         res.status(200).send({ });
       }
     });
+
   }).catch(error => res.status(500).send({ }));
 }
 
@@ -496,10 +513,63 @@ exports.changeNewsletterState = (req, res, next) =>
     let sql = `UPDATE users SET newsletter = ${req.body.newsletter} WHERE (name = "${req.body.user}" OR mail = "${req.body.user}")`;
 
     db.query(sql).then(result => {
-      db.end();
 
-      res.status(200).send({});
+      if(req.body.newsletter == false)
+      {
+        let sqlDelete = `DELETE FROM newsletters WHERE mail = "${req.body.user}"`;
+
+        db.query(sqlDelete).then(result => {
+
+          db.end();
+
+          res.status(200).send({});
+
+        }).catch(error => { db.end(); res.status(500).send({ error : "SERVER_QUERY_FAIL" }); });
+      }
+      else
+      {
+        db.end();
+
+        res.status(200).send({});
+      }
 
     }).catch(error => { db.end(); res.status(500).send({ error : "SERVER_QUERY_FAIL" }); });
   }).catch(error => { res.status(500).send({ error : "SERVER_QUERY_FAIL" }); });
+}
+
+/*
+ * Add a new mail in the newsletters list
+ * @param {String}                      req.body.mail              The mail adress
+ * @param {String}                      req.body.lang              The lang
+ * @return                                                         Empty
+ */
+exports.addNewsletterMail = (req, res, next) => 
+{
+  config.connectBDD().then((db) => {
+
+    log.log("addNewsletter", {mail : req.body.mail, lang : req.body.lang});
+
+    let sql = `SELECT * FROM newsletters WHERE mail = "${req.body.mail}"`;
+
+    db.query(sql).then(result => {
+
+      if(result.length == 0)
+      {
+        let sqlInsert = `INSERT INTO newsletters (mail, lang) VALUES ('${req.body.mail}', '${req.body.lang}')`;
+
+        db.query(sqlInsert).then(result => {
+
+          db.end();
+          res.status(200).send({});
+
+        }).catch(error => { db.end(); res.status(500).send({ error : "SERVER_QUERY_FAIL" }); });
+      }
+      else
+      {
+        db.end();
+        res.status(500).send({ error : "SERVER_NEWSLETTER_ALREADY_SUBSCRIBER" });
+      }
+    
+    }).catch(error => { db.end(); res.status(500).send({ error : "SERVER_QUERY_FAIL" }); });
+  }).catch(error => { db.end(); res.status(500).send({ }); });
 }

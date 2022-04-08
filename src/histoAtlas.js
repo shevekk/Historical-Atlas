@@ -60,6 +60,7 @@ class Main
       });
 
       me.actionsList = new ActionList();
+      me.labelDate = new LabelDate(me.map, me.params);
 
       me.copyManager = new CopyManager(me.map, me.actionsList);
 
@@ -67,9 +68,10 @@ class Main
       me.backgroundControl = new BackgroundControl({paintParams : me.paintParams, jsonBackgrounds : jsonBackgrounds}).addTo(me.map);
       me.backgroundControl.updateList(me.params.backgrounds, jsonBackgrounds);
       me.backgroundControl.manageEvents()
-      me.timeControl = new TimeControl({params : me.params, paintParams : me.paintParams}).addTo(me.map);
+      me.timeControl = new TimeControl({params : me.params, paintParams : me.paintParams, labelDate : me.labelDate}).addTo(me.map);
       me.layersControl = new LayersControl({paintParams : me.paintParams, params : me.params, timeControl : me.timeControl, actionsList : me.actionsList});
       me.settingsControl = new SettingsControl({paintParams : me.paintParams, params : me.params, jsonBackgrounds : jsonBackgrounds, backgroundControl : me.backgroundControl, timeControl : me.timeControl, layersControl : me.layersControl}).addTo(me.map);
+      me.propertiesControl = new PropertiesControl({}).addTo(me.map);
 
       me.cursorManager = new CursorManager({params : me.params, paintParams : me.paintParams});
       me.cursorManager.layer = L.layerGroup().addTo(me.map);
@@ -91,6 +93,15 @@ class Main
       me.actionsList.timeControl = me.timeControl;
       me.actionsList.actionsControl = me.actionsControl;
 
+      me.propertiesControl.initFromProps(me.layersManager, me.timeControl);
+
+      me.keyboardEventsSManager = new KeyboardEventsManager(me.loadSaveManager, me.actionsControl);
+
+      if(me.params.editMode)
+      {
+        me.keyboardEventsSManager.manageEvents();
+      }
+
       if(me.params.editMode)
       {
         me.loadSaveManager.checkValidUser();
@@ -102,7 +113,7 @@ class Main
         me.loadSaveManager.loadFile(urlParams["file"], function()
         {
           $("#loading").html("");
-          $("#description-text").html(me.params.description);
+          //$("#description-text").html(me.params.description);
 
           me.manageControlFromWindowSize();
         });
@@ -112,7 +123,10 @@ class Main
         me.loadSaveManager.loadMapOnServer(urlParams["mapId"], function()
         {
           $("#loading").html("");
-          $("#description-text").html(me.params.description);
+          //$("#description-text").html(me.params.description.replaceAll("\n", "<br/>\n"));
+
+          var evt = new CustomEvent("reloadPropertiesControl", { });
+          document.dispatchEvent(evt);
 
           me.manageControlFromWindowSize();
         });
@@ -124,7 +138,7 @@ class Main
 
         me.manageControlFromWindowSize();
 
-        me.loadSaveManager.callServer("map/createNewMap", "post", {});
+        Utils.callServer("map/createNewMap", "post", {});
       }
 
       me.manageDescription();
@@ -268,16 +282,19 @@ class Main
 
       Dictionary.load(lang, "", function()
       {
+        let saveName = me.actionsControl.buttons["save"].savNameInput.value;
+
         me.actionsControl.removeButtons();
         me.actionsControl.createMenu();
-        me.loadSaveManager.checkValidUser();
+        me.loadSaveManager.checkValidUser(true);
+        me.actionsControl.buttons["save"].savNameInput.value = saveName;
 
         me.layersControl.redraw();
         me.backgroundControl.redraw();
         me.timeControl.redraw();
         me.settingsControl.redraw();
         me.backMenuControl.redraw();
-
+ 
         me.manageDescription();
 
         $("#language-choise-text").html(Dictionary.get("MAP_DESC_LANG_CHOISE"));
@@ -321,7 +338,7 @@ class Main
 
     $("#img-description-edit").click(function() {
 
-      $("#description-text").html(`<textarea id="text-area-description">${me.params.description}</textarea>`);
+      $("#description-text").html(`<textarea id="text-area-description">${me.params.description.replaceAll("<br/>\n", "\n")}</textarea>`);
       $("#img-description-edit").css("visibility", "hidden");
       $("#sav-description").css("display", "inline");
 
@@ -329,7 +346,7 @@ class Main
 
         if($("#text-area-description").length > 0)
         {
-          me.params.description = $("#text-area-description").val();
+          me.params.description = $("#text-area-description").val().replaceAll("\n", "<br/>\n");
 
           $("#description-text").html(me.params.description);
           $("#img-description-edit").css("visibility", "visible");
@@ -337,12 +354,22 @@ class Main
         }
       });
     });
-
     // Manage choise type
     $("#type-map-choise-history-label").html(Dictionary.get("MAP_TYPE_HISTORY"));
     $("#type-map-choise-uchrony-label").html(Dictionary.get("MAP_TYPE_UCHRONY"));
     $("#type-map-choise-present-label").html(Dictionary.get("MAP_TYPE_PRESENT"));
     $("#type-map-choise-text").html(Dictionary.get("MAP_TYPE_TEXT"));
+
+    // Disabled radio element 
+    if(!this.params.editMode)
+    {
+      jQuery("input[name='type-map-choise']").each(function() {
+          $(this).prop('disabled', "true");
+      });
+      jQuery("input[name='map-lang']").each(function() {
+          $(this).prop('disabled', "true");
+      });
+    }
   }
 
   /**

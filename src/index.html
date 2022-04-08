@@ -1,13 +1,16 @@
 ﻿<!DOCTYPE html>
 <html>
   <head>
-    <title>Histo Atlas</title>
+    <title>HistoAtlas</title>
     <link rel="icon" type="image/png" href="img/icon.png" />
-    <link rel="stylesheet" href="index.css?v=7.5" />
+    <link rel="stylesheet" href="index.css?v=9" />
   </head>
   <body>
 
   <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+
+  <link href="node_modules/toastr/build/toastr.min.css" rel="stylesheet" />
+  <script src="node_modules/toastr/build/toastr.min.js"></script>
 
   <div id="index-page-content">
 
@@ -18,13 +21,23 @@
 
     <div id="menu"></div><br/><br/>
 
+    <button id="follow">Suivre le projet</button>
+    <div id="follow-div">
+      <p id="newsletter-follow-desc">Recevoir une newsletter (une fois par mois maximum) :</p>
+      <label for="mail-newsletter-follow" id="mail-newsletter-follow-label">Votre mail : </label><input id="mail-newsletter-follow" type="text" style="width: 250px;"></input><button id="follow-newsletter-send">Envoyer</button>
+      <input type="radio" id="lang-newsletter-follow-en" name="lang-newsletter-follow" value="en"><label for="lang-newsletter-follow-en" class="lang-label-follow">EN</label><input type="radio" id="lang-newsletter-follow-fr" name="lang-newsletter-follow" value="fr"><label for="lang-newsletter-follow-fr" class="lang-label-follow">FR</label><br/>
+      <a href="#" id="link-follow-twitter"><img src="img/menu/twitter.png" class="icon-menu" /><text id="twitter-link-text"> Twitter</text></a><br/>
+      <a href="#" id="link-follow-facebook"><img src="img/menu/facebook.png" class="icon-menu" /><text id="twitter-link-text"> Facebook</text></a><br/>
+      <a href="#" id="link-follow-discord"><img src="img/menu/discord.png" class="icon-menu" /><text id="discord-link-text"> Discord</text></a>
+    </div>
+
     <h2 id="index-title">Histo Atlas</h2>
 
     <p id="description">Histo Atlas est un logiciel libre et gratuit permettant de dessiner et de visualiser des cartes historiques avec la visualisation d’évolution dans le temps de frontières, zones culturelles ou autres.<br/>
     Le logiciel permet de dessiner des zones, d'ajouter des labels, de choisir un fond de plan, de définir des zones de temps.<br/>
     Vous pouvez vous inscrire pour pouvoir sauvegarder vos propres carte et les partager en ligne.</p>
 
-    <img id="index-img-desc" src="img/captures/map_rome.png" />
+    <img id="index-img-desc" src="img/captures/map_rome.jpg" />
     <br/><br/>
     <!-- <a href="histoAtlas.html"><button id="create_empty_map">Créer une nouvelle carte</button></a> -->
     <a id="create-empty-map-link" href="histoAtlas.html"><img src="img/menu/plus-solid.svg" class="icon-menu" /> <text id="create_empty_map">Créer une nouvelle carte</text></a>
@@ -57,20 +70,21 @@
       
       <a id="help-menu-link" href="files/HistoAtlas_Help.pdf"><img src="img/menu/question-circle-solid.svg" class="icon-menu" /> <text id="help-menu-link-text">Menu aide.</text></a><br/>
 
-      <a href="https://www.youtube.com/channel/UCVuK-EYlX5qDi8KaOtUQ8JQ"><img src="img/menu/youtube-brands.svg" class="icon-menu" /> <text id="video-link-text">Vidéos tutoriel.</text></a><br/>
+      <a href="https://www.youtube.com/channel/UCVuK-EYlX5qDi8KaOtUQ8JQ" id="link-bottom-youtube"><img src="img/menu/youtube-brands.svg" class="icon-menu" /> <text id="video-link-text">Vidéos tutoriel.</text></a><br/>
 
-      <a id="version-link" href="pages/version7.html"><img src="img/menu/calendar-alt-solid.svg" class="icon-menu" /> <text id="version-link-text">Version actuelle : V7.</text></a><br/>
+      <a id="version-link" href="pages/version9.html"><img src="img/menu/calendar-alt-solid.svg" class="icon-menu" /> <text id="version-link-text">Version actuelle : V9.</text></a><br/>
       
       <a href="pages/contact.html"><img src="img/menu/envelope-solid.svg" class="icon-menu" /> <text id="contact-link-text">Contactez-moi pour remonter un bug, une suggestion, un avis ou si vous avez besoin d'aide.</text></a><br/>
 
       <a href="pages/support.html"><img src="img/menu/hands-helping-solid.svg" class="icon-menu" /> <text id="support-link-text">Soutenir le projet.</text></a><br/>
 
-      <a href="https://github.com/shevekk/Historical-Atlas"><img src="img/menu/git-hub.png" class="icon-menu"  /> <text id="source-code-link-text">Dépôt du code source</text></a><br/>
+      <a href="https://github.com/shevekk/Historical-Atlas" id="link-bottom-gitHub"><img src="img/menu/git-hub.png" class="icon-menu"  /> <text id="source-code-link-text">Dépôt du code source</text></a><br/>
 
-      <a href="https://twitter.com/HistoAtlas"><img src="img/menu/twitter.png" class="icon-menu" /><text id="twitter-link-text">Twitter</text></a><br/>
+      <a href="https://twitter.com/HistoAtlas" id="link-bottom-twitter"><img src="img/menu/twitter.png" class="icon-menu" /><text id="twitter-link-text">Twitter</text></a><br/>
 	  
-	    <a href="https://www.facebook.com/HistoAtlas-108587098369582"><img src="img/menu/facebook.png" class="icon-menu" /><text id="twitter-link-text"> Facebook</text></a>
-	  
+	    <a href="https://www.facebook.com/HistoAtlas-108587098369582" id="link-bottom-facebook"><img src="img/menu/facebook.png" class="icon-menu" /><text id="twitter-link-text"> Facebook</text></a><br/>
+
+      <a href="https://discord.gg/Ubx2zH7c" id="link-bottom-discord"><img src="img/menu/discord.png" class="icon-menu" /><text id="discord-link-text"> Discord</text></a>
 	  
 
       <p><a id="creator-link" href="http://dataexplorer.hd.free.fr/Presentation/index.html"><text id="creator-link-text">Crée par Maxence MARTIN</text></a></p>
@@ -79,12 +93,14 @@
 
   </div>
 
-  <script type="text/javascript" src="config/config.js?v=8"></script>
-  <script type="text/javascript" src="data/mapData.js?v=8"></script>
-  <script type="text/javascript" src="dictionary/dictionary.js?v=8"></script>
-  <script type="text/javascript" src="pages/menu.js?v=8"></script>
+  <script type="text/javascript" src="config/config.js?v=9"></script>
+  <script type="text/javascript" src="data/mapData.js?v=9"></script>
+  <script type="text/javascript" src="dictionary/dictionary.js?v=9"></script>
+  <script type="text/javascript" src="pages/menu.js?v=9"></script>
+
+  <script type="text/javascript" src="utils/utils.js?v=9"></script>
   
-  <script type="text/javascript" src="index.js?v=8"></script>
+  <script type="text/javascript" src="index.js?v=9"></script>
   
 
   </body>

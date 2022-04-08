@@ -31,25 +31,18 @@ Config.load().then((config) =>
     /* Check if user is connected */
     if(localStorage.getItem('session-id-histoatlas'))
     {
-      let urlServer = config.serverUrl + "/api/user/checkValidUser";
-      $.ajax({
-        url: urlServer,
-        method: "GET",
-        contentType: "application/json",
-        headers:{ 'Authorization': localStorage.getItem('session-token-histoatlas') },
-        success: (response) => {
+      Utils.callServer("user/checkValidUser", "GET", {}).then((result) => 
+      {
+        let user = localStorage.getItem('session-id-histoatlas');
+        getUserMap(user);
+        getServerMaps(user);
+        displayUser(user);
 
-          let user = localStorage.getItem('session-id-histoatlas');
-          getUserMap(user);
-          getServerMaps(user);
-          displayUser(user);
-        },
-        error: (err) => {
-          localStorage.removeItem('session-id-histoatlas');
-          localStorage.removeItem('session-token-histoatlas');
+      }).catch((err) => { 
+        localStorage.removeItem('session-id-histoatlas');
+        localStorage.removeItem('session-token-histoatlas');
           
-          getServerMaps(null);
-        }
+        getServerMaps(null);
       });
     }
     else
@@ -63,23 +56,18 @@ Config.load().then((config) =>
      */
     function getServerMaps(user)
     {
-      $.ajax({
-        url: config.serverUrl + "/api/map/getVisibleMaps/" + user,
-        method: "GET",
-        contentType: "application/json",
-        success: (response) => 
-        {
-          let publicMaps = [];
+      Utils.callServer("map/getVisibleMaps/" + user, "GET", {}).then((response) => 
+      {
+        let publicMaps = [];
           for(let i = 0; i < response.publicMaps.length; i++)
           {
             publicMaps.push(new MapData());
             publicMaps[i].fromJson(response.publicMaps[i]);
           }
           displayPublicMap(publicMaps);
-        },
-        error: (err) => {
-          alert(Dictionary.get('MENU_MAP_RECOVER_FAIL') + Dictionary.get(err.responseJSON.error));
-        }})
+      }).catch((err) => { 
+        toastr.error(Dictionary.get(err.responseJSON.error), Dictionary.get('MENU_MAP_RECOVER_FAIL'));
+      });
     }
 
     /* 
@@ -88,23 +76,18 @@ Config.load().then((config) =>
      */
     function getUserMap(user)
     {
-      $.ajax({
-        url: config.serverUrl + "/api/map/getVisibleMapsOfUser/" + user,
-        method: "GET",
-        contentType: "application/json",
-        success: (response) => 
+
+      Utils.callServer("map/getVisibleMapsOfUser/" + user, "GET", {}).then((response) => 
+      {
+        let userMaps = [];
+        for(let i = 0; i < response.userMaps.length; i++)
         {
-          let userMaps = [];
-          for(let i = 0; i < response.userMaps.length; i++)
-          {
-            userMaps.push(new MapData());
-            userMaps[i].fromJson(response.userMaps[i]);
-          }
-          displayUserMap(userMaps);
-        },
-        error: (err) => {
-          alert(Dictionary.get('MENU_MAP_RECOVER_FAIL') + Dictionary.get(err.responseJSON.error));
+          userMaps.push(new MapData());
+          userMaps[i].fromJson(response.userMaps[i]);
         }
+        displayUserMap(userMaps);
+      }).catch((err) => { 
+        toastr.error(Dictionary.get(err.responseJSON.error), Dictionary.get('MENU_MAP_RECOVER_FAIL'));
       });
     }
 
@@ -118,7 +101,8 @@ Config.load().then((config) =>
 
       function initMapDivContent(userMap, num)
       {
-        let content = `<div class="map-div" id="map-div_${num}">${userMap.name}
+        let categoryText = Dictionary.get('MAP_TYPE_' + userMap.category.toUpperCase());
+        let content = `<div class="map-div" id="map-div_${num}">[${userMap.lang.toUpperCase()}][${categoryText}] <b>${userMap.name}</b>
         <a href="histoAtlas.html?mapId=${userMap.id}&edit=false"><img class="icon-action" src="img/menu/eye-solid.svg" title="${Dictionary.get('INDEX_MAP_VIEW')}" /></a>
         <a href="histoAtlas.html?mapId=${userMap.id}"><img class="icon-action" src="img/menu/edit-solid.svg" title="${Dictionary.get('INDEX_MAP_EDIT')}" /></a></div>`;
 
@@ -192,24 +176,16 @@ Config.load().then((config) =>
           var nameRegex = /^[a-zA-Z0-9\s]+$/;
           if(!nameRegex.test(mapNewName))
           {
-            alert(Dictionary.get("MAP_SAVEANDLOAD_SAVE_FILENAME_INVALID"));
+            toastr.error(Dictionary.get("MAP_SAVEANDLOAD_SAVE_FILENAME_INVALID"), '');
             return;
           }
           let fileName = mapNewName.replaceAll(" ", "_");
 
-          let urlServer = config.serverUrl + "/api/map/rename";
-          $.ajax({
-            url: urlServer,
-            method: "POST",
-            contentType: "application/json",
-            headers:{ 'Authorization': localStorage.getItem('session-token-histoatlas') }, // 
-            data: JSON.stringify({user : localStorage.getItem('session-id-histoatlas'), id : userMaps[mapNumber].id, newName : mapNewName, fileName : fileName}),
-            success: (response) => {
-              document.location.href="index.html";
-            },
-            error: (err) => {
-              alert(`${Dictionary.get(err.responseJSON.error)}`);
-            }
+          Utils.callServer("map/rename", "POST", {user : localStorage.getItem('session-id-histoatlas'), id : userMaps[mapNumber].id, newName : mapNewName, fileName : fileName}).then((result) => 
+          {
+            document.location.href="index.html";
+          }).catch((err) => { 
+            toastr.error(Dictionary.get(err.responseJSON.error), '');
           });
         });
       });
@@ -219,20 +195,12 @@ Config.load().then((config) =>
       {
         let mapNumber = parseInt($(this).prop("id").split("_")[1]);
 
-        let urlServer = config.serverUrl + "/api/map/changePublicState";
-        $.ajax({
-          url: urlServer,
-          method: "POST",
-          contentType: "application/json",
-          headers:{ 'Authorization': localStorage.getItem('session-token-histoatlas') }, // 
-          data: JSON.stringify({user : localStorage.getItem('session-id-histoatlas'), id : userMaps[mapNumber].id, public : !userMaps[mapNumber].public}),
-          success: (response) => {
-            userMaps[mapNumber].public = !userMaps[mapNumber].public;
-            displayUserMap(userMaps);
-          },
-          error: (err) => {
-            alert(`${Dictionary.get(INDEX_LOGIN_UNABLE)} ${Dictionary.get(err.responseJSON.error)}`);
-          }
+        Utils.callServer("map/changePublicState", "POST", {user : localStorage.getItem('session-id-histoatlas'), id : userMaps[mapNumber].id, public : !userMaps[mapNumber].public}).then((response) => 
+        {
+          userMaps[mapNumber].public = !userMaps[mapNumber].public;
+          displayUserMap(userMaps);
+        }).catch((err) => { 
+          toastr.error(Dictionary.get(err.responseJSON.error), Dictionary.get('INDEX_LOGIN_UNABLE'));
         });
       });
 
@@ -241,20 +209,12 @@ Config.load().then((config) =>
       {
         let mapNumber = parseInt($(this).prop("id").split("_")[1]);
 
-        let urlServer = config.serverUrl + "/api/map/changeEditableState";
-        $.ajax({
-          url: urlServer,
-          method: "POST",
-          contentType: "application/json",
-          headers:{ 'Authorization': localStorage.getItem('session-token-histoatlas') }, // 
-          data: JSON.stringify({user : localStorage.getItem('session-id-histoatlas'), id : userMaps[mapNumber].id, public_editable : !userMaps[mapNumber].publicEditable}),
-          success: (response) => {
-            userMaps[mapNumber].publicEditable = !userMaps[mapNumber].publicEditable;
-            displayUserMap(userMaps);
-          },
-          error: (err) => {
-            alert(`${Dictionary.get(INDEX_LOGIN_UNABLE)} ${Dictionary.get(err.responseJSON.error)}`);
-          }
+        Utils.callServer("map/changeEditableState", "POST", {user : localStorage.getItem('session-id-histoatlas'), id : userMaps[mapNumber].id, public_editable : !userMaps[mapNumber].publicEditable}).then((result) => 
+        {
+          userMaps[mapNumber].publicEditable = !userMaps[mapNumber].publicEditable;
+          displayUserMap(userMaps);
+        }).catch((err) => { 
+          toastr.error(Dictionary.get(err.responseJSON.error), Dictionary.get('INDEX_LOGIN_UNABLE'));
         });
       });
 
@@ -266,19 +226,12 @@ Config.load().then((config) =>
 
         if (window.confirm(`Etes vous sur de vouloir supprimer la carte "${mapName}" ?`))
         {
-          $.ajax({
-          url: config.serverUrl + "/api/map/",
-          method: "DELETE",
-          contentType: "application/json",
-          headers:{ 'Authorization': localStorage.getItem('session-token-histoatlas') }, // 
-          data: JSON.stringify({user : localStorage.getItem('session-id-histoatlas'), id : userMaps[mapNumber].id}),
-          success: (response) => {
+          Utils.callServer("map/", "DELETE", {user : localStorage.getItem('session-id-histoatlas'), id : userMaps[mapNumber].id}).then((result) => 
+          {
             document.location.href="index.html";
-          },
-          error: (err) => {
-            alert(`${Dictionary.get(INDEX_DELETE_UNABLE)} ${Dictionary.get(err.responseJSON.error)}`);
-          }
-        });
+          }).catch((err) => { 
+            toastr.error(Dictionary.get(err.responseJSON.error), Dictionary.get('INDEX_LOGIN_UNABLE'));
+          });
         }
       });
 
@@ -397,25 +350,17 @@ Config.load().then((config) =>
        */
       function login()
       {
-        let urlServer = config.serverUrl + "/api/user/login";
-
         let name = $("#user-name").val();
         let password = $("#user-password").val();
 
-        $.ajax({
-          url: urlServer,
-          method: "POST",
-          contentType: "application/json",
-          data: JSON.stringify({name : name, password : password}),
-          success: (response) => {
-            localStorage.setItem('session-token-histoatlas', response.token);
-            localStorage.setItem('session-id-histoatlas', response.userId);
+        Utils.callServer("user/login", "POST", {name : name, password : password}).then((response) => 
+        {
+          localStorage.setItem('session-token-histoatlas', response.token);
+          localStorage.setItem('session-id-histoatlas', response.userId);
 
-            document.location.href="index.html";
-          },
-          error: (err) => {
-            alert(`${Dictionary.get('INDEX_LOGIN_UNABLE')} ${Dictionary.get(err.responseJSON.error)}`);
-          }
+          document.location.href="index.html";
+        }).catch((err) => { 
+          toastr.error(Dictionary.get(err.responseJSON.error), Dictionary.get('INDEX_LOGIN_UNABLE'));
         });
       }
 
@@ -445,7 +390,7 @@ Config.load().then((config) =>
     $("#description").html(Dictionary.get('INDEX_DESCRIPTION'));
     $("#help-menu-link-text").html(Dictionary.get('INDEX_HELP_MENU'));
     $("#video-link-text").html(Dictionary.get('INDEX_VIDEO_LINK_TEXT'));
-    $("#version-link-text").html(Dictionary.get('INDEX_VERSION_LINK_TEXT') + "8");
+    $("#version-link-text").html(Dictionary.get('INDEX_VERSION_LINK_TEXT') + "9");
     $("#contact-link-text").html(Dictionary.get('INDEX_CONTACT_LINK_TEXT'));
     $("#support-link-text").html(Dictionary.get('INDEX_SUPPORT_LINK_TEXT'));
     $("#source-code-link-text").html(Dictionary.get('INDEX_SOURCE_CODE_LINK_TEXT'));
@@ -458,16 +403,82 @@ Config.load().then((config) =>
     $("#registration-button").html(Dictionary.get('INDEX_REGISTRATION'));
     $("#cancel-button").html(Dictionary.get('INDEX_CANCEL'));
 
+    $("#follow").html(Dictionary.get('INDEX_FOLLOW_PROJET'));
+    $("#newsletter-follow-desc").html(Dictionary.get('INDEX_FOLLOW_GET_NEWSLETTER'));
+    $("#mail-newsletter-follow-label").html(Dictionary.get('INDEX_FOLLOW_YOUR_MAIL'));
+    $("#follow-newsletter-send").html(Dictionary.get('INDEX_FOLLOW_SEND'));
+
     $("#help-menu-link").prop("href", `files/HistoAtlas_Help_${Dictionary.lang}.pdf`);
 
     if(Dictionary.lang == "fr")
     {
-      $("#version-link").prop("href", "pages/version8.html");
+      $("#version-link").prop("href", "pages/version9.html");
     }
     else if(Dictionary.lang == "en")
     {
-      $("#version-link").prop("href", "pages/version8_en.html");
+      $("#version-link").prop("href", "pages/version9_en.html");
       $("#creator-link").prop("href", "http://dataexplorer.hd.free.fr/Presentation/index_en.html");
     }
+
+    // Links management
+    let fileName = "config/links.json"
+    let jqxhr = $.getJSON(fileName, null)
+    .done(function(content)
+    {
+      $("#link-follow-twitter").attr("href", content.twitter);
+      $("#link-follow-facebook").attr("href", content.facebook);
+      $("#link-follow-discord").attr("href", content.discord);
+
+      $("#link-bottom-twitter").attr("href", content.twitter);
+      $("#link-bottom-facebook").attr("href", content.facebook);
+      $("#link-bottom-discord").attr("href", content.discord);
+      $("#link-bottom-youtube").attr("href", content.youtube);
+      $("#link-bottom-gitHub").attr("href", content.gitHub);
+    })
+    .fail(function(d, textStatus, error)
+    {
+      console.error("JSON lINKS failed, status: " + textStatus + ", error: " + error);
+    });
+
+    // Newsletter div management
+    $("#follow").click(function()
+    {
+      $("#follow-div").css("display", "block"); 
+      $("#follow").css("display", "none"); 
+
+      $('#lang-newsletter-follow-' + lang).prop("checked", true);
+    });
+
+    // Add a new entry in newsletters
+    $("#follow-newsletter-send").click(() => 
+    {
+      let mailNewsletter = $("#mail-newsletter-follow").val();
+
+      const exp = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if(exp.test(mailNewsletter))
+      {
+        let selectLang = "";
+        $('input[name="lang-newsletter-follow"]').each(function() {
+          if(this.checked)
+          {
+            selectLang = this.value;
+          }
+        });
+
+        let dataAddNewsletter = {};
+        dataAddNewsletter["lang"] = selectLang;
+        dataAddNewsletter["mail"] = mailNewsletter;
+
+        Utils.callServer('user/addNewsletterMail', "POST", dataAddNewsletter).then(() => {
+          toastr.success(Dictionary.get("INDEX_FOLLOW_SUCCESS"), "");
+        })
+        .catch(err => { toastr.error(Dictionary.get(err.responseJSON.error), Dictionary.get("INDEX_FOLLOW_FAIL"));});
+      }
+      else
+      {
+        toastr.error(Dictionary.get('REGISTRATION_UNABLE_MAIL_INVALID'), Dictionary.get("INDEX_FOLLOW_FAIL"));
+      }
+    });
+    
   });
 });
