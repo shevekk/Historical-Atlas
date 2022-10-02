@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+
+    <title>Histo Atlas</title>
+    <link rel="icon" type="image/png" href="img/icon.png" />
+
+    <link href="node_modules\mapbox-gl\dist/mapbox-gl.css" rel="stylesheet">
+    <script src="node_modules\mapbox-gl\dist/mapbox-gl.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link rel="stylesheet" href="libs/jquery-ui/jquery-ui.min.css">
+    <script src="libs/jquery-ui/jquery-ui.min.js"></script>
+
+    <script type="text/javascript" src="utils/utils.js?v=10"></script>
+    <script type="text/javascript" src="config/config.js?v=10"></script>
+    <script type="text/javascript" src="config/params.js?v=10"></script>
+
+    <script type="text/javascript" src="dictionary/dictionary.js?v=10"></script>
+
+    <script type="text/javascript" src="controls/dateConverter.js?v=10"></script>
+
+    <script type="text/javascript" src="histoAtlasMapbox.js?v=10"></script>
+    <script type="text/javascript" src="mapbox/timeBar.js?v=10"></script>
+    <script type="text/javascript" src="mapbox/layer.js?v=10"></script>
+    <script type="text/javascript" src="mapbox/marker.js?v=10"></script>
+    <script type="text/javascript" src="mapbox/layersManager.js?v=10"></script>
+    <script type="text/javascript" src="mapbox/backgroundUI.js?v=10"></script>
+
+    <script type="text/javascript" src="shared/descriptionManager.js?v=10"></script>
+
+    <script type="text/javascript" src="node_modules/@turf/turf/turf.min.js"></script>
+
+    <link rel="stylesheet" href="libs/jquery-ui/jquery-ui.min.css">
+    <script src="libs/jquery-ui/jquery-ui.min.js"></script>
+
+    <link rel="stylesheet" href="histoAtlasMapbox.css?v=10" />
+    <link rel="stylesheet" href="timeSlider.css?v=10" />
+
+  </head>
+  <body>
+    <div id="map"></div>
+    <div class="map-overlay top">
+      <div class="map-overlay-inner">
+        <label id="select-projection-label">Select projection</label>
+        <select id="projection" name="projection">
+          <option value="mercator">Mercator</option>
+          <option value="globe" selected="">Globe</option>
+          <option value="albers">Albers</option>
+          <option value="equalEarth">Equal Earth</option>
+          <option value="equirectangular">Equirectangular</option>
+          <option value="lambertConformalConic">Lambert Conformal Conic</option>
+          <option value="naturalEarth">Natural Earth</option>
+          <option value="winkelTripel">Winkel Tripel</option>
+        </select>
+      </div>
+    </div>
+    <div id="right-ui">
+      <div id="right-ui-backgrounds">
+        <b id="right-ui-backgrounds-title"></b>
+        <img class="right-ui-icon-hide" id="right-ui-backgrounds-icon-hide" src="img/menu/minus-solid.svg" />
+        <div id="right-ui-backgrounds-content"></div>
+      </div>
+      <div id="right-ui-elements">
+        <img class="right-ui-icon-hide" id="right-ui-elements-icon-hide" src="img/menu/minus-solid.svg" />
+        <p class="right-ui-layer-title"><b id="right-ui-layer-title">Layers : </b></p>
+        <div id="right-ui-elements-content">
+          <div id="right-layer-ui"></div>
+          <p class="right-ui-marker-title"><b id="right-ui-marker-title">Marker : </b></p>
+          <div id="right-marker-ui"></div>
+        </div>
+      </div>
+    </div>
+    <div id="left-button-ui"></div>
+    <div id="left-group">
+      <div id="left-group-legend"></div>
+      <div id="left-button-group"></div>
+      <div id="left-buttons-lang-div"></div>
+    </div>
+    <div id="time-bar"></div>
+    <div id="dialog-description" title=""></div>
+     
+    <script>
+      let lang = "en";
+      if(Config.getCookie("lang"))
+      {
+        lang = Config.getCookie("lang");
+      }
+      let params = Config.getUrlParams();
+      if(params["lang"])
+      {
+        lang = params["lang"];
+      }
+
+      Dictionary.load(lang, "", function()
+      {
+        let main = new MainMapBox();
+        main.init();
+      });
+    </script>
+     
+  </body>
+</html>

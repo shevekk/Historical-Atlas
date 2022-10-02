@@ -1,14 +1,21 @@
-﻿body
+﻿
+/*
+ * body
 {
   margin : 0px;
   display: flex;
   flex-direction: column;
 }
+*/
+html, body {
+   height: 100%;
+   margin : 0px;
+}
 
 #map
 {
   width: 100%;
-  height: 800px; 
+  height: 100%;
   background: #ffffff;
   margin : 0px;
 }
@@ -64,8 +71,9 @@
 {
 }
 
+
 /* Action button splider */
-.leaflet-control-div-slider  
+.leaflet-control-div-slider
 {
     background-color: #fff;
     position: absolute;
@@ -86,7 +94,7 @@
 }
 
 /* Action button splider content */
-.leaflet-control-div-slider-content  
+.leaflet-control-div-slider-content
 {
     padding: 5px;
     display: inline-block;
@@ -95,7 +103,7 @@
 }
 
 /* Action button open class */
-.leaflet-control-div-slider-open  
+.leaflet-control-div-slider-open
 {
     border: inherit!important;
     max-width: 250px;
@@ -260,8 +268,8 @@
 .layers-list-color
 {
     display: inline-block;
-    width:18px;
-    height:18px;
+    width:16px;
+    height:16px;
     border-radius: 4px;
     vertical-align:middle;
     margin-bottom: 2px;
@@ -380,115 +388,6 @@
   margin-bottom: 7px;
 }
 
-/* Time splider */
-.time-slider 
-{
-  height: 38px;
-  -webkit-appearance: none;
-  margin: 0px;
-  width: 100%;
-  width: 300px;
-  background: none;
-  margin-left: 5px;
-}
-
-.time-slider:focus
-{
-  outline: none;
-}
-
-/* Time splider for webkit */
-.time-slider::-webkit-slider-runnable-track 
-{
-  width: 100%;
-  height: 10px;
-  cursor: pointer;
-  animate: 0.2s;
-  box-shadow: 1px 1px 1px #000000;
-  background: #ADBEF3;
-  border-radius: 5px;
-  border: 1px solid #000000;
-}
-
-.time-slider::-webkit-slider-thumb 
-{
-  box-shadow: 1px 1px 1px #000000;
-  border: 1px solid #000000;
-  height: 30px;
-  width: 15px;
-  border-radius: 5px;
-  background: #4F65A5;
-  cursor: pointer;
-  -webkit-appearance: none;
-  margin-top: -11px;
-}
-
-.time-slider:focus::-webkit-slider-runnable-track 
-{
-  background: #ADBEF3;
-}
-
-/* Time splider for moz */
-.time-slider::-moz-range-track {
-  width: 100%;
-  height: 10px;
-  cursor: pointer;
-  animate: 0.2s; 
-  box-shadow: 1px 1px 1px #000000;
-  background: #ADBEF3;
-  border-radius: 5px;
-  border: 1px solid #000000;
-}
-
-.time-slider::-moz-range-thumb {
-  box-shadow: 1px 1px 1px #000000;
-  border: 1px solid #000000;
-  height: 26px;
-  width: 12px;
-  border-radius: 5px;
-  background: #4F65A5;
-  cursor: pointer;
-}
-
-/* Time splider for ms */
-.time-slider::-ms-track {
-  width: 100%;
-  height: 10px;
-  cursor: pointer;
-  animate: 0.2s;
-  background: transparent;
-  border-color: transparent;
-  color: transparent;
-}
-.time-slider::-ms-fill-lower {
-  background: #ADBEF3;
-  border: 1px solid #000000;
-  border-radius: 10px;
-  box-shadow: 1px 1px 1px #000000;
-}
-.time-slider::-ms-fill-upper {
-  background: #ADBEF3;
-  border: 1px solid #000000;
-  border-radius: 10px;
-  box-shadow: 1px 1px 1px #000000;
-}
-.time-slider::-ms-thumb {
-  margin-top: 1px;
-  box-shadow: 1px 1px 1px #000000;
-  border: 1px solid #000000;
-  height: 30px;
-  width: 15px;
-  border-radius: 5px;
-  background: #4F65A5;
-  cursor: pointer;
-}
-.time-slider:focus::-ms-fill-lower {
-  background: #ADBEF3;
-}
-.time-slider:focus::-ms-fill-upper {
-  background: #ADBEF3;
-}
-
 /* Div of the time */
 .time-control
 {
@@ -496,23 +395,6 @@
 }
 
 /* Title display the selected date */
-/*
-.time-slider-title
-{
-    display: inline;
-    padding: 3px;
-    border-radius: 6px;
-    margin-left: 5px;
-    margin-right: 0px;
-    margin-top: 18px;
-    float : right;
-    background-color: #4F65A5;
-    color : #ffffff;
-    min-width: 30px;
-    text-align: center;
-}
-*/
-
 .time-slider-title
 {
     display: inline;
@@ -590,7 +472,7 @@
 #text-area-description
 {
   width: 100%;
-  height: 50px;
+  height: 120px;
 }
 
 #language-choise
@@ -768,4 +650,39 @@
   margin-top: 4px;
   margin-bottom: 4px;
   background-color: #fafafa;
+}
+
+/* Hide all pop-up close cross */
+.ui-dialog-titlebar-close {
+    visibility: hidden;
+}
+
+/* Group legend */
+.left-group-legend {
+  bottom : 50px;
+  left: 10px;
+
+  background-color: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+  padding: 8px;
+  margin-bottom: 10px;
+
+  display : flex;
+  flex-direction: column;
+  visibility: hidden;
+}
+
+.left-group-legend-line {
+  margin : 1px;
+  padding: 1px;
+  display: flex;
+}
+
+.left-group-legend-square {
+  width:16px;
+  height:16px;
+  border-radius: 4px;
+  margin-right: 4px;
+  border: 1px solid black;
 }

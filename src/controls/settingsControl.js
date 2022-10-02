@@ -185,14 +185,12 @@ var SettingsControl = L.Control.extend({
     labelTimeMin.for = "timeMin";
     labelTimeMin.innerHTML = Dictionary.get("MAP_PARAMS_DATE_MIN");
     let inputTimeMin = L.DomUtil.create('input', 'settings-time-input', timeMaxMinDiv);
-    //inputTimeMin.type = "number";
     inputTimeMin.name = "timeMin";
     inputTimeMin.value = this.params.timeMin;
     let labelTimeMax = L.DomUtil.create('label', '', timeMaxMinDiv);
     labelTimeMax.for = "timeMax";
     labelTimeMax.innerHTML = " " + Dictionary.get("MAP_PARAMS_DATE_MAX");
     let inputTimeMax = L.DomUtil.create('input', 'settings-time-input', timeMaxMinDiv);
-    //inputTimeMax.type = "number";
     inputTimeMax.name = "timeMax";
     inputTimeMax.value = this.params.timeMax;
 
@@ -216,7 +214,28 @@ var SettingsControl = L.Control.extend({
     labelTimeBarBigSize.for = "dateBarSize";
     labelTimeBarBigSize.innerHTML = Dictionary.get("MAP_PARAMS_DATE_BAR_SIZE");
 
-    // 
+    // Auto scroll speed
+    let autoScroolTimeDiv = L.DomUtil.create('div', '', contentDiv);
+    let inputAutoScroolTimeEnable = L.DomUtil.create('input', '', autoScroolTimeDiv);
+    inputAutoScroolTimeEnable.type = "checkbox";
+    inputAutoScroolTimeEnable.name = "autoScroolTimeEnable";
+    inputAutoScroolTimeEnable.checked = this.params.scrollTimeEnable;
+    let labelAutoScroolTimeEnable = L.DomUtil.create('label', '', autoScroolTimeDiv);
+    labelAutoScroolTimeEnable.for = "autoScroolTimeEnable";
+    labelAutoScroolTimeEnable.innerHTML = Dictionary.get("MAP_PARAMS_DATE_AUTOSCROLL_ENABLE");
+
+    let labelAutoScroolTimeSpeed = L.DomUtil.create('label', '', autoScroolTimeDiv);
+    labelAutoScroolTimeSpeed.for = "autoScroolTimeSpeed";
+    labelAutoScroolTimeSpeed.style = "margin-left : 15px;";
+    labelAutoScroolTimeSpeed.innerHTML = Dictionary.get("MAP_PARAMS_DATE_AUTOSCROLL_SPEED");
+    let inputAutoScroolTimeSpeed = L.DomUtil.create('input', 'settings-time-input', autoScroolTimeDiv);
+    inputAutoScroolTimeSpeed.type = "number";
+    inputAutoScroolTimeSpeed.name = "autoScroolTimeSpeed";
+    inputAutoScroolTimeSpeed.style = "width: 50px;";
+    inputAutoScroolTimeSpeed.min = 1;
+    inputAutoScroolTimeSpeed.value = this.params.scrollTimeSpeed;
+
+    // Props button
     let divProps = L.DomUtil.create('div', 'settings-prop-div', contentDiv);
     let propertiesForm = L.DomUtil.create('button', '', divProps);
     propertiesForm.innerHTML = Dictionary.get("MAP_PARAMS_OPEN_PROP_FORM");
@@ -237,7 +256,7 @@ var SettingsControl = L.Control.extend({
 
     //L.DomEvent.on(inputTimeCheckBox, 'click', function(e) { this.changeTimeState(e) }, this);
 
-    L.DomEvent.on(buttonSav, 'click', function(e) { this.sav(inputPositionLat, inputPositionLong, inputZoomDefault, inputZoomMin, inputZoomMax, selectBackgroundDefault, selectBackgroundDisplay, inputTimeCheckBox, inputTimeMin, inputTimeMax, selectTypeDate, inputTimeBarBigSize) }, this);    
+    L.DomEvent.on(buttonSav, 'click', function(e) { this.sav(inputPositionLat, inputPositionLong, inputZoomDefault, inputZoomMin, inputZoomMax, selectBackgroundDefault, selectBackgroundDisplay, inputTimeCheckBox, inputTimeMin, inputTimeMax, selectTypeDate, inputTimeBarBigSize, inputAutoScroolTimeEnable, inputAutoScroolTimeSpeed) }, this);
   },
 
   /*
@@ -307,8 +326,10 @@ var SettingsControl = L.Control.extend({
    * @param {L.Dom}               inputTimeMax                            The input time max
    * @param {L.Dom}               selectTypeDate                          The select input of type date
    * @param {L.Dom}               inputTimeBarBigSize                     The input for big size of bar time
+   * @param {L.Dom}               inputAutoScroolTimeEnable               The input of auto scroll enable
+   * @param {L.Dom}               inputAutoScroolTimeSpeed                The input of auto scroll speed
    */
-  sav(inputPositionLat, inputPositionLong, inputZoomDefault, inputZoomMin, inputZoomMax, selectBackgroundDefault, selectBackgroundDisplay, inputTimeCheckBox, inputTimeMin, inputTimeMax, selectTypeDate, inputTimeBarBigSize)
+  sav(inputPositionLat, inputPositionLong, inputZoomDefault, inputZoomMin, inputZoomMax, selectBackgroundDefault, selectBackgroundDisplay, inputTimeCheckBox, inputTimeMin, inputTimeMax, selectTypeDate, inputTimeBarBigSize, inputAutoScroolTimeEnable, inputAutoScroolTimeSpeed)
   {
     this.params.defaultPosition = [];
     this.params.defaultPosition.push(parseFloat(inputPositionLat.value));
@@ -359,6 +380,9 @@ var SettingsControl = L.Control.extend({
     {
       this.layersControl.layersManager.updateTypeDate(this.params.typeTime, selectTypeDate.value)
     }
+
+    this.params.scrollTimeEnable = inputAutoScroolTimeEnable.checked;
+    this.params.scrollTimeSpeed = Number.parseInt(inputAutoScroolTimeSpeed.value);
 
     this.params.typeTime = selectTypeDate.value;
 

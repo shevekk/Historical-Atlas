@@ -147,7 +147,7 @@ var LayersControl = L.Control.extend({
     }
     if(this.paintParams.scrollDisable)
     {
-      this.actionsControl.changeScrollDisableState();
+      //this.actionsControl.changeScrollDisableState();
     }
     if(this.paintParams.moveLabel)
     {
@@ -185,7 +185,6 @@ var LayersControl = L.Control.extend({
 
     this._menu.style["display"] = "inline-block";
 
-    //markersControl = new MarkersControl(this._menu, layersManager);
     this.markersControl.initContent(this.div, this.map, layersManager);
   },
 
@@ -226,7 +225,7 @@ var LayersControl = L.Control.extend({
     {
       if(this.parentsLayersDiv[i].parentLayer.number == parentLayer.number)
       {
-        this.parentsLayersDiv[i].setColor(parentLayer.polygonOptions.color);
+        this.parentsLayersDiv[i].setColor(parentLayer.polygonOptions);
       }
     }
   },

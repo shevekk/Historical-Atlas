@@ -1,3 +1,4 @@
 ﻿{
-  "serverUrl" : "http://localhost:3000"
+  "serverUrl" : "http://localhost:3000",
+  "mapboxAccessToken" : "pk.eyJ1Ijoic2hldmVrIiwiYSI6ImNsNmM5c2U2djAybTIza3FpZjd1cWF3NjMifQ.FT3Vkwzwc0mAaOHZIp7YmQ"
 }

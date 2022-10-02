@@ -25,7 +25,7 @@
 
     lineContent += `<div id="propmenu-layer-${number}-line" style="margin-bottom:15px;">`;
 
-    lineContent += `<img id="propmenu-layer-${number}-delete" title="${Dictionary.get('MAP_PROP_FORM_DELETE_LINE_TITLE')}" src="img/menu/source_icons_cancel" class="prop-form-delete-line-button" />`;
+    lineContent += `<img id="propmenu-layer-${number}-delete" title="${Dictionary.get('MAP_PROP_FORM_DELETE_LINE_TITLE')}" src="img/menu/source_icons_cancel.svg" class="prop-form-delete-line-button" />`;
 
     lineContent += `<select id="propmenu-layer-${number}-name" style="margin-left:10px;width:200px">`
     lineContent += `<option value=""></option>`;

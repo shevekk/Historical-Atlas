@@ -22,6 +22,8 @@ var TimeControl = L.Control.extend({
     this.paintParams = options.paintParams;
     this.value = this.params.timeMin;
     this.labelDate = options.labelDate;
+
+    this.playInterval = null;
   },
   
   /*
@@ -34,6 +36,16 @@ var TimeControl = L.Control.extend({
     let me = this;
 
     this._container = L.DomUtil.create('div', 'time-control');
+
+    this.playButton = L.DomUtil.create('img', 'timeControl-change-img', this._container);
+    this.playButton.src = "img/actions/play-solid.svg";
+    this.playButton.title = Dictionary.get("MAP_TIME_PLAY");
+
+    L.DomEvent.addListener(this.playButton, 'dblclick', L.DomEvent.stop);
+    L.DomEvent.addListener(this.playButton, 'mousedown', L.DomEvent.stop);
+    L.DomEvent.addListener(this.playButton, 'mouseup', L.DomEvent.stop);
+
+    L.DomEvent.addListener(this.playButton, 'click', function(e) { this.playOrPause(); }, this);
 
     this.leftButton = L.DomUtil.create('img', 'timeControl-change-img', this._container);
     this.leftButton.src = "img/menu/caret-left-solid.svg";
@@ -62,7 +74,6 @@ var TimeControl = L.Control.extend({
     this.title = L.DomUtil.create('p', 'time-slider-title', this._container);
     this.title.innerHTML = this.value;
 
-    //var menuContent = L.DomUtil.create('div', 'leaflet-control-div-slider-content', this._container);
     this.cursor = L.DomUtil.create('input', 'time-slider', this._container);
     this.cursor.type = "range";
     this.cursor.id = "time-slider";
@@ -350,8 +361,6 @@ var TimeControl = L.Control.extend({
 
     this.checkDisableLeftButton();
     this.checkDisableRightButton();
-
-
   },
 
   /*
@@ -379,6 +388,13 @@ var TimeControl = L.Control.extend({
 
       this.layersManager.changeTime(value);
 
+      if(this.params.scrollTimeEnable) {
+        this.playButton.style = "visibility: visible;";
+      }
+      else {
+        this.playButton.style = "visibility: hidden;";
+      }
+
       // Get size of time bar
       if(this.params.timeBarBigSize)
       {
@@ -393,6 +409,50 @@ var TimeControl = L.Control.extend({
     {
       this._container.style = "display : none";
       this.layersManager.changeSelectZoneWithoutTime();
+    }
+  },
+
+  /*
+   * Click play button -> auto scrolling time of the map
+   */
+  playOrPause()
+  {
+    let me = this;
+
+    if(me.playInterval) {
+      me.playButton.src = "img/actions/play-solid.svg";
+      me.playButton.title = Dictionary.get("MAP_TIME_PLAY");
+
+      clearInterval(me.playInterval);
+      me.playInterval = null;
+    }
+    else {
+      me.playButton.src = "img/actions/pause-solid.svg";
+      me.playButton.title = Dictionary.get("MAP_TIME_PAUSE");
+
+      me.playInterval = setInterval(function () {
+        let max = DateConverter.dateToNumber(me.params.timeMax, true, me.params);
+        if(me.value + me.params.scrollTimeSpeed > max) {
+          me.setValue(max);
+
+          me.playButton.src = "img/actions/play-solid.svg";
+          me.playButton.title = Dictionary.get("MAP_TIME_PLAY");
+          clearInterval(me.playInterval);
+          me.playInterval = null;
+        }
+        else {
+          if(me.params.scrollTimeSpeed > 1) {
+            let startDate = me.value + me.params.scrollTimeSpeed;
+            let endDate = startDate + (me.params.scrollTimeSpeed-1);
+            me.setValue(startDate);
+
+            me.layersManager.displayTimeArea(startDate, endDate);
+          }
+          else {
+            me.setValue(me.value + me.params.scrollTimeSpeed);
+          }
+        }
+      }, 1000);
     }
   }
 });

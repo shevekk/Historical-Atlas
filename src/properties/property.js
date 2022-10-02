@@ -44,6 +44,7 @@
    */
   modifyPolygonOptions(polygonOptions, valueNumber)
   {
+    polygonOptions.fillColor = this.colors[valueNumber];
     polygonOptions.color = this.colors[valueNumber];
     polygonOptions.fillOpacity = parseInt(this.opacity[valueNumber]) / 100;
     polygonOptions.weight = 1;
@@ -56,17 +57,13 @@
    */
   toJson(content)
   {
-    content.properties = [];
-    for(let i = 0; i < PropertiesForm.properties.length; i++)
-    {
-      content.properties.push({});
-      content.properties[content.properties.length - 1]['name'] = this.name;
-      content.properties[content.properties.length - 1]['number'] = this.number;
-      content.properties[content.properties.length - 1]['nbValues'] = this.nbValues;
-      content.properties[content.properties.length - 1]['values'] = this.values;
-      content.properties[content.properties.length - 1]['colors'] = this.colors;
-      content.properties[content.properties.length - 1]['opacity'] = this.opacity;
-    }
+    content.properties.push({});
+    content.properties[content.properties.length - 1]['name'] = this.name;
+    content.properties[content.properties.length - 1]['number'] = this.number;
+    content.properties[content.properties.length - 1]['nbValues'] = this.nbValues;
+    content.properties[content.properties.length - 1]['values'] = this.values;
+    content.properties[content.properties.length - 1]['colors'] = this.colors;
+    content.properties[content.properties.length - 1]['opacity'] = this.opacity;
 
     return content;
   }

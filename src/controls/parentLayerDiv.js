@@ -50,13 +50,14 @@ class ParentLayerDiv
       L.DomUtil.remove(this.paintZoneDom);
 
     this.paintZoneDiv = [];
+    let opacityCode = parseInt(this.parentLayer.polygonOptions.fillOpacity * 255).toString(16);
 
     this.parentLineDiv = L.DomUtil.create('div', 'layers-list-line-parent', this.div);
 
     let selectDiv = L.DomUtil.create('div', 'layers-list-line-select', this.parentLineDiv);
 
     this.colorDiv = L.DomUtil.create('div', 'layers-list-color', selectDiv);
-    this.colorDiv.style = `background-color:${this.parentLayer.polygonOptions.color}`;
+    this.colorDiv.style = `background-color:${this.parentLayer.polygonOptions.fillColor}${opacityCode}; border:2px solid ${this.parentLayer.polygonOptions.color};`;
     this.colorDiv.number = this.parentLayer.number;
 
     let nameCmp = L.DomUtil.create('p', 'layers-list-text', selectDiv);
@@ -116,6 +117,11 @@ class ParentLayerDiv
         {
           this.paintZoneDiv[this.paintZoneDiv.length - 1].changeLineColor();
         }
+      }
+
+      // Hide paintZoneDom (sub-layer)
+      if(this.paintZoneDom) {
+        this.paintZoneDom.style.display = "none";
       }
 
       // Add zone
@@ -237,6 +243,10 @@ class ParentLayerDiv
   {
     this.parentLayer.addPaintZone(numberZoneToCopy, true);
     this.redraw();
+
+    if(this.paintZoneDom) {
+      this.paintZoneDom.style.display = "inline";
+    }
 
     this.paintZoneDiv[this.paintZoneDiv.length -1].select();
 
@@ -366,11 +376,12 @@ class ParentLayerDiv
 
   /*
    * Change the color of the parent layer
-   * @param {String}         color          The color value
+   * @param {Object}         polygonOptions          polygon options with colors
    */
-  setColor(color)
+  setColor(polygonOptions)
   {
-    this.colorDiv.style = `background-color:${color}`;
+    let opacityCode = parseInt(this.parentLayer.polygonOptions.fillOpacity * 255).toString(16);
+    this.colorDiv.style = `background-color:${polygonOptions.fillColor}${opacityCode}; border:2px solid ${polygonOptions.color}`;
   }
 
   /*
@@ -389,6 +400,15 @@ class ParentLayerDiv
   select()
   {
     this.layersControl.unselectAll();
+
+    if(this.paintZoneDom) {
+      if(this.paintZoneDom.style.display == "none") {
+        this.paintZoneDom.style.display = "inline";
+      }
+      else {
+        this.paintZoneDom.style.display = "none";
+      }
+    }
 
     this.parentLineDiv.style = "background-color : #c7e0f0";
     this.layersManager.selectedLayer = this.parentLayer;

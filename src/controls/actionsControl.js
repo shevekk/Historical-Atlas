@@ -35,6 +35,7 @@ var ActionsControl = L.Control.extend({
     this.actionsList = options.actionsList;
     this.copyManager = options.copyManager;
     this.geoJsonManager = options.geoJsonManager;
+    this.descriptionManager = options.descriptionManager;
 
     this.params = options.params;
 
@@ -53,12 +54,7 @@ var ActionsControl = L.Control.extend({
     this._container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
     this.createMenu();
 
-    this.buttons["color"].setValue(this.layersManager.selectedLayer.polygonOptions.color);
-
-    if(!this.params.editMode)
-    {
-      this._container.style["display"] = "none";
-    }
+    this.buttons["color"].setValue(this.layersManager.selectedLayer.polygonOptions.fillColor);
 
     return this._container;
   },
@@ -76,7 +72,7 @@ var ActionsControl = L.Control.extend({
     L.DomUtil.remove(this.buttons["erase_all"].buttonDom);
     L.DomUtil.remove(this.buttons["cursor_size"].buttonDom);
     L.DomUtil.remove(this.buttons["color"].buttonDom);
-    L.DomUtil.remove(this.buttons["border_size"].buttonDom);
+    L.DomUtil.remove(this.buttons["border"].buttonDom);
     L.DomUtil.remove(this.buttons["opacity"].buttonDom);
     L.DomUtil.remove(this.buttons["label"].buttonDom);
     L.DomUtil.remove(this.buttons["label_size"].buttonDom);
@@ -91,6 +87,7 @@ var ActionsControl = L.Control.extend({
     L.DomUtil.remove(this.buttons["copy_menu"].buttonDom);
     L.DomUtil.remove(this.buttons["copy_zone"].buttonDom);
     L.DomUtil.remove(this.buttons["paste_zone"].buttonDom);
+    L.DomUtil.remove(this.buttons["description"].buttonDom);
   },
   
   /*
@@ -108,6 +105,8 @@ var ActionsControl = L.Control.extend({
     this.buttons["redo"] = new ActionButtonSimple(this._container, "img/actions/redo-solid.svg", Dictionary.get("MAP_ACTIONS_RETAIN_ACTION"), function(e) { me.paintParams.uiClick = true; me.redo() });
     this.buttons["redo"].setActiveState(false);
 
+    this.buttons["description"] = new ActionButtonSimple(this._container, "img/actions/bars-solid.svg", Dictionary.get("MAP_ACTIONS_SHOW_DESCRIPTION"),  function(e) { me.descriptionManager.display(); });
+
     this.buttons["selection"] = new ActionButtonSimple(this._container, "img/actions/mouse-pointer-solid.svg", Dictionary.get("MAP_ACTIONS_ACTIVATE_SELECTION"), function(e) { me.paintParams.uiClick = true; me._changeSelectionState(e); });
 
     this.buttons["back"] = new ActionButtonSimple(this._container, "img/actions/arrow-left-solid.svg", Dictionary.get("MAP_ACTIONS_BACK"), function(e) { me.paintParams.uiClick = true; me.backToMain(); });
@@ -122,7 +121,7 @@ var ActionsControl = L.Control.extend({
 
     this.buttons["color"] = new ActionButtonColor(this._container, Dictionary.get("MAP_ACTIONS_COLOR"), function(e) { me.paintParams.uiClick = true }, function (e) { me._changeColor(e.target.value); });
 
-    this.buttons["border_size"] = new ActionButtonSlider(this._container, "img/actions/border-style-solid.svg", Dictionary.get("MAP_ACTIONS_BORDER_SIZE"), function(e) { me._cursorBorderSizeMove(e) }, 0, 20, this.paintParams.borderWeight, this.paintParams);
+    this.buttons["border"] = new ActionButtonBorderIU(this._container, "img/actions/border-style-solid.svg", Dictionary.get("MAP_ACTIONS_BORDER_SIZE"), me.layersManager, me.layersControl, this.paintParams);
 
     this.buttons["opacity"] = new ActionButtonSlider(this._container, "img/actions/opacity.png", Dictionary.get("MAP_ACTIONS_OPACITY"), function(e) { me._cursorOpacityMove(e) }, 0, 100, this.paintParams.opacity * 100, this.paintParams);
 
@@ -157,6 +156,11 @@ var ActionsControl = L.Control.extend({
     this.buttons["save"] = new ActionButtonSave(this._container, "img/actions/save-regular.svg", Dictionary.get("MAP_ACTIONS_SAVE"), me.paintParams, me.loadSaveManager);
 
     this.backToMain();
+
+    if(!this.params.editMode)
+    {
+      this.hideButtonViewMode();
+    }
   },
 
   /*
@@ -229,6 +233,42 @@ var ActionsControl = L.Control.extend({
   },
 
   /*
+   * Hide all buttons except the description button
+   */
+  hideButtonViewMode() {
+    // Change buttons visibility
+    this.buttons["description"].show();
+
+    this.buttons["connexion_state"].hide();
+    this.buttons["erase"].hide();
+    this.buttons["import_export"].hide();
+    this.buttons["save"].hide();
+    this.buttons["selection"].hide();
+    this.buttons["paint"].hide();
+    this.buttons["label"].hide();
+    this.buttons["undo"].hide();
+    this.buttons["redo"].hide();
+    this.buttons["copy_menu"].hide();
+    this.buttons["cursor_size"].hide();
+    this.buttons["border"].hide();
+    this.buttons["opacity"].hide();
+    this.buttons["color"].hide();
+    this.buttons["back"].hide();
+    this.buttons["export"].hide();
+    this.buttons["import"].hide();
+    this.buttons["erase_all"].hide();
+    this.buttons["label_size"].hide();
+    this.buttons["move_label"].hide();
+    this.buttons["filling"].hide();
+    this.buttons["simplify"].hide();
+    this.buttons["copy_zone"].hide();
+    this.buttons["paste_zone"].hide();
+    this.buttons["auto_border"].hide();
+    this.buttons["import_geojson"].hide();
+    this.buttons["export_geojson"].hide();
+  },
+
+  /*
    * Back to main menu
    */
   backToMain : function()
@@ -243,9 +283,10 @@ var ActionsControl = L.Control.extend({
     this.buttons["label"].show();
     this.buttons["undo"].show();
     this.buttons["copy_menu"].show();
+    this.buttons["description"].show();
 
     this.buttons["cursor_size"].hide();
-    this.buttons["border_size"].hide();
+    this.buttons["border"].hide();
     this.buttons["opacity"].hide();
     this.buttons["color"].hide();
     this.buttons["back"].hide();
@@ -300,9 +341,10 @@ var ActionsControl = L.Control.extend({
     this.buttons["label"].hide();
     this.buttons["connexion_state"].hide();
     this.buttons["copy_menu"].hide();
+    this.buttons["description"].hide();
 
     this.buttons["cursor_size"].show();
-    this.buttons["border_size"].show();
+    this.buttons["border"].show();
     this.buttons["opacity"].show();
     this.buttons["color"].show();
     this.buttons["back"].show();
@@ -342,6 +384,7 @@ var ActionsControl = L.Control.extend({
     this.buttons["label"].hide();
     this.buttons["connexion_state"].hide();
     this.buttons["copy_menu"].hide();
+    this.buttons["description"].hide();
   },
 
   /*
@@ -367,6 +410,7 @@ var ActionsControl = L.Control.extend({
     this.buttons["label"].hide();
     this.buttons["connexion_state"].hide();
     this.buttons["copy_menu"].hide();
+    this.buttons["description"].hide();
 
     this.disableScroll();
     this.map.dragging.disable();
@@ -392,6 +436,7 @@ var ActionsControl = L.Control.extend({
     this.buttons["label"].hide();
     this.buttons["connexion_state"].hide();
     this.buttons["copy_menu"].hide();
+    this.buttons["description"].hide();
 
     this.buttons["back"].show();
     this.buttons["label_size"].show();
@@ -411,6 +456,7 @@ var ActionsControl = L.Control.extend({
     this.buttons["label"].hide();
     this.buttons["connexion_state"].hide();
     this.buttons["copy_menu"].hide();
+    this.buttons["description"].hide();
 
     this.buttons["back"].show();
     this.buttons["copy_zone"].show();
@@ -473,7 +519,13 @@ var ActionsControl = L.Control.extend({
    */
   _changeColor : function(color)
   {
-    this.layersManager.selectedLayer.polygonOptions.color = color;
+    // Change border color if are same
+    if(this.layersManager.selectedLayer.polygonOptions.fillColor == this.layersManager.selectedLayer.polygonOptions.color) {
+      this.layersManager.selectedLayer.polygonOptions.color = color;
+    }
+
+    this.layersManager.selectedLayer.polygonOptions.fillColor = color;
+
     this.layersManager.selectedLayer.redraw();
     this.cursorManager.updateCursorPosition(null, this.layersManager.selectedLayer);
 
@@ -490,21 +542,6 @@ var ActionsControl = L.Control.extend({
   },
 
   /* 
-   * Cursor border size move, update border size value
-   * @param {Event}               e                    The event with slider value
-   */
-  _cursorBorderSizeMove: function(e)
-  {
-    this.paintParams.borderWeight = e.target.valueAsNumber;
-    this.layersManager.selectedLayer.polygonOptions.weight = e.target.valueAsNumber;
-
-    if(this.layersManager.selectedLayer)
-    {
-      this.layersManager.selectedLayer.redraw();
-    }
-  },
-
-  /* 
    * Cursor opacity state move, update opacity value
    * @param {Event}               e                    The event with slider value
    */
@@ -517,6 +554,8 @@ var ActionsControl = L.Control.extend({
     {
       this.layersManager.selectedLayer.redraw();
     }
+
+    this.layersControl.updateLineColor(this.layersManager.selectedLayer);
   },
   
   /* 
@@ -630,8 +669,8 @@ var ActionsControl = L.Control.extend({
    */
   updateParamsFromLayerOptions : function(polygonOptions)
   {
-    this.buttons["color"].setValue(polygonOptions.color);
-    this.buttons["border_size"].setValue(polygonOptions.weight);
+    this.buttons["color"].setValue(polygonOptions.fillColor);
+    this.buttons["border"].setValues(polygonOptions);
     this.buttons["opacity"].setValue(polygonOptions.fillOpacity * 100);
     this.buttons["label_size"].setValue(this.layersManager.selectedLayer.label.textSize);
     this.buttons["simplify"].setValue(5);

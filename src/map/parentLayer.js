@@ -207,15 +207,15 @@ class ParentLayer
         if(this.viewPropertyNumber >= 0)
         {
           let valueNumber = 1;
-          let propLayer = this.properties.find(p => p.propNumber == this.viewPropertyNumber);
-
-          if(propLayer)
-          {
-            if(!propLayer.startDate || !propLayer.endDate || (propLayer.startDate <= timeValue && propLayer.endDate >= timeValue))
+          let propLayers = this.properties.filter(p => p.propNumber == this.viewPropertyNumber);
+          for(let j = 0; j < propLayers.length; j++) {
+            if(!propLayers[j].startDate || !propLayers[j].endDate || (propLayers[j].startDate <= timeValue && propLayers[j].endDate >= timeValue))
             {
-              valueNumber = propLayer.valueNumber;
+              valueNumber = propLayers[j].valueNumber;
             }
+          }
 
+          if(valueNumber >= 0) {
             let prop = PropertiesForm.properties.find((p) => p.number == this.viewPropertyNumber);
             prop.modifyPolygonOptions(this.polygonOptions, valueNumber);
           }
@@ -286,6 +286,11 @@ class ParentLayer
     this.label.fromJson(contentObj["label"]);
     this.polygonOptions = contentObj["options"];
     this.polygonOptionsInitial = contentObj["options"];
+
+    if(!this.polygonOptionsInitial['fillColor']) {
+      this.polygonOptionsInitial['fillColor'] = this.polygonOptionsInitial['color'];
+    }
+
     this.number = contentObj["number"];
 
     if(contentObj["properties"])

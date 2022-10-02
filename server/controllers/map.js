@@ -146,6 +146,7 @@ exports.getMap = (req, res, next) =>
 {
   let user = url.parse(req.url,true).query.user;
   let editMode = url.parse(req.url,true).query.editMode;
+  let mapbox = url.parse(req.url,true).query.mapbox;
 
   let sql = ``;
 
@@ -162,7 +163,7 @@ exports.getMap = (req, res, next) =>
             WHERE maps.id = ${req.params.id} AND (users.name = "${user}" OR maps.public)`;
   }
 
-  this.getMapManage(sql, req.params.id, editMode, user, res);
+  this.getMapManage(sql, req.params.id, editMode, mapbox, user, res);
 }
 
 /*
@@ -170,11 +171,13 @@ exports.getMap = (req, res, next) =>
  * @param {Number}                      req.params.id                       The id of the map
  * @param {String}                      req.query.user                      The user name
  * @param {Boolean}                     req.query.editMode                  Edit Mode
+ * @param {Boolean}                     req.query.mapbox                    True if is mapbox view
  * @return {Object}                                                         Object with map data
  */
 exports.getMapGuest = (req, res, next) => 
 {
   let editMode = url.parse(req.url,true).query.editMode;
+  let mapbox = url.parse(req.url,true).query.mapbox;
   let sql = "";
 
   if(editMode == true || editMode == "true")
@@ -190,7 +193,7 @@ exports.getMapGuest = (req, res, next) =>
             WHERE maps.id = ${req.params.id} AND maps.public`;
   }
 
-  this.getMapManage(sql, req.params.id, editMode, "", res);
+  this.getMapManage(sql, req.params.id, editMode, mapbox, "", res);
 }
 
 /*
@@ -199,10 +202,11 @@ exports.getMapGuest = (req, res, next) =>
  * @param {Number}                      id                   The map id
  * @param {Boolean}                     editMode             True if editMode 
  * @param {String}                      userName             The user name
+ * @param {Boolean}                     mapbox               True if is mapbox view
  * @param {Boolean}                     res                  Result manager
  * @return {Object}                                          Object with map data
  */
-exports.getMapManage = (sql, id, editMode, userName, res) =>
+exports.getMapManage = (sql, id, editMode, mapbox, userName, res) =>
 {
   config.connectBDD().then((db) => {
 
@@ -229,7 +233,7 @@ exports.getMapManage = (sql, id, editMode, userName, res) =>
           }
           
           db.end();
-          log.log("getMap", {name : result[0]['name'], url : result[0]['url']});
+          log.log("getMap", {name : result[0]['name'], editMode : editMode, mapbox : mapbox, url : result[0]['url']});
           res.status(200).json({data : data, views : views, name : result[0]['name'], lang : result[0]['lang'], type : result[0]['category'], userName : result[0]['user_name']});
         });
 

@@ -35,15 +35,10 @@ class Main
   {
     let me = this;
     let urlParams = me.getUrlParams();
-    let defaultFullScreen = false;
 
     if(urlParams["edit"] == "false")
     {
       me.params.editMode = false;
-    }
-    if(urlParams["defaultFullScreen"] == "true")
-    {
-      defaultFullScreen = true;
     }
 
     $.getJSON("config/backgounds.json", function(jsonBackgrounds) 
@@ -53,14 +48,17 @@ class Main
       me.map = L.map('map', {
         center: centerMap,
         zoom : 6,
-        fullscreenControl: !defaultFullScreen,
-        fullscreenControlOptions: {
-          position: 'topleft'
+        projection: {
+          name: 'lambertConformalConic',
+          center: [0, 30],
+          parallels: [30, 30]
         }
       });
 
       me.actionsList = new ActionList();
       me.labelDate = new LabelDate(me.map, me.params);
+
+      me.descriptionManager = new DescriptionManager(me.params);
 
       me.copyManager = new CopyManager(me.map, me.actionsList);
 
@@ -78,10 +76,10 @@ class Main
 
       me.layersManager = new LayersManager({params : me.params, paintParams : me.paintParams, cursorManager : me.cursorManager, map: me.map, layersControl :me.layersControl});
 
-      me.loadSaveManager = new LoadSaveManager(me.map, me.layersManager, me.params, me.backgroundControl, me.timeControl, me.layersControl, me.actionsList, jsonBackgrounds);
+      me.loadSaveManager = new LoadSaveManager(me.map, me.layersManager, me.params, me.backgroundControl, me.timeControl, me.layersControl, me.actionsList, me.descriptionManager, jsonBackgrounds);
       me.geoJsonManager = new GeoJsonManager(me.map, me.layersManager, me.layersControl, me.timeControl, me.actionsList, me.loadSaveManager, me.params);
 
-      me.actionsControl = new ActionsControl({cursorManager : me.cursorManager, paintParams : me.paintParams, layersManager: me.layersManager, params : me.params, loadSaveManager : me.loadSaveManager, layersControl : me.layersControl, actionsList : me.actionsList, copyManager : me.copyManager, geoJsonManager : me.geoJsonManager}).addTo(me.map);
+      me.actionsControl = new ActionsControl({cursorManager : me.cursorManager, paintParams : me.paintParams, layersManager: me.layersManager, params : me.params, loadSaveManager : me.loadSaveManager, layersControl : me.layersControl, actionsList : me.actionsList, copyManager : me.copyManager, geoJsonManager : me.geoJsonManager, descriptionManager : me.descriptionManager}).addTo(me.map);
 
       me.loadSaveManager.actionsControl = me.actionsControl;
       me.layersManager.actionsControl = me.actionsControl;
@@ -95,12 +93,9 @@ class Main
 
       me.propertiesControl.initFromProps(me.layersManager, me.timeControl);
 
-      me.keyboardEventsSManager = new KeyboardEventsManager(me.loadSaveManager, me.actionsControl);
+      me.keyboardEventsSManager = new KeyboardEventsManager(me.loadSaveManager, me.actionsControl, me.timeControl);
 
-      if(me.params.editMode)
-      {
-        me.keyboardEventsSManager.manageEvents();
-      }
+      me.keyboardEventsSManager.manageEvents(me.params.editMode);
 
       if(me.params.editMode)
       {
@@ -120,16 +115,18 @@ class Main
       }
       else if(urlParams["mapId"])
       {
-        me.loadSaveManager.loadMapOnServer(urlParams["mapId"], function()
-        {
-          $("#loading").html("");
-          //$("#description-text").html(me.params.description.replaceAll("\n", "<br/>\n"));
+        //me.loadSaveManager.checkValidUser(true, function() {
+          me.loadSaveManager.loadMapOnServer(urlParams["mapId"], function()
+          {
+            $("#loading").html("");
+            //$("#description-text").html(me.params.description.replaceAll("\n", "<br/>\n"));
 
-          var evt = new CustomEvent("reloadPropertiesControl", { });
-          document.dispatchEvent(evt);
+            var evt = new CustomEvent("reloadPropertiesControl", { });
+            document.dispatchEvent(evt);
 
-          me.manageControlFromWindowSize();
-        });
+            me.manageControlFromWindowSize();
+          });
+        //});
       }
       else
       {
@@ -138,22 +135,12 @@ class Main
 
         me.manageControlFromWindowSize();
 
+        me.descriptionManager.updateContent({name : "", lang : lang, type : "history"});
+
         Utils.callServer("map/createNewMap", "post", {});
       }
 
-      me.manageDescription();
       me.manageMapEvents();
-
-      // If mobile -> Fullcreen
-      if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
-      {
-        defaultFullScreen = true;
-      }
-
-      if(defaultFullScreen)
-      {
-        me.toggleFullScreen();
-      }
     });
   }
 
@@ -165,29 +152,15 @@ class Main
     let me = this;
     me.paintParams.mouseDown = false;
 
+    // Mouse Down action
     me.map.on('mousedown', function(e) 
     {
       me.paintParams.mouseDown = true;
 
       me.actionsList.addActionPaint(me.layersManager);
-
-      /*
-      if(me.paintParams.moveLabel)
-      {
-        me.layersManager.moveLabel(e);
-        me.actionsControl.changeMoveLabelState();
-        me.map.dragging.enable();
-      }
-
-      else if(me.paintParams.moveMarker)
-      {
-        me.paintParams.moveMarker = false;
-        me.layersControl.markersControl.setPosition(e);
-        me.map.dragging.enable();
-      }
-      */
     });
     
+    // Mouse Up action
     me.map.on('mouseup', function(e)
     {
       me.paintParams.mouseDown = false;
@@ -221,6 +194,7 @@ class Main
       }      
     });
     
+    // Click on map action
     me.map.on('click', function(e)
     {
       if(me.paintParams.uiClick == false)
@@ -243,6 +217,7 @@ class Main
       me.paintParams.autoClosePopUp = false;
     });
     
+    // Mouse nove action
     me.map.on('mousemove', function(e) 
     {
       if(me.paintParams.uiClick == false)
@@ -263,6 +238,7 @@ class Main
       }
     });
     
+    // Zoom in map action
     me.map.on('zoom', function(e) 
     {
       me.paintParams.zoomLevel = e.target.getZoom();
@@ -275,7 +251,7 @@ class Main
       me.layersManager.updateLabelSize();
     });
     
-    // 
+    // Manage change lang
     document.addEventListener('changeLang', function (e) 
     {
       let lang = e.detail.lang;
@@ -288,14 +264,15 @@ class Main
         me.actionsControl.createMenu();
         me.loadSaveManager.checkValidUser(true);
         me.actionsControl.buttons["save"].savNameInput.value = saveName;
+        me.descriptionManager.changeLang();
 
         me.layersControl.redraw();
         me.backgroundControl.redraw();
         me.timeControl.redraw();
         me.settingsControl.redraw();
         me.backMenuControl.redraw();
- 
-        me.manageDescription();
+
+        //me.manageDescription();
 
         $("#language-choise-text").html(Dictionary.get("MAP_DESC_LANG_CHOISE"));
       });
@@ -322,80 +299,6 @@ class Main
     }
 
     return argsValues;
-  }
-  
-  /**
-   * Manage change of description
-   */
-  manageDescription()
-  {
-    let me = this;
-
-    if(!me.params.editMode)
-    {
-      $("#img-description-edit").css("visibility", "hidden");
-    }
-
-    $("#img-description-edit").click(function() {
-
-      $("#description-text").html(`<textarea id="text-area-description">${me.params.description.replaceAll("<br/>\n", "\n")}</textarea>`);
-      $("#img-description-edit").css("visibility", "hidden");
-      $("#sav-description").css("display", "inline");
-
-      $("#sav-description").click(function() {
-
-        if($("#text-area-description").length > 0)
-        {
-          me.params.description = $("#text-area-description").val().replaceAll("\n", "<br/>\n");
-
-          $("#description-text").html(me.params.description);
-          $("#img-description-edit").css("visibility", "visible");
-          $("#sav-description").css("display", "none");
-        }
-      });
-    });
-    // Manage choise type
-    $("#type-map-choise-history-label").html(Dictionary.get("MAP_TYPE_HISTORY"));
-    $("#type-map-choise-uchrony-label").html(Dictionary.get("MAP_TYPE_UCHRONY"));
-    $("#type-map-choise-present-label").html(Dictionary.get("MAP_TYPE_PRESENT"));
-    $("#type-map-choise-text").html(Dictionary.get("MAP_TYPE_TEXT"));
-
-    // Disabled radio element 
-    if(!this.params.editMode)
-    {
-      jQuery("input[name='type-map-choise']").each(function() {
-          $(this).prop('disabled', "true");
-      });
-      jQuery("input[name='map-lang']").each(function() {
-          $(this).prop('disabled', "true");
-      });
-    }
-  }
-
-  /**
-   * Manual toggle to the fullscreen mode
-   */
-  toggleFullScreen() 
-  {
-    var map = this.map;
-    map._exitFired = false;
-    if (map._isFullscreen) {
-      if (this._screenfull.isEnabled && !this.options.forcePseudoFullscreen) {
-        this._screenfull.exit();
-      } else {
-        leaflet.DomUtil.removeClass(this.options.fullscreenElement ? this.options.fullscreenElement : map._container, 'leaflet-pseudo-fullscreen');
-        map.invalidateSize();
-      }
-      map.fire('exitFullscreen');
-      map._exitFired = true;
-      map._isFullscreen = false;
-    }
-    else {
-      L.DomUtil.addClass(map._container, 'leaflet-pseudo-fullscreen');
-        map.invalidateSize();
-      map.fire('enterFullscreen');
-      map._isFullscreen = true;
-    }
   }
 
   /**

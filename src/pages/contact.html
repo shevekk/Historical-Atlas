@@ -8,7 +8,7 @@
 
   <script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
 
-  <link rel="stylesheet" href="../index.css?v=9" />
+  <link rel="stylesheet" href="../index.css?v=10" />
 
   <div id="index-page-content">
 
@@ -94,15 +94,16 @@
           {
             let urlServer = config.serverUrl + "/api/user/mail";
 
+            // data: JSON.stringify({name : name, message : message, title : title, mail : mail}),
+
             $.ajax({
-              url: urlServer,
+              url: "../mail/contact.php",
               method: "POST",
-              contentType: "application/json",
-              data: JSON.stringify({name : name, message : message, title : "[Contact] "+title, mail : mail}),
+              data: {name : name, message : message, title : title, mail : mail},
               success: (response) => {
 
                 alert("Message Envoyé");
-                window.location.href = "../index.html";
+                //window.location.href = "../index.html";
               },
               error: (err) => {
                 alert("Echec de l'envoit du mail");

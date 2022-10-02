@@ -215,7 +215,7 @@ class PaintZoneDiv
    */
   select()
   {
-    if(this.layersControl.timeControl.value <= this.paintZone.startDate || this.layersControl.timeControl.value >= this.paintZone.endDate)
+    if(this.layersControl.timeControl.params.timeEnable && this.layersControl.timeControl.value <= this.paintZone.startDate || this.layersControl.timeControl.value >= this.paintZone.endDate)
     {
       this.layersControl.timeControl.setValue(this.paintZone.startDate);
     }

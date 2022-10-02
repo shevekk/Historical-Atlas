@@ -39,7 +39,7 @@ var LayersManager = L.Class.extend({
   init()
   {
     this.layerGroups = [];
-    this.layerGroups.push(new ParentLayer(this.map, {color:'#ff0000'}, this.layerGroups.length, this.paintParams, this.params));
+    this.addNewLayer(true);
     this.selectedLayer = this.layerGroups[0];
   },
 
@@ -100,8 +100,9 @@ var LayersManager = L.Class.extend({
 
   /*
    * Add a new layer with random color and update UI
+   * @param {Boolean}               first                   True if is the first layer (new map creation)
    */
-  addNewLayer : function()
+  addNewLayer : function(first)
   {
     let polygonOptions = {};
 
@@ -111,7 +112,7 @@ var LayersManager = L.Class.extend({
 
     let colorText = "#"+r.toString(16).padStart(2,'0')+g.toString(16).padStart(2,'0')+b.toString(16).padStart(2,'0');
 
-    polygonOptions = {color:`${colorText}`, fillOpacity : this.paintParams.opacity, weight: this.paintParams.borderWeight};
+    polygonOptions = {color:`${colorText}`, fillColor:`${colorText}`, fillOpacity : this.paintParams.opacity, weight: this.paintParams.borderWeight};
 
     let number = 1;
     for(let i = 0; i < this.layerGroups.length; i++)
@@ -126,8 +127,10 @@ var LayersManager = L.Class.extend({
 
     this.selectedLayer = this.layerGroups[this.layerGroups.length - 1];
 
-    this.layersControl.addLayer(this.layerGroups[this.layerGroups.length - 1], true);
-    this.layersControl.parentsLayersDiv[this.layersControl.parentsLayersDiv.length - 1].select();
+    if(!first) {
+      this.layersControl.addLayer(this.layerGroups[this.layerGroups.length - 1], true);
+      this.layersControl.parentsLayersDiv[this.layersControl.parentsLayersDiv.length - 1].select();
+    }
   },
 
   /*
@@ -157,7 +160,6 @@ var LayersManager = L.Class.extend({
     {
       // Select first layer
       this.selectedLayer = selectedLayers[0];
-      console.log(this.selectedLayer.number);
     }
     else
     {
@@ -183,8 +185,6 @@ var LayersManager = L.Class.extend({
       {
         this.selectedLayer = selectedLayers[0];
       }
-
-      console.log(this.selectedLayer.number);
     }
   },
 
@@ -205,6 +205,15 @@ var LayersManager = L.Class.extend({
     for(let i = 0; i < this.markers.length; i++)
     {
       content.markers.push(this.markers[i].toJson());
+    }
+
+    // List of fontAwsome icons
+    content.fontawsome = [];
+    for(let i = 0; i < this.markers.length; i++)
+    {
+      if(this.markers[i].isFontAwsome && !content.fontawsome.includes(this.markers[i].img)) {
+        content.fontawsome.push(this.markers[i].img);
+      }
     }
 
     return content;
@@ -232,6 +241,10 @@ var LayersManager = L.Class.extend({
         this.markers[i].fromJson(contentObj["markers"][i]);
         this.markers[i].number = i;
       }
+    }
+
+    if(contentObj["fontawsome"]) {
+      this.layersControl.markersControl.iconsFontAwsome = contentObj["fontawsome"];
     }
 
     this.layersControl.updateLayersContent(this);

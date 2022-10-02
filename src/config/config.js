@@ -4,7 +4,7 @@ class Config
 {
   constructor()
   {
-
+    // mapboxAccessToken
   }
 
   static load(inUnderFolder)

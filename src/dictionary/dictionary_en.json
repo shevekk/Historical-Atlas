@@ -2,6 +2,7 @@
   "MENU_CHOISE_LANGUE_LABEL": "Choice of language : ",
 
   "INDEX_MAP_VIEW": "View",
+  "INDEX_MAP_VIEW_3D": "View in 3D mode",
   "INDEX_MAP_EDIT_COPY" : "Edit a copy",
   "INDEX_MAP_EDIT" : "Edit",
   "INDEX_MAP_EXPORT_MAP" : "Export as an iframe",
@@ -21,23 +22,27 @@
   "INDEX_LOGIN_UNABLE" : "Unable to login :",
   "INDEX_DELETE_UNABLE" : "Unable to delete :",
   "INDEX_MAP_CREATOR" : "creator",
-  "INDEX_FEACTURED_MAPS_TITLE" : "Feacture maps : ",
+  "INDEX_FEACTURED_MAPS_TITLE" : "Feacture maps",
   "INDEX_MAP_RENAME_SAVE" : "Save",
   "INDEX_MAP_RENAME_CANCEL" : "Cancel",
   "INDEX_MAP_RENAME" : "Rename the map",
+  "INDEX_MAP_COPY_IFRAME" : "Content of the iframe copied to the clipboard",
+  "INDEX_MAP_DELETE_CONFIRM" : "Are you sure you want to remove the map",
+  "INDEX_DELETE_UNABLE" : "Unable to delete",
+  "INDEX_CHANGE_VISIBILITY_UNABLE" : "Unable to change the visibility status of the map",
+  "INDEX_RENAME_UNABLE" : "Impossible to rename the map",
 
-  "INDEX_DESCRIPTION" : "Histo Atlas is a free software that allows you to draw and visualize historical maps with the visualization of evolution in time of borders, cultural areas or others.<br/>The software allows you to draw areas, add labels, choose a background map, define time zones.<br/>You can register to be able to save your own maps and share them online.",
-  "INDEX_EXEMPLE_MAPS_TITLE" : "Example Maps :",
-  "INDEX_USER_MAPS_TITLE" : "Your Maps :",
-  "INDEX_PUBLIC_MAPS_TITLE" : "Public Maps :",
+  "INDEX_USER_MAPS_TITLE" : "Your Maps",
+  "INDEX_PUBLIC_MAPS_TITLE" : "Public Maps",
   "INDEX_HELP_MENU" : "Help Menu",
   "INDEX_VIDEO_LINK_TEXT" : "Tutorial videos",
   "INDEX_VERSION_LINK_TEXT" : "Current version : V",
-  "INDEX_CONTACT_LINK_TEXT" : "Contact me to report a bug, a suggestion, an idea or if you need help.",
+  "INDEX_CONTACT_LINK_TEXT" : "Contact",
+  "INDEX_CONTACT_LINK_DESCRIPTION" : "Contact me to report a bug, a suggestion, an idea or if you need help",
   "INDEX_SUPPORT_LINK_TEXT" : "Support the project.",
   "INDEX_SOURCE_CODE_LINK_TEXT" : "Source code repository",
   "INDEX_TWITTER_LINK_TEXT" : "Twitter",
-  "INDEX_CREATOR_LINK_TEXT" : "Created by Maxence MARTIN",
+  "INDEX_CREATOR_LINK_TEXT" : "Creator",
   "INDEX_BOUTON_CREATE_NEW_MAP" : "Create a une new map",
   "INDEX_CONNEXION" : "Login", 
   "INDEX_REGISTRATION" : "Registration",
@@ -185,7 +190,13 @@
   "MAP_ACTIONS_AUTO_BORDER" : "Automatic creation of layer borders from other layers",
   "MAP_ACTIONS_IMPORT_GEOJSON" : "Import a GeoJson file",
   "MAP_ACTIONS_EXPORT_GEOJSON" : "Export the visualization in Geojson format",
-  
+  "MAP_ACTIONS_SHOW_DESCRIPTION" : "Display the map description",
+  "MAP_ACTIONS_CAPTURE" : "Generate a png image of the map",
+
+  "MAP_ACTIONS_BORDER_SIZE" : "Size : ",
+  "MAP_ACTIONS_BORDER_PERSO_LABEL" : "Custom color",
+  "MAP_ACTIONS_BORDER_COLOR_PICKER" : "Border color : ",
+
   "MAP_LAYERS_ADD_LAYER" : "Adding a layer",
   "MAP_LAYERS_TITLE" : "Layers :",
   "MAP_LAYERS_OK" : "OK",
@@ -226,6 +237,9 @@
   "MAP_MARKERS_POPUP" : "Pop-up : ",
   "MAP_MARKERS_REORDER_BY_DATE" : "Re-ordered by start date",
   "MAP_MARKERS_ADD_ICON" : "Add a new icon",
+  "MAP_MARKERS_FONTAWSOME_ADD" : "FontAwsome",
+  "MAP_MARKERS_FONTAWSOME_LIST" : "List of FontAwsome icons",
+  "MAP_MARKERS_FONTAWSOME_LABEL" : "Fontawsome icon code : ",
 
   "MAP_TIMEAREA_TITLE" : "Time Area :",
   "MAP_TIMEAREA_START_DATE" : "Start date : ",
@@ -241,7 +255,7 @@
   "MAP_PARAMS_POSITION" : "Default position : ",
   "MAP_PARAMS_GET_CURRENT_POSITION" : "Get the current position",
   "MAP_PARAMS_BACKGROUND_DEFAULT" : "Default background : ",
-  "MAP_PARAMS_BACKGROUNDS" : "Possible background : ",
+  "MAP_PARAMS_BACKGROUNDS" : "Possible backgrounds : ",
   "MAP_PARAMS_ACTIVE_TIME_BAR" : "Active time bar",
   "MAP_PARAMS_DATE_MIN" : "Min : ",
   "MAP_PARAMS_DATE_MAX" : "Max : ",
@@ -254,9 +268,12 @@
   "MAP_PARAMS_DATE_BAR_SIZE" : "Large time bar",
   "MAP_PARAMS_OPEN_PROP_FORM" : "Properties",
   "MAP_PARAMS_OPEN_PROP_FORM_TITLE" : "Open the properties menu",
+  "MAP_PARAMS_DATE_AUTOSCROLL_ENABLE" : "Enabled auto scroll time",
+  "MAP_PARAMS_DATE_AUTOSCROLL_SPEED" : "Speed : ",
 
   "MAP_DESC_LANG_CHOISE": "Language : ",
   "MAP_DESC_VIEWS_NUMBER" : "views",
+  "MAP_DESC_TYPE" : "Type : ",
 
   "MAP_MENU_WEBSITE" : "Site",
   "MAP_MENU_MENU" : "Menu",
@@ -278,10 +295,12 @@
   "MAP_SAVEANDLOAD_EDIT_IMPOSSIBLE" : "Cannot load the map : ",
   "MAP_SAVEANDLOAD_SAVE_END" : "Save Completed",
 
-  "MAP_BACKGROUND_TITLE" : "Map background : ",
+  "MAP_BACKGROUND_TITLE" : "Map backgrounds : ",
 
   "MAP_TIME_LAST" : "Move to last event",
   "MAP_TIME_NEXT" : "Move to next event",
+  "MAP_TIME_PLAY" : "Automatic time scrolling",
+  "MAP_TIME_PAUSE" : "Stop automatic time scrolling",
 
   "MAP_GEOJSON_IMPORT_POLYGON" : "Polygon",
   "MAP_GEOJSON_IMPORT_GEOM" : "geom",
@@ -322,5 +341,7 @@
   "MAP_PROP_LAYER_FORM_TITLES_VALUE" : "Value",
   "MAP_PROP_LAYER_FORM_TITLES_START" : "Start date (optional)",
   "MAP_PROP_LAYER_FORM_TITLES_END" : "End date (optional)",
-  "MAP_PROP_LAYER_FORM_SAVE_INVALID" : "Unable to save, some date fields are not valid"
+  "MAP_PROP_LAYER_FORM_SAVE_INVALID" : "Unable to save, some date fields are not valid",
+
+  "SELECT-PROJECTION-LABEL" : "Select projection"
 }

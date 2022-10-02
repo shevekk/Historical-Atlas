@@ -15,8 +15,9 @@ class Marker
    * @property {String}                  imgKey                   The image key (in list)
    * @property {String}                  color                    The color value
    * @property {Number}                  size                     The size value
+   * @property {Boolean}                 isFontAwsome             True if is a fontAwsome icons
   */
-  constructor(paintParams, number, label, startDate, endDate, popUpContent, position, img, imgKey, color, size)
+  constructor(paintParams, number, label, startDate, endDate, popUpContent, position, img, imgKey, color, size, isFontAwsome)
   {
     this.visible = false;
 
@@ -25,7 +26,7 @@ class Marker
 
     if(label)
     {
-      this.edit(label, startDate, endDate, popUpContent, position, img, imgKey, color, size);
+      this.edit(label, startDate, endDate, popUpContent, position, img, imgKey, color, size, isFontAwsome);
     }
   }
 
@@ -40,8 +41,9 @@ class Marker
    * @param {String}                  imgKey                  The image key (in list)
    * @param {String}                  color                   The color value
    * @param {Number}                  size                    The size value
+   * @param {Boolean}                 isFontAwsome            True if is a fontAwsome icons
    */
-  edit(label, startDate, endDate, popUpContent, position, img, imgKey, color, size)
+  edit(label, startDate, endDate, popUpContent, position, img, imgKey, color, size, isFontAwsome)
   {
     this.label = label;
     this.startDate = parseInt(startDate);
@@ -50,16 +52,26 @@ class Marker
     this.position = position;
     this.color = color;
     this.size = size;
+    this.isFontAwsome = isFontAwsome;
 
     this.img = img;
     this.imgKey = imgKey;
 
-    this.icon = L.colorIcon({
-      iconSize : [size, size],
-      popupAnchor : [0, -size/2],
-      iconUrl: this.img,
-      color: this.color
-    })
+    if(isFontAwsome) {
+      this.icon = L.colorIcon({
+        iconSize : [size, size],
+        popupAnchor : [0, -size/2],
+        html: `<i class="${this.img}" style="font-size: ${size}px;color:${this.color}"></i>`
+      });
+    }
+    else {
+      this.icon = L.colorIcon({
+        iconSize : [size, size],
+        popupAnchor : [0, -size/2],
+        iconUrl: this.img,
+        color: this.color
+      });
+    }
   }
 
   /**
@@ -86,23 +98,6 @@ class Marker
       }
 
       this.visible = true;
-
-      // Add label
-      /*
-      this.tooltip = L.tooltip({
-        direction: 'center',
-        permanent: true,
-        interactive: false,
-        noWrap: true,
-        opacity: 1,
-        className: 'label-tooltip'
-      });
-
-      this.tooltip.setLatLng(new L.LatLng(this.position[0], this.position[1]));
-      
-      this.tooltip.setContent(`<p style="font-size: 25px"> ${this.label} </p>`);
-      this.tooltip.addTo(map);
-      */
     }
   }
 
@@ -234,7 +229,8 @@ class Marker
     obj["position"] = this.position;
     obj["color"] = this.color;
     obj["size"] = this.size;
-
+    obj["isFontAwsome"] = this.isFontAwsome;
+    
     obj["img"] = this.img;
     obj["imgKey"] = this.imgKey;
     
@@ -254,10 +250,11 @@ class Marker
     this.position = contentObj["position"];
     this.color = contentObj["color"];
     this.size = contentObj["size"];
+    this.isFontAwsome = contentObj["isFontAwsome"];
 
     this.img = contentObj["img"];
     this.imgKey = contentObj["imgKey"];
 
-    this.edit(this.label, this.startDate, this.endDate, this.popUpContent, this.position, this.img, this.imgKey, this.color, this.size)
+    this.edit(this.label, this.startDate, this.endDate, this.popUpContent, this.position, this.img, this.imgKey, this.color, this.size, this.isFontAwsome)
   }
 }

@@ -20,6 +20,7 @@ class MarkersControl
     this.actionsList = actionsList;
     this.layersControl = layersControl;
     this.selectedNumber = -1;
+    this.iconsFontAwsome = [];
 
     this.lineContentDiv = [];
 
@@ -54,7 +55,7 @@ class MarkersControl
       "users" : "img/markers/users-solid.svg"
     }
 
-    let content = "";
+    let content = `<div id='dialog-marker-icons-list'>`;
 
     let first = true;
     for (const prop in this.iconsList)
@@ -69,33 +70,9 @@ class MarkersControl
         content += `<input type="radio" id="dialog-marker-icon-${prop}" name="dialog-marker-icon" value="${prop}"/><img src="${this.iconsList[prop]}" width="25px" height="25px" style="margin-right:10px" />`;
       }
     }
+    content += `</div>`;
 
-    /*
-    content += `<div id="dialog-marker-perso-icons-div"></div>`;
-
-    if(localStorage.getItem('session-id-histoatlas'))
-    {
-      Utils.callServer("iconMarker/get/" + localStorage.getItem('session-id-histoatlas'), "GET", {}).then((result) => 
-      {
-        console.log(result);
-
-        let iconsMarkersPerso = result.iconsMarkers;
-
-        let content = "";
-        for(let i = 0; i < iconsMarkersPerso.length; i++)
-        {
-          $("#dialog-marker-perso-icons-div").append(`<input type="radio" id="dialog-marker-perso-icon-${iconsMarkersPerso[i]['id']}" name="dialog-marker-icon" value="${iconsMarkersPerso[i]['id']}"/><img src="${iconsMarkersPerso[i]['url']}" id="dialog-marker-perso-icon-${iconsMarkersPerso[i]['id']}-img" width="25px" height="25px" style="margin-right:10px" />`);
-
-          Utils.callServer("iconMarker/getImage/" + iconsMarkersPerso[i]['id'], "GET", {}).then((resultImg) => 
-          {
-            $(`#dialog-marker-perso-icon-${iconsMarkersPerso[i]['id']}-img`).prop("src", resultImg);
-          });
-        }
-      });
-    }
-    
-    content += `<br/><button id='dialog-marker-add-icon'>${Dictionary.get("MAP_MARKERS_ADD_ICON")}</button><div id="dialog-marker-load-icon-div"></div>`;
-    */
+    content += `<div id="add-marker-fontawsome-div"><button id="add-marker-fontawsome-button">${Dictionary.get("MAP_MARKERS_FONTAWSOME_ADD")}</button></div>`;
 
     content += `<br/><br/><label for="dialog-marker-label">${Dictionary.get("MAP_MARKERS_LABEL")}</label><input id="dialog-marker-label" type="text" style="width: 320px;"><br/><br/>
                     <div id="dialog-marker-start-div"><label for="dialog-marker-start">${Dictionary.get("MAP_MARKERS_START_DATE")}</label><input id="dialog-marker-start" type="text" style="width: 200px;"><br/><br/></div>
@@ -125,7 +102,6 @@ class MarkersControl
         },
         OK: function() {
           me.savAddMarker();
-          
         }
       },
       close: function() {
@@ -133,31 +109,39 @@ class MarkersControl
       }
     });
 
-    /*
-    $("#dialog-marker-add-icon").click(function()
-    {
-      $("#dialog-marker-add-icon").css("display", "none");
-      $("#dialog-marker-load-icon-div").html(`<input id="dialog-marker-load-icon-input" type="file" accept="image/*" />`);
+    me.addFontAwsomeManagement();
+  }
 
-      var fileInput = document.getElementById("dialog-marker-load-icon-input"),
-      readFile = function () {
-        var reader = new FileReader();
-        reader.fileName = document.getElementById("dialog-marker-load-icon-input").files[0];
-        reader.onload = function (readerEvt) 
-        {
-          let content = {fileName : reader.fileName.name, fileContent : reader.result, user : localStorage.getItem('session-id-histoatlas')};
+  /*
+   * Manage click in add a new FontAwsome icon
+   */
+  addFontAwsomeManagement() 
+  {
+    let me = this;
+    $("#add-marker-fontawsome-button").click(function() {
+      let placeholder = `fa-solid fa-hotel`;
+
+      let html = `<label for="add-marker-fontawsome-input">${Dictionary.get("MAP_MARKERS_FONTAWSOME_LABEL")}</label>
+      <input type="text" id="add-marker-fontawsome-input" placeholder="${placeholder}" />
+      <button id="add-marker-fontawsome-ok">${Dictionary.get("MAP_LAYERS_OK")}</button>
+      <a href="https://fontawesome.com/search?o=r&s=solid&f=sharp" target="_blank">${Dictionary.get("MAP_MARKERS_FONTAWSOME_LIST")}</a>`;
+
+      $("#add-marker-fontawsome-div").html(html);
+
+      $("#add-marker-fontawsome-ok").click(function() {
+        if($("#add-marker-fontawsome-input").val()) {
+          let inputValue = $("#add-marker-fontawsome-input").val();
+          let iconCode = `<i class='${inputValue}' style="font-size:18px; margin-right:10px"></i>`;
+
+          $("#dialog-marker-icons-list").append(`<input type="radio" id="dialog-marker-icon-fa1" name="dialog-marker-icon" value="fa-${me.iconsFontAwsome.length}" checked />${iconCode}`);
         
-          Utils.callServer("iconMarker/add", "POST", content).then((result) => {
+          me.iconsFontAwsome.push(inputValue);
 
-          });
+          $("#add-marker-fontawsome-div").html(`<button id="add-marker-fontawsome-button">${Dictionary.get("MAP_MARKERS_FONTAWSOME_ADD")}</button>`);
+          me.addFontAwsomeManagement();
         }
-
-        reader.readAsText(fileInput.files[0]);
-        $("#dialog-marker-load-icon-input")[0].value = "";
-      }
-      fileInput.addEventListener('change', readFile);
+      });
     });
-    */
   }
 
   /**
@@ -211,6 +195,12 @@ class MarkersControl
       $(`#layers-marker-select-${number}`).css("background-color", "#c7e0f0");
     });
 
+    // Add fontAwsome icon
+    for (let i = 0; i < this.iconsFontAwsome.length; i++) {
+      let iconCode = `<i class='${this.iconsFontAwsome[i]}' style="font-size:18px; margin-right:10px"></i>`;
+      $("#dialog-marker-icons-list").append(`<input type="radio" id="dialog-marker-icon-fa1" name="dialog-marker-icon" value="fa-${i}" checked />${iconCode}`);
+    }
+
     this.updateContent();
   }
 
@@ -257,15 +247,21 @@ class MarkersControl
     for(let i = 0; i < this.layersManager.markers.length; i++)
     {
       let lineDiv = L.DomUtil.create('div', 'layers-marker-line', this.contentDiv);
-      //lineDiv.innerHTML = this.layersManager.markers[i].label;
-
+      
       let selectDiv = L.DomUtil.create('div', 'layers-marker-select', lineDiv);
       selectDiv.id = 'layers-marker-select-' + this.layersManager.markers[i].number;
-      //selectDiv.innerHTML = this.layersManager.markers[i].label;
+      let imageIcon = null;
 
-      let imageIcon = L.DomUtil.create('img', '', selectDiv);
-      imageIcon.src = this.layersManager.markers[i].img;
-      imageIcon.style = `width:16px;margin-right:2px;float:left;${this.layersManager.markers[i].icon.options.filter}`;
+      if(this.layersManager.markers[i].isFontAwsome) {
+        imageIcon = L.DomUtil.create('a', '', selectDiv);
+        imageIcon.className = this.layersManager.markers[i].img;
+        imageIcon.style = `color:${this.layersManager.markers[i].color}`;
+      } 
+      else {
+        imageIcon = L.DomUtil.create('img', '', selectDiv);
+        imageIcon.src = this.layersManager.markers[i].img;
+        imageIcon.style = `width:16px;margin-right:2px;float:left;${this.layersManager.markers[i].icon.options.filter}`;
+      }
 
       let nameCmp = L.DomUtil.create('p', 'layers-list-text', selectDiv);
       if(this.layersManager.markers[i].label.length > 35)
@@ -388,11 +384,20 @@ class MarkersControl
       let size = $("#dialog-marker-size").val();
       let img = "";
       let imgKey = "";
+      let isFontAwsome = false;
       $('input[name="dialog-marker-icon"]').each(function() {
         if(this.checked)
         {
-          img = me.iconsList[this.value];
-          imgKey = this.value;
+          if(this.value.startsWith("fa")) {
+            img = me.iconsFontAwsome[parseInt(this.value.split("-")[1])];
+            imgKey = img;
+            isFontAwsome = true;
+          }
+          else {
+            img = me.iconsList[this.value];
+            imgKey = this.value;
+            isFontAwsome = false;
+          }
         }
       });
 
@@ -408,7 +413,7 @@ class MarkersControl
         }
       }
 
-      this.layersManager.markers.push(new Marker(this.paintParams, numberMaker, label, startDate, endDate, popUpContent, position, img, imgKey, color, size));
+      this.layersManager.markers.push(new Marker(this.paintParams, numberMaker, label, startDate, endDate, popUpContent, position, img, imgKey, color, size, isFontAwsome));
 
       this.layersManager.markers[this.layersManager.markers.length - 1].updateVisibilityFromTime(this.timeControl.value, this.map, this.params);
 
@@ -493,7 +498,21 @@ class MarkersControl
       $("#dialog-marker-end-div").css("display", "none");
     }
 
-    $('#dialog-marker-icon-' + marker.imgKey).prop("checked", true);
+    if(marker.isFontAwsome) {
+      let iconNumber = -1;
+      for(let i = 0; i < me.iconsFontAwsome.length; i++) {
+        if(me.iconsFontAwsome[i] == marker.imgKey) {
+          iconNumber = i;
+        }
+      }
+
+      if(iconNumber >= 0) {
+        $(`#dialog-marker-icon-fa${iconNumber}`).prop("checked", true);
+      } 
+    }
+    else {
+      $('#dialog-marker-icon-' + marker.imgKey).prop("checked", true);
+    }
 
     $("#dialog-marker-position-lng").val(marker.position[1]);
     $("#dialog-marker-position-lat").val(marker.position[0]);  
@@ -540,18 +559,27 @@ class MarkersControl
       let size = $("#dialog-marker-size").val();
       let img = "";
       let imgKey = "";
+      let isFontAwsome = false;
       $('input[name="dialog-marker-icon"]').each(function() {
         if(this.checked)
         {
-          img = me.iconsList[this.value];
-          imgKey = this.value;
+          if(this.value.startsWith("fa")) {
+            img = me.iconsFontAwsome[parseInt(this.value.split("-")[1])];
+            imgKey = img;
+            isFontAwsome = true;
+          }
+          else {
+            img = me.iconsList[this.value];
+            imgKey = this.value; // <i class="fa-solid fa-vihara"></i>
+            isFontAwsome = false;
+          }
         }
       });
 
       let startDate = this.getDate(startDateStr, false);
       let endDate = this.getDate(endDateStr, true);
 
-      marker.edit(label, startDate, endDate, popUpContent, position, img, imgKey, color, size);
+      marker.edit(label, startDate, endDate, popUpContent, position, img, imgKey, color, size, isFontAwsome);
 
       marker.clear();
 
@@ -587,7 +615,7 @@ class MarkersControl
   {
     this.map.setView(new L.LatLng(marker.position[0], marker.position[1]));
 
-    if(this.layersControl.timeControl.value <= marker.startDate || this.layersControl.timeControl.value >= marker.endDate)
+    if(this.layersControl.timeControl.params.timeEnable && this.layersControl.timeControl.value <= marker.startDate || this.layersControl.timeControl.value >= marker.endDate)
     {
       this.layersControl.timeControl.setValue(marker.startDate);
     }

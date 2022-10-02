@@ -3,6 +3,9 @@ body
 {
   background-color: #5678a7;
   background-image: url("img/background.jpeg");
+
+  margin-top: 0px;
+  margin-bottom: 0px;
 }
 
 #index-page-content
@@ -12,77 +15,92 @@ body
   background-color: #ffffff;
   padding: 8px;
 
-  margin-top: 0px;
-  margin-bottom: 0px;
+  margin-top: -1px;
+  margin-bottom: -1px;
+
+  border: 1px solid #8A8A8A;
 }
 
 #index-title
 {
   text-align: center;
 
-  background-color: #b8cbe6;
+  background-color: #93ACD1;
 
-  margin-bottom: 0px;
+  margin: 0px;
+  margin-top: 10px;
+
+  padding-bottom: 2px;
+  padding-top: 2px;
+
+  border-radius: 4px 4px 0px 0px;
 }
 
-#description
+.description
 {
   background-color: #c8d7ec;
-  padding: 5px;
-  border : 2px solid #7092c2;
-  margin-top: 5px;
+  padding: 8px;
+  border-radius: 0px 0px 7px 7px;
 }
 
-
-#index-img-desc
+.description p
 {
+  margin-top : 8px;
+  margin-bottom : 8px;
+}
+
+.description ul
+{
+  margin-top : 0px;
+  margin-bottom : 0px;
+}
+
+.fieldset-map-frame
+{
+  background-color: #E4ECF6;
+  border : 2px solid #7092c2;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-bottom: 5px;
+
+  margin-top: 5px;
+  border-radius: 4px;
+}
+
+.fieldset-map-content
+{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-frame
+{
+  width: 300px;
+  border: 2px solid #7092c2;
+  padding: 5px;
+  margin: 5px;
   text-align: center;
-  margin: auto;
-  display:flex;
+  border-radius: 10px;
+  background-color: #c8d7ec;
 }
 
-#user-maps-div
+.map-frame:hover
 {
-  background-color: #c8d7ec;
-  border : 2px solid #7092c2;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin-bottom: 5px;
-
-  margin-top: 5px;
+  background-color: #aec4e2;
 }
 
-#featured-maps-div
+.map-frame p
 {
-  background-color: #c8d7ec;
-  border : 2px solid #7092c2;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin-bottom: 5px;
-
-  margin-top: 5px;
-}
-
-#public-maps-div
-{
-  background-color: #c8d7ec;
-  border : 2px solid #7092c2;
-  margin-top: 5px;
-  padding: 5px;
-}
-
-
-#index-links
-{
-  background-color: #c8d7ec;
-  border : 2px solid #7092c2;
-  padding: 5px;
+  margin-top: 4px;
+  margin-bottom: 4px;
 }
 
 #create-empty-map-link
 {
   display: inline-block;
-  background-color: #c8d7ec;
+  background-color: #E4ECF6;
   padding: 10px;
   border : 2px solid #7092c2;
   margin-bottom: 0px;
@@ -91,11 +109,16 @@ body
   font-size: 1.1em;
   vertical-align:middle;
   cursor: pointer;
+  width: 970px;
+  text-align: center;
+  border-radius: 5px;
+  font-size: 18px;
+  font-weight: bold;
 }
 
 #create-empty-map-link:hover
 {
-  background-color: #7e9bc3;
+  background-color: #aec4e2;
 }
 
 
@@ -111,7 +134,7 @@ body
 
 .icon-action:hover
 {
-  background-color: #aaaaaa;
+  background-color: #6991c6;
 }
 
 /* Icon action for change public state */
@@ -223,13 +246,15 @@ body
   display: inline-block;
 }
 
-.icon-menu
+.icon-menu-new-map
 {
   vertical-align: middle;
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
   margin-top: 2px;
   margin-bottom: 2px;
+  margin-left : 14px;
+  margin-right: 14px;
 }
 
 /* iframe button for public map */
@@ -265,9 +290,18 @@ body
 
   background-color: #c8d7ec;
 
-  font-size: 1.1em;
+  font-size: 1.05em;
 
   padding: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+
+  cursor: pointer;
+}
+
+#follow:hover
+{
+  background-color: #7092c2;
 }
 
 #follow-div
@@ -276,6 +310,7 @@ body
 
   border : 2px solid #7092c2;
   background-color: #c8d7ec;
+  padding-bottom: 5px;
 }
 
 #follow-div p
@@ -305,4 +340,176 @@ body
 {
   margin-left:0px;
   margin-right:15px;
+}
+
+/* */
+legend {
+  font-weight: bold;
+}
+
+/* Container of the links (footer) */
+#index-links
+{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.link-frame {
+  width: 170px;
+  border: 2px solid #7092c2;
+  padding: 8px;
+  margin: 5px;
+  text-align: center;
+  border-radius: 10px;
+  background-color: #c8d7ec;
+  color: black;
+  text-decoration: none;
+}
+
+.link-frame:hover {
+  background-color: #aec4e2;
+}
+
+.icon-link-frame {
+  width: 30px;
+  height: 30px;
+}
+
+.link-frame p {
+  margin-top: 4px;
+  margin-bottom: 0px;
+}
+
+/* */
+.img-frame {
+  display: flex;
+  align-items: center;
+  /* margin-top: 5px; */
+  margin-bottom: 10px;
+}
+
+.img-change {
+  width: 30px;
+  height: 50px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.img-change:hover {
+  background-color: #7092c2;
+}
+
+.img-change-content
+{
+  text-align: center;
+  margin: auto;
+  margin-top: 10px;
+  display:flex;
+  width: 700px;
+  height: 400px;
+  object-fit: cover;
+}
+
+/*
+ * Manage smartphone 
+ */
+@media (max-width: 900px)
+{
+  body {
+    margin: 0px;
+    display: flex;
+  }
+
+  #index-title {
+    margin-left: -1px;
+    border-radius: none;
+  }
+
+  .description {
+    margin-left: -1px;
+    font-size:  14px;
+  }
+
+  /* Images */
+  #index-img-desc {
+    width: 80%;
+    height : 250px;
+  }
+
+  /* Map divs */
+  #create-empty-map-link {
+    width: 100%;
+    padding: 0px;
+    border: none;
+  }
+
+  #create-empty-map-content {
+    padding: 10px;
+    border: 2px solid #7092c2;
+    border-radius : 5px;
+  }
+
+  /* */
+  #index-page-content
+  {
+    width: 100%;
+  }
+
+  .map-frame
+  {
+    width: 44%;
+    margin: 1%;
+    font-size: 17px;
+  }
+
+  .icon-action
+  {
+    width: 28px;
+  }
+
+  .iframe-publicmap
+  {
+    width: 30px;
+  }
+
+  .link-frame {
+    width: 28%;
+    margin: auto;
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
+}
+
+/*
+ * Manage smartphone 
+ */
+@media (max-width: 500px)
+{
+  .map-frame
+  {
+    width: 100%;
+    font-size: 19px;
+  }
+
+  .icon-action
+  {
+    width: 32px;
+    margin-left: 2px;
+    margin-right: 2px;
+  }
+
+  .iframe-publicmap
+  {
+    width: 34px;
+  }
+
+  .link-frame {
+    width: 42%;
+    margin: auto;
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
+
 }

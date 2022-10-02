@@ -18,6 +18,7 @@ var PropertiesControl = L.Control.extend({
   initialize: function (options) 
   {
     this.listButtons = [];
+    this.legend = null;
     this.isDefault = true;
   },
   
@@ -59,8 +60,12 @@ var PropertiesControl = L.Control.extend({
       }
       me.listButtons = [];
 
+      // Create legend control
+      me.legend = L.DomUtil.create('div', 'left-group-legend', me._container);
+
+      // Create 
       me.backButton = L.DomUtil.create('button', 'properties-control-button', me._container);
-      me.backButton.innerHTML = "Retour";
+      me.backButton.innerHTML = Dictionary.get("MAP_ACTIONS_BACK");
       me.backButton.style.display = "none";
       L.DomEvent.addListener(me.backButton, 'click', function() { me.backButtonClick() }, me);
 
@@ -83,6 +88,17 @@ var PropertiesControl = L.Control.extend({
    */
   applyFilter : function(prop, layersManager, button)
   {
+    // create legend
+    let html = "";
+    for (var i in prop.colors){
+      if (prop.colors.hasOwnProperty(i)) {
+        html += `<div class="left-group-legend-line"><div class="left-group-legend-square" style="background-color:${prop.colors[i]}"></div><span>${prop.values[i]}</span></div>`;
+      }
+    }
+    this.legend.innerHTML = html;
+    this.legend.style = "visibility:visible";
+
+    //
     for(let i = 0; i < this.listButtons.length; i++)
     {
       this.listButtons[i].disabled = false;
@@ -124,6 +140,7 @@ var PropertiesControl = L.Control.extend({
   backButtonClick : function()
   {
     this.backButton.style.display = "none";
+    this.legend.style = "visibility:hidden";
     this.isDefault = true;
 
     for(let i = 0; i < this.listButtons.length; i++)
@@ -134,7 +151,13 @@ var PropertiesControl = L.Control.extend({
     for(let i = 0; i < this.layersManager.layerGroups.length; i++)
     {
       this.layersManager.layerGroups[i].viewPropertyNumber = -1;
-      this.layersManager.layerGroups[i].polygonOptions = {...this.layersManager.layerGroups[i].polygonOptionsInitial};
+
+      let polygonOptions = {...this.layersManager.layerGroups[i].polygonOptionsInitial};
+      if(!polygonOptions["fillColor"]) {
+        polygonOptions["fillColor"] = polygonOptions["color"];
+      }
+      this.layersManager.layerGroups[i].polygonOptions = polygonOptions;
+
       this.layersManager.layerGroups[i].redraw(false);
     }
   }

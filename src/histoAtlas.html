@@ -16,13 +16,18 @@
 
     <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
 
+    <link href="libs/fontawesome-free-6.2.0-web/css/fontawesome.css" rel="stylesheet">
+    <link href="libs/fontawesome-free-6.2.0-web/css/brands.css" rel="stylesheet">
+    <link href="libs/fontawesome-free-6.2.0-web/css/solid.css" rel="stylesheet">
+
     <link href="node_modules/toastr/build/toastr.min.css" rel="stylesheet" />
     <script src="node_modules/toastr/build/toastr.min.js"></script>
 
     <link rel="stylesheet" href="libs/jquery-ui/jquery-ui.min.css">
     <script src="libs/jquery-ui/jquery-ui.min.js"></script>
 
-    <link rel="stylesheet" href="histoAtlas.css?v=9" />
+    <link rel="stylesheet" href="histoAtlas.css?v=10" />
+    <link rel="stylesheet" href="timeSlider.css?v=10" />
 
     <link rel="stylesheet" href="libs/fullscreen/Control.FullScreen.css" />
     <script src="libs/fullscreen/Control.FullScreen.js"></script>
@@ -31,99 +36,96 @@
     <div id="loading"></div>
     <!--  -->
     <div id="map"></div>
-    <div id="description">Description : <div id="description-text"></div><img id="img-description-edit" src="img/menu/edit-solid.svg" width="20px" /><button style="display:none" id="sav-description">Ok</button></div><br/><br/>
-    <div id="language-choise"><text id="language-choise-text">Langue : </text><input type="radio" id="map-lang-en" name="map-lang" value="en"><label for="map-lang-en">EN</label><input type="radio" id="map-lang-fr" name="map-lang" value="fr"><label for="map-lang-fr">FR</label></div>
-    <div id="type-map-choise"><text id="type-map-choise-text">Type de carte : </text>
-        <input type="radio" id="type-map-choise-history" name="type-map-choise" value="history" checked="true"><label for="type-map-choise-history" id="type-map-choise-history-label">Historique</label>
-        <input type="radio" id="type-map-choise-uchrony" name="type-map-choise" value="uchrony"><label for="type-map-choise-uchrony" id="type-map-choise-uchrony-label">Uchronie</label>
-        <input type="radio" id="type-map-choise-present" name="type-map-choise" value="present"><label for="type-map-choise-present" id="type-map-choise-present-label">Présent</label>
-    <p id="nb-views"></p>
 
-    <div id="images"></div>
+    <!-- <div id="images"></div>-->
 
     <div id="dialog-modify-popUp" title="Contenu de la PopUp"><textarea id="textAreaModifyPopUp" name="textAreaModifyPopUp"></textarea></div>
 
-    <div id="dialog-marker" title=""></div>
+    <div id="dialog-marker"></div>
 
-    <div id="dialog-import-geojson" title=""></div>
+    <div id="dialog-import-geojson"></div>
 
-    <div id="dialog-time-area" title=""></div>
+    <div id="dialog-time-area"></div>
 
-    <div id="dialog-properties" title=""></div>
-    <div id="dialog-properties-layer" title=""></div>
+    <div id="dialog-properties"></div>
+    <div id="dialog-properties-layer"></div>
+
+    <div id="dialog-description"></div>
 
     
     <script type="text/javascript" src="libs/colorIcon/L.colorIcon.js"></script>
 
-    <script type="text/javascript" src="config/config.js?v=9"></script>
-    <script type="text/javascript" src="histoAtlas.js?v=9"></script>
-    <script type="text/javascript" src="config/params.js?v=9"></script>
+    <script type="text/javascript" src="config/config.js?v=10"></script>
+    <script type="text/javascript" src="histoAtlas.js?v=10"></script>
+    <script type="text/javascript" src="config/params.js?v=10"></script>
 
-    <script type="text/javascript" src="dictionary/dictionary.js?v=9"></script>
+    <script type="text/javascript" src="dictionary/dictionary.js?v=10"></script>
 
-    <script type="text/javascript" src="controls/actionsControl.js?v=9"></script>
-    <script type="text/javascript" src="controls/backgroundControl.js?v=9"></script>
-    <script type="text/javascript" src="controls/layersControl.js?v=9"></script>
-    <script type="text/javascript" src="controls/settingsControl.js?v=9"></script>
-    <script type="text/javascript" src="controls/timeControl.js?v=9"></script>
-    <script type="text/javascript" src="controls/paintZoneDiv.js?v=9"></script>
-    <script type="text/javascript" src="controls/parentLayerDiv.js?v=9"></script>
-    <script type="text/javascript" src="controls/backMenuControl.js?v=9"></script>
-    <script type="text/javascript" src="controls/dateConverter.js?v=9"></script>
-    <script type="text/javascript" src="controls/markersControl.js?v=9"></script>
-    <script type="text/javascript" src="controls/propertiesControl.js?v=9"></script>
+    <script type="text/javascript" src="controls/actionsControl.js?v=10"></script>
+    <script type="text/javascript" src="controls/backgroundControl.js?v=10"></script>
+    <script type="text/javascript" src="controls/layersControl.js?v=10"></script>
+    <script type="text/javascript" src="controls/settingsControl.js?v=10"></script>
+    <script type="text/javascript" src="controls/timeControl.js?v=10"></script>
+    <script type="text/javascript" src="controls/paintZoneDiv.js?v=10"></script>
+    <script type="text/javascript" src="controls/parentLayerDiv.js?v=10"></script>
+    <script type="text/javascript" src="controls/backMenuControl.js?v=10"></script>
+    <script type="text/javascript" src="controls/dateConverter.js?v=10"></script>
+    <script type="text/javascript" src="controls/markersControl.js?v=10"></script>
+    <script type="text/javascript" src="controls/propertiesControl.js?v=10"></script>
     
-    <script type="text/javascript" src="map/parentLayer.js?v=9"></script>
-    <script type="text/javascript" src="map/paintZone.js?v=9"></script>
-    <script type="text/javascript" src="map/paintParams.js?v=9"></script>
-    <script type="text/javascript" src="map/loadSaveManager.js?v=9"></script>
-    <script type="text/javascript" src="map/layersManager.js?v=9"></script>
-    <script type="text/javascript" src="map/cursorManager.js?v=9"></script>
-    <script type="text/javascript" src="map/label.js?v=9"></script>
-    <script type="text/javascript" src="map/marker.js?v=9"></script>
-    <script type="text/javascript" src="map/copyManager.js?v=9"></script>
-    <script type="text/javascript" src="map/geojsonManager.js?v=9"></script>
-    <script type="text/javascript" src="map/labelDate.js?v=9"></script>
+    <script type="text/javascript" src="map/parentLayer.js?v=10"></script>
+    <script type="text/javascript" src="map/paintZone.js?v=10"></script>
+    <script type="text/javascript" src="map/paintParams.js?v=10"></script>
+    <script type="text/javascript" src="map/loadSaveManager.js?v=10"></script>
+    <script type="text/javascript" src="map/layersManager.js?v=10"></script>
+    <script type="text/javascript" src="map/cursorManager.js?v=10"></script>
+    <script type="text/javascript" src="map/label.js?v=10"></script>
+    <script type="text/javascript" src="map/marker.js?v=10"></script>
+    <script type="text/javascript" src="map/copyManager.js?v=10"></script>
+    <script type="text/javascript" src="map/geojsonManager.js?v=10"></script>
+    <script type="text/javascript" src="map/labelDate.js?v=10"></script>
 
-    <script type="text/javascript" src="buttons/actionButton.js?v=9"></script>
-    <script type="text/javascript" src="buttons/actionButtonSlider.js?v=9"></script>
-    <script type="text/javascript" src="buttons/actionButtonSimple.js?v=9"></script>
-    <script type="text/javascript" src="buttons/actionButtonColor.js?v=9"></script>
-    <script type="text/javascript" src="buttons/actionButtonFile.js?v=9"></script>
-    <script type="text/javascript" src="buttons/actionButtonSave.js?v=9"></script>
-    <script type="text/javascript" src="buttons/actionButtonConnexionState.js?v=9"></script>
-    <script type="text/javascript" src="buttons/actionButtonSliderWithButton.js?v=9"></script>
+    <script type="text/javascript" src="buttons/actionButton.js?v=10"></script>
+    <script type="text/javascript" src="buttons/actionButtonSlider.js?v=10"></script>
+    <script type="text/javascript" src="buttons/actionButtonSimple.js?v=10"></script>
+    <script type="text/javascript" src="buttons/actionButtonColor.js?v=10"></script>
+    <script type="text/javascript" src="buttons/actionButtonFile.js?v=10"></script>
+    <script type="text/javascript" src="buttons/actionButtonSave.js?v=10"></script>
+    <script type="text/javascript" src="buttons/actionButtonConnexionState.js?v=10"></script>
+    <script type="text/javascript" src="buttons/actionButtonSliderWithButton.js?v=10"></script>
+    <script type="text/javascript" src="buttons/actionButtonBorderUI.js?v=10"></script>
 
-    <script type="text/javascript" src="actions/action.js?v=9"></script>
-    <script type="text/javascript" src="actions/actionPaint.js?v=9"></script>
-    <script type="text/javascript" src="actions/actionsList.js?v=9"></script>
-    <script type="text/javascript" src="actions/actionDeleteZone.js?v=9"></script>
-    <script type="text/javascript" src="actions/actionAddZone.js?v=9"></script>
-    <script type="text/javascript" src="actions/actionDeleteLayer.js?v=9"></script>
-    <script type="text/javascript" src="actions/actionAddLayer.js?v=9"></script>
-    <script type="text/javascript" src="actions/actionChangeDateZone.js?v=9"></script>
-    <script type="text/javascript" src="actions/actionRenameLayer.js?v=9"></script>
-    <script type="text/javascript" src="actions/actionPopUpContent.js?v=9"></script>
-    <script type="text/javascript" src="actions/actionMoveLabel.js?v=9"></script>
-    <script type="text/javascript" src="actions/actionMaker.js?v=9"></script>
-    <script type="text/javascript" src="actions/actionLoadJson.js?v=9"></script>
-    <script type="text/javascript" src="actions/actionCopy.js?v=9"></script>
-    <script type="text/javascript" src="actions/actionPaste.js?v=9"></script>
-    <script type="text/javascript" src="actions/actionAutoBorder.js?v=9"></script>
-    <script type="text/javascript" src="actions/actionLoadGeojson.js?v=9"></script>
+    <script type="text/javascript" src="actions/action.js?v=10"></script>
+    <script type="text/javascript" src="actions/actionPaint.js?v=10"></script>
+    <script type="text/javascript" src="actions/actionsList.js?v=10"></script>
+    <script type="text/javascript" src="actions/actionDeleteZone.js?v=10"></script>
+    <script type="text/javascript" src="actions/actionAddZone.js?v=10"></script>
+    <script type="text/javascript" src="actions/actionDeleteLayer.js?v=10"></script>
+    <script type="text/javascript" src="actions/actionAddLayer.js?v=10"></script>
+    <script type="text/javascript" src="actions/actionChangeDateZone.js?v=10"></script>
+    <script type="text/javascript" src="actions/actionRenameLayer.js?v=10"></script>
+    <script type="text/javascript" src="actions/actionPopUpContent.js?v=10"></script>
+    <script type="text/javascript" src="actions/actionMoveLabel.js?v=10"></script>
+    <script type="text/javascript" src="actions/actionMaker.js?v=10"></script>
+    <script type="text/javascript" src="actions/actionLoadJson.js?v=10"></script>
+    <script type="text/javascript" src="actions/actionCopy.js?v=10"></script>
+    <script type="text/javascript" src="actions/actionPaste.js?v=10"></script>
+    <script type="text/javascript" src="actions/actionAutoBorder.js?v=10"></script>
+    <script type="text/javascript" src="actions/actionLoadGeojson.js?v=10"></script>
 
-    <script type="text/javascript" src="utils/utils.js?v=9"></script>
-    <script type="text/javascript" src="utils/keyboardEventsManager.js?v=9"></script>
+    <script type="text/javascript" src="utils/utils.js?v=10"></script>
+    <script type="text/javascript" src="utils/keyboardEventsManager.js?v=10"></script>
 
-    <script type="text/javascript" src="properties/propertiesForm.js?v=9"></script>
-    <script type="text/javascript" src="properties/propertiesFormLine.js?v=9"></script>
-    <script type="text/javascript" src="properties/property.js?v=9"></script>
-    <script type="text/javascript" src="properties/propertiesLayerForm.js?v=9"></script>
-    <script type="text/javascript" src="properties/propertyLayerFormLine.js?v=9"></script>
-    <script type="text/javascript" src="properties/propertyLayer.js?v=9"></script>
+    <script type="text/javascript" src="properties/propertiesForm.js?v=10"></script>
+    <script type="text/javascript" src="properties/propertiesFormLine.js?v=10"></script>
+    <script type="text/javascript" src="properties/property.js?v=10"></script>
+    <script type="text/javascript" src="properties/propertiesLayerForm.js?v=10"></script>
+    <script type="text/javascript" src="properties/propertyLayerFormLine.js?v=10"></script>
+    <script type="text/javascript" src="properties/propertyLayer.js?v=10"></script>
+
+    <script type="text/javascript" src="shared/descriptionManager.js?v=10"></script>
 
 	<script>
-
         // If HTTPS -> reload to http
         if(window.location.protocol == "https:")
         {
@@ -143,11 +145,9 @@
 
         Dictionary.load(lang, "", function()
         {
-            let main = new Main();
+          let main = new Main();
     	    setTimeout(main.init(), 1000);
         });
     </script>
-
-
   </body>
 </html>

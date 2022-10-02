@@ -24,7 +24,7 @@
 
     lineContent += `<div id="propmenu-${number}-line" style="margin-bottom:15px;">`;
 
-    lineContent += `<img id="propmenu-${number}-delete" title="${Dictionary.get('MAP_PROP_FORM_DELETE_LINE_TITLE')}" src="img/menu/source_icons_cancel" class="prop-form-delete-line-button" />`;
+    lineContent += `<img id="propmenu-${number}-delete" title="${Dictionary.get('MAP_PROP_FORM_DELETE_LINE_TITLE')}" src="img/menu/source_icons_cancel.svg" class="prop-form-delete-line-button" />`;
 
     lineContent += `<input id="propmenu-${number}-number" style="display:none" value="${number}"></input>`;
     lineContent += `<input id="propmenu-${number}-name" style="margin-left:10px"></input>`;
@@ -119,7 +119,7 @@
 
     if(numValues != 1)
     {
-      valueContent += `<img id="propmenu-${me.number}-delete-${numValues}" title="${Dictionary.get('MAP_PROP_FORM_DELETE_VALUE_TITLE')}" src="img/menu/source_icons_cancel" class="prop-form-delete-value-button" />`;
+      valueContent += `<img id="propmenu-${me.number}-delete-${numValues}" title="${Dictionary.get('MAP_PROP_FORM_DELETE_VALUE_TITLE')}" src="img/menu/source_icons_cancel.svg" class="prop-form-delete-value-button" />`;
     }
     valueContent += `</div>`;
 

@@ -39,6 +39,9 @@ class Params
 
     this.description = "";
 
+    this.scrollTimeEnable = true;
+    this.scrollTimeSpeed = 1;
+
     this.timeBarBigSize = false;
   }
 
@@ -66,6 +69,9 @@ class Params
     content.params["description"] = this.description;
 
     content.params["timeBarBigSize"] = this.timeBarBigSize;
+
+    content.params["scrollTimeEnable"] = this.scrollTimeEnable;
+    content.params["scrollTimeSpeed"] = this.scrollTimeSpeed;
 
     return content;
   }
@@ -95,17 +101,14 @@ class Params
       {
         this.typeTime = content.params["typeTime"];
       }
-
-      if(content.params["description"])
+      if ("scrollTimeEnable" in content.params)
       {
-        this.description = content.params["description"];
+        this.scrollTimeEnable = content.params["scrollTimeEnable"];
       }
-      else
+      if(content.params["scrollTimeSpeed"])
       {
-        this.description = "";
+        this.scrollTimeSpeed = content.params["scrollTimeSpeed"];
       }
-
-      $("#description-text").html(this.description);
     }
   }
 

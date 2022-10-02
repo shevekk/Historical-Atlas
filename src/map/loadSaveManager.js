@@ -15,9 +15,10 @@ class LoadSaveManager
    * @property {Object}                     jsonBackgrounds          The json background
    * @property {Boolean}                    logged                   The logged state 
    * @property {ActionsList}                actionsList              Manager of action list and undo/redo
+   * @property {DescriptionManager}         descriptionManager       The manager for display description in pop-up
    * @property {ActionsControl}             actionsControl           The action control
    */
-  constructor(map, layersManager, params, backgroundControl, timeControl, layersControl, actionsList, jsonBackgrounds)
+  constructor(map, layersManager, params, backgroundControl, timeControl, layersControl, actionsList, descriptionManager, jsonBackgrounds)
   {
     this.map = map;
     this.layersManager = layersManager;
@@ -28,6 +29,7 @@ class LoadSaveManager
     this.jsonBackgrounds = jsonBackgrounds;
     this.timeControl = timeControl;
     this.actionsList = actionsList;
+    this.descriptionManager = descriptionManager;
 
     if(localStorage.getItem('session-id-histoatlas'))
     {
@@ -197,7 +199,10 @@ class LoadSaveManager
       this.layersManager.changeSelectZoneWithoutTime();
     }
 
-    PropertiesForm.fromJson(contentObj["properties"]);
+    if(contentObj.hasOwnProperty("properties")) 
+    {
+      PropertiesForm.fromJson(contentObj["properties"]);
+    }
   }
 
   /*
@@ -235,7 +240,6 @@ class LoadSaveManager
 
     let content = {};
     content = this.params.toJson(content);
-    content = this.layersManager.toJson(content);
     content = this.layersManager.toJson(content);
     content = PropertiesForm.toJson(content);
 
@@ -291,7 +295,7 @@ class LoadSaveManager
   {
     let me = this;
 
-    let apiName = `map/get/${mapId}?user=${localStorage.getItem('session-id-histoatlas')}&editMode=${me.params.editMode}`
+    let apiName = `map/get/${mapId}?user=${localStorage.getItem('session-id-histoatlas')}&editMode=${me.params.editMode}&mapbox=false`
     if(!localStorage.getItem('session-id-histoatlas'))
     {
       apiName = `map/getGuest/${mapId}?editMode=${me.params.editMode}`
@@ -310,17 +314,17 @@ class LoadSaveManager
 
       me.initMapFromData(contentObj);
 
-      $("#nb-views").html(`${result.views} ${Dictionary.get("MAP_DESC_VIEWS_NUMBER")}`);
+      me.descriptionManager.updateContent(result);
 
-      $('#map-lang-' + result.lang).prop("checked", true);
-
-      $('#type-map-choise-' + result.type).prop("checked", true);
-
-      document.title = `HistoAtlas : [${result.lang}][${result.type}]${result.name} (${result.userName})`;
+      document.title = `${result.name} (${result.userName}) [${result.lang}][${result.type}]`;
 
       callback();
 
-    }).catch((err) => { 
+    }).catch((err) => {
+
+      if(err.status == 401) {
+        localStorage.removeItem('session-id-histoatlas');
+      }
 
       if(err.responseJSON)
       {
@@ -337,37 +341,62 @@ class LoadSaveManager
   /*
    * Check if the user is valid
    * @param {Boolean}               reinitButton                     Reinit button if is True
+   * @param {Function}             callback                  The callback
    */
-  checkValidUser(reinitButton)
+  checkValidUser(reinitButton, callback)
   {
     let me = this;
 
-    if(localStorage.getItem('session-id-histoatlas'))
+    if(me.params.editMode)
     {
-      Utils.callServer("user/checkValidUser", "GET").then((result) => {
+      if(localStorage.getItem('session-id-histoatlas'))
+      {
+        Utils.callServer("user/checkValidUser", "GET").then((result) => {
 
-        if(!me.logged || reinitButton)
-        {
-          me.actionsControl.updateLoggedState(true);
-          me.logged = true;
-        }
+          if(!me.logged || reinitButton)
+          {
+            me.actionsControl.updateLoggedState(true);
+            me.logged = true;
+          }
 
-      }).catch((err) => {
-        localStorage.removeItem('session-id-histoatlas');
-        localStorage.removeItem('session-token-histoatlas');
+          //console.log('validUser');
 
-        me.actionsControl.updateLoggedState(false);
+          if(callback) {
+            callback(); 
+          }
 
-        me.logged = false;
-      });
+        }).catch((err) => {
+          localStorage.removeItem('session-id-histoatlas');
+          localStorage.removeItem('session-token-histoatlas');
+
+          //console.log('invalidUser');
+
+          me.actionsControl.updateLoggedState(false);
+
+          me.logged = false;
+
+          if(callback) {
+            callback(); 
+          }
+        });
+      }
+      else
+      {
+        //if(me.logged)
+        //{
+          me.actionsControl.updateLoggedState(false);
+          me.logged = false;
+
+          if(callback) {
+            callback(); 
+          }
+        //}
+      }
     }
-    else
-    {
-      //if(me.logged)
-      //{
-        me.actionsControl.updateLoggedState(false);
-        me.logged = false;
-      //}
+    else {
+      if(callback) {
+        callback(); 
+      }
     }
   }
 }
