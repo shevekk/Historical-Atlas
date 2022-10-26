@@ -2,9 +2,9 @@
   "bdd" : 
   {
     "host" : "localhost",
-    "user" : "max",
-    "password" : "KHYZHAT9",
-    "database" : "histoatlas",
+    "user" : "",
+    "password" : "",
+    "database" : "",
     "port" : 3306
   },
   "tokenKey" : "tokenTest",
